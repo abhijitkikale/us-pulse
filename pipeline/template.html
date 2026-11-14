@@ -148,8 +148,9 @@ footer th{background:none;position:static}
   <section class="tab" id="tab-sectors">
     <div class="grid">
       <div class="card c12"><div class="hd"><div><h2>Sector Performance</h2><div class="sub" id="sec-sub"></div></div><div class="pseg seg" data-k="sec"></div></div><div id="ch-sec" class="chart"></div></div>
-      <div class="card c12"><div class="hd"><div><h2>Sector Momentum Rank</h2><div class="sub">Rank by return in each period (1 = best). Click a sector row. The two right-hand columns combine the ranks from 1W up to the horizon you pick: lowest sum = composite rank 1.</div></div><div style="display:flex;gap:8px;align-items:center"><span class="hint">Composite horizon</span><select id="secH"><option value="1M">1M</option><option value="3M">3M</option><option value="6M" selected>6M</option><option value="1Y">1Y</option><option value="3Y">3Y</option><option value="5Y">5Y</option></select><button class="info" data-info="seccomp" title="How is the composite rank worked out?">ⓘ</button></div></div><div class="scroll" style="max-height:none"><table class="heat" id="tb-secrank"></table></div></div>
-      <div class="card c12"><div class="hd"><div><h2>% of stocks above moving average (sectors)</h2><div class="sub">Share of each sector's stocks trading above their SMA. Grey bar = S&amp;P 500.</div></div>
+      <div class="card c12"><div class="hd"><div><h2>Sector Momentum Rank</h2><div class="sub">For the selected period: Cap-weighted (ETF) = the Select Sector SPDR's return, Equal-weight = the average return of the sector's S&amp;P 500 stocks, vs S&amp;P 500 = the ETF's return minus the S&amp;P 500's (percentage points). Then the rank by return in each period (1 = best). Click a sector row. The two right-hand columns combine the ranks from 1W up to the horizon you pick: lowest sum = composite rank 1.</div></div><div style="display:flex;gap:8px;align-items:center"><span class="hint">Composite horizon</span><select id="secH"><option value="1M">1M</option><option value="3M">3M</option><option value="6M" selected>6M</option><option value="1Y">1Y</option><option value="3Y">3Y</option><option value="5Y">5Y</option></select><button class="info" data-info="seccomp" title="How is the composite rank worked out?">ⓘ</button></div></div><div class="scroll" style="max-height:none"><table class="heat" id="tb-secrank"></table></div></div>
+      <div class="card c12"><div class="hd"><div><h2>Themes</h2><div class="sub">Industry and theme ETFs, ranked the same way as the sectors (same composite horizon and method). ETF return and vs S&amp;P 500 are for the selected period. Themes are shown for comparison only: stocks are grouped by sector, never by theme.</div></div></div><div class="scroll" style="max-height:none"><table class="heat" id="tb-themes"></table></div></div>
+      <div class="card c12"><div class="hd"><div><h2>% of stocks above moving average (sectors)</h2><div class="sub">Share of each sector's stocks (S&amp;P 500, 400 and 600 members) trading above their SMA. Grey bar = all tracked stocks (S&amp;P 500, 400 and 600 together).</div></div>
         <div class="seg" id="smaSel"><button data-v="a50" class="on">SMA 50</button><button data-v="a200">SMA 200</button></div></div><div id="ch-sma" class="chart"></div></div>
     </div>
   </section>
@@ -159,9 +160,11 @@ footer th{background:none;position:static}
       <div class="card c12"><div class="hd"><div><h2>Momentum Stocks <button class="info" data-info="momstk" title="How is the score worked out?">ⓘ</button></h2><div class="sub" id="mom-sub"></div></div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="hint">Horizon</span><select id="mom-h"><option value="1M">1M</option><option value="3M">3M</option><option value="6M" selected>6M</option><option value="1Y">1Y</option><option value="3Y">3Y</option><option value="5Y">5Y</option></select>
           <span class="hint">Sector weight</span><input class="num" id="mom-ws" type="number" min="0" max="1" step="0.05"><span class="hint">Stock weight</span><input class="num" id="mom-wt" type="number" min="0" max="1" step="0.05">
-          <button class="btn" id="mom-reset" title="Back to 0.6 / 0.4">Reset</button><select id="mom-sec"></select></div></div>
+          <button class="btn" id="mom-reset" title="Back to 0.5 / 0.5">Reset</button><select id="mom-sec"></select>
+          <label class="hint" style="display:flex;gap:4px;align-items:center"><input type="checkbox" id="mom-illiq">include illiquid</label></div></div>
         <div id="mm-box" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:2px 0 10px"></div>
-        <div class="scroll" style="max-height:75vh"><table class="heat" id="tb-mom"></table></div></div>
+        <div class="scroll" style="max-height:75vh"><table class="heat" id="tb-mom"></table></div>
+        <div class="hint" style="margin-top:8px">Rankings use current index constituents (S&amp;P 500, 400, 600); stocks under $5 or with under $5M average daily dollar volume are hidden unless you include illiquid.</div></div>
     </div>
   </section>
 
@@ -222,6 +225,7 @@ const IDX = Object.fromEntries(D.indices.map(i=>[i.label,i]));
 const STK = Object.fromEntries(D.stocks.map(s=>[s.s,s]));
 const BENCH = D.indices.filter(i=>i.group==='benchmark'&&i.label!=='VIX');   // S&P 500, Nasdaq 100, Dow Jones, S&P 400, S&P 600 (VIX is a volatility gauge, not a return)
 const SECT = D.indices.filter(i=>i.group==='sector');                // the 11 Select Sector SPDRs (themes have group 'theme')
+const THEME = D.indices.filter(i => i.group === 'theme');            // industry / theme ETFs: shown on the Sectors tab only, never used to group stocks
 const S = {pp:{bench:'1M',glob:'1M',sec:'1M',ad:'1M',drawer:'1M'}, tab:'overview', ccy:'usd', sma:'a50', stack:[], sort:{k:'ret',dir:-1}};
 const $ = s=>document.querySelector(s);
 const PL = (k='drawer')=>S.pp[k];
@@ -254,12 +258,17 @@ function median(a){a=a.filter(x=>x!=null).sort((x,y)=>x-y);return a.length?a[Mat
 
 /* ---------- header ---------- */
 $('#asof').textContent = `End-of-day data as of ${D.stock_asof||'unknown'}${D.asof&&D.asof!==D.stock_asof?' · indices '+D.asof:''}`;
+// the current wall-clock date and time in New York as numbers {year, month (1-12), day, hour (0-23), minute}
+function etParts(d=new Date()){
+  const o={};new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',hourCycle:'h23'})
+    .formatToParts(d).forEach(p=>{if(p.type!=='literal')o[p.type]=+p.value});
+  if(o.hour===24)o.hour=0;return o}
 (function nextUpdate(){                       // refresh runs weekdays about 17:35 ET; show the next one in ET whatever the viewer's timezone
-  const et=new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
-  const t=new Date(et);t.setHours(17,35,0,0);
-  if(et>=t)t.setDate(t.getDate()+1);
-  while(t.getDay()===0||t.getDay()===6)t.setDate(t.getDate()+1);
-  const day=t.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const et=etParts();
+  const t=new Date(Date.UTC(et.year,et.month-1,et.day));            // the ET calendar date, held in UTC so local DST never shifts it
+  if(et.hour*60+et.minute>=17*60+35)t.setUTCDate(t.getUTCDate()+1);
+  while(t.getUTCDay()===0||t.getUTCDay()===6)t.setUTCDate(t.getUTCDate()+1);
+  const day=t.toLocaleDateString('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'});
   const b=D.built?new Date(D.built).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' ET':null;
   $('#nextup').textContent=`${b?'Page built '+b+' · ':''}Next update: ${day}, about 5:35 PM ET (weekdays)`;
 })();
@@ -269,12 +278,12 @@ const STALE_DAYS = 4;
 (function staleBanner(){
   const MON={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
   const m=/^(\d{1,2}) ([A-Z][a-z]{2}) (\d{4})$/.exec(D.stock_asof||'');
-  const asofMs=m&&MON[m[2]]!=null?new Date(+m[3],MON[m[2]],+m[1]).getTime():null;
-  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));now.setHours(0,0,0,0);   // today's date in ET
-  const old=asofMs==null||Math.round((now.getTime()-asofMs)/864e5)>STALE_DAYS;      // whole calendar days, so Fri data on Tue after a Monday holiday is fine
+  const asofMs=m&&MON[m[2]]!=null?Date.UTC(+m[3],MON[m[2]],+m[1]):null;
+  const et=etParts(),now=Date.UTC(et.year,et.month-1,et.day);                       // today's date in ET (both dates held as UTC midnights)
+  const old=asofMs==null||Math.round((now-asofMs)/864e5)>STALE_DAYS;      // whole calendar days, so Fri data on Tue after a Monday holiday is fine
   const lines=[];
   if(D.stale||old)lines.push('<b>⚠ Data may be out of date.</b> '+esc(D.stale_note||(asofMs==null?'The price date is unknown.':`Prices end ${D.stock_asof}, more than ${STALE_DAYS} days ago; the daily update may have stopped.`)));
-  const bad=Object.entries(D.status||{}).filter(([k,v])=>/^(stale|failed|partial)/.test(String(v))).map(([k])=>k);
+  const bad=Object.entries(D.status||{}).filter(([k,v])=>k!=='freshness'&&/^(stale|failed|partial)/.test(String(v))).map(([k])=>k);
   if(bad.length)lines.push(`<b>⚠ Stale or failed sources:</b> ${bad.map(esc).join(', ')} (details at the bottom of the page)`);
   const el=$('#stale-banner');
   if(lines.length){el.innerHTML=lines.join('<br>');el.hidden=false}
@@ -353,31 +362,50 @@ function sectComposite(H){
   const items=SECT.map(i=>({key:i.label,i}));
   return {items,H,inc,...composite(items,(it,pp)=>it.i.ret[pp],inc)};
 }
+// the same composite for the theme ETFs (display only: momRows never sees themes)
+function themeComposite(H){
+  const inc=incFor(H);
+  const items=THEME.map(i=>({key:i.label,i}));
+  return {items,H,inc,...composite(items,(it,pp)=>it.i.ret[pp],inc)};
+}
+// a rank / heat table: the selected-period value columns, the rank in each period, then Σ ranks and the composite rank
+function rankTable(sel,name,comp,p,sortKey,valCols){
+  const {items,rk,H,inc,cr,nOk}=comp;
+  const sorted=items.slice().sort((a,b)=>((rk[a.key]||{})[p]||[99])[0]-((rk[b.key]||{})[p]||[99])[0]);
+  if(S[sortKey])sorted.sort((a,b)=>{const x=cr[a.key],y=cr[b.key];if(x.ok!==y.ok)return x.ok?-1:1;return S[sortKey]==='asc'?x.rank-y.rank:y.rank-x.rank});
+  const arrow=S[sortKey]==='asc'?' ▲':S[sortKey]==='desc'?' ▼':' ⇅';
+  const cmpCells=k=>{const c=cr[k];return c.ok?`<td style="border-left:2px solid var(--line);text-align:center" title="ranks ${esc(inc.map((q,j)=>q+':'+c.rs[j]).join(', '))}">${c.sum}</td><td class="h" style="background:${heatColor((c.rank-1)/Math.max(nOk-1,1))};font-size:14px">${c.rank}</td>`:`<td style="border-left:2px solid var(--line);text-align:center" class="hint">n/a</td><td class="h" style="background:var(--card2);color:var(--mut)" title="history too short for one of the periods">n/a</td>`};
+  const vHead=valCols.map(([lbl,,tip],j)=>`<th class="sel" title="${esc(tip)}" style="text-align:center${j===valCols.length-1?';border-right:2px solid var(--line)':''}">${esc(lbl)}<br><span class="hint">${esc(p)}${annNote(p)}</span></th>`).join('');
+  const vCells=it=>valCols.map(([,get,,c],j)=>{const v=get(it.i);return `<td class="${cls(v)}${c?' '+c:''}" style="text-align:center${j===valCols.length-1?';border-right:2px solid var(--line)':''}">${c==='rs'&&v!=null?fmt(v,1).replace('%',' pts'):fmt(v,1)}</td>`}).join('');
+  $(sel).innerHTML=`<thead><tr><th>${esc(name)}</th>${vHead}${PERIODS.map(q=>`<th class="${q===p?'sel':''}" style="text-align:center">${esc(q)}</th>`).join('')}<th data-sort="comp" title="Click to sort" style="text-align:center;border-left:2px solid var(--line);cursor:pointer">Σ ranks${arrow}<br><span class="hint">${esc(inc[0]||'')}→${esc(H)}${MOMM.method==='slice'?' · non-overlapping':''}</span></th><th data-sort="comp" title="Click to sort ascending / descending" style="text-align:center;cursor:pointer">Composite${arrow}<br>rank</th></tr></thead><tbody>`+
+   sorted.map(i=>`<tr class="click" data-l="${esc(i.key)}"><td>${esc(i.key)}</td>${vCells(i)}${PERIODS.map(q=>{const r=(rk[i.key]||{})[q];return r?`<td class="h" style="background:${heatColor((r[0]-1)/Math.max(r[1]-1,1))}" title="${fmt(i.i.ret[q],2)}">${r[0]}</td>`:'<td class="h">–</td>'}).join('')}${cmpCells(i.key)}</tr>`).join('')+'</tbody>';
+  $(sel).onclick=e=>{
+    if(e.target.closest('th[data-sort]')){S[sortKey]=S[sortKey]==null?'asc':S[sortKey]==='asc'?'desc':null;return renderSectors()}      // asc -> desc -> default order
+    const tr=e.target.closest('tr[data-l]');if(tr){S.pp.drawer=S.pp.sec;openIndex(tr.dataset.l,true)}};
+}
 function renderSectors(){
   renderPsegs();
   const p=S.pp.sec;
   $('#sec-sub').textContent=`Sector index return over ${p}${annNote(p)} · click a sector to see its stocks`;
   const s=SECT.filter(i=>i.ret[p]!=null).sort((x,y)=>y.ret[p]-x.ret[p]);
   bar('#ch-sec',s.map(i=>i.label),s.map(i=>i.ret[p]),from('sec'));
-  const {items,rk,H,inc,cr,nOk}=sectComposite(S.secH||'6M');
-  const sorted=items.slice().sort((a,b)=>((rk[a.key]||{})[p]||[99])[0]-((rk[b.key]||{})[p]||[99])[0]);
-  if(S.secSort)sorted.sort((a,b)=>{const x=cr[a.key],y=cr[b.key];if(x.ok!==y.ok)return x.ok?-1:1;return S.secSort==='asc'?x.rank-y.rank:y.rank-x.rank});
-  const arrow=S.secSort==='asc'?' ▲':S.secSort==='desc'?' ▼':' ⇅';
+  const H=S.secH||'6M';
   $('#secH').value=H;
-  const cmpCells=k=>{const c=cr[k];return c.ok?`<td style="border-left:2px solid var(--line);text-align:center" title="ranks ${esc(inc.map((q,j)=>q+':'+c.rs[j]).join(', '))}">${c.sum}</td><td class="h" style="background:${heatColor((c.rank-1)/Math.max(nOk-1,1))};font-size:14px">${c.rank}</td>`:`<td style="border-left:2px solid var(--line);text-align:center" class="hint">n/a</td><td class="h" style="background:var(--card2);color:var(--mut)" title="history too short for one of the periods">n/a</td>`};
-  $('#tb-secrank').innerHTML=`<thead><tr><th>Sector</th>${PERIODS.map(q=>`<th class="${q===p?'sel':''}" style="text-align:center">${esc(q)}</th>`).join('')}<th data-sort="comp" title="Click to sort" style="text-align:center;border-left:2px solid var(--line);cursor:pointer">Σ ranks${arrow}<br><span class="hint">${esc(inc[0]||'')}→${esc(H)}${MOMM.method==='slice'?' · non-overlapping':''}</span></th><th data-sort="comp" title="Click to sort ascending / descending" style="text-align:center;cursor:pointer">Composite${arrow}<br>rank</th></tr></thead><tbody>`+
-   sorted.map(i=>`<tr class="click" data-l="${esc(i.key)}"><td>${esc(i.key)}</td>${PERIODS.map(q=>{const r=(rk[i.key]||{})[q];return r?`<td class="h" style="background:${heatColor((r[0]-1)/Math.max(r[1]-1,1))}" title="${fmt(i.i.ret[q],2)}">${r[0]}</td>`:'<td class="h">–</td>'}).join('')}${cmpCells(i.key)}</tr>`).join('')+'</tbody>';
-  $('#tb-secrank').onclick=e=>{
-    if(e.target.closest('th[data-sort]')){S.secSort=S.secSort==null?'asc':S.secSort==='asc'?'desc':null;return renderSectors()}      // asc -> desc -> default order
-    const tr=e.target.closest('tr[data-l]');if(tr){S.pp.drawer=S.pp.sec;openIndex(tr.dataset.l,true)}};
-  // % above SMA
-  const k=S.sma;const pct=l=>{const m=members(l).filter(x=>x[k]!=null);return m.length?100*m.filter(x=>x[k]).length/m.length:null};
-  const rows=SECT.map(i=>({l:i.label,v:pct(i.label)})).filter(r=>r.v!=null);
-  const base={l:'S&P 500',v:pct('S&P 500')};if(base.v!=null)rows.push(base);rows.sort((a,b)=>b.v-a.v);
-  Plotly.react($('#ch-sma'),[{type:'bar',x:rows.map(r=>r.l),y:rows.map(r=>r.v),customdata:rows.map(r=>r.l),marker:{color:rows.map(r=>r.l==='S&P 500'?'#7d8794':'#f08c1a')},
+  const rsCol=['vs S&P 500',i=>(i.rs||{})[p]??null,'Return minus the S&P 500 return over the same period, in percentage points','rs'];
+  rankTable('#tb-secrank','Sector',sectComposite(H),p,'secSort',[
+    ['Cap-weighted (ETF)',i=>i.ret[p],'Return of the Select Sector SPDR ETF (weighted by market cap)'],
+    ['Equal-weight',i=>(i.ew||{})[p]??null,"Average return of the sector's S&P 500 stocks, each counted equally (– when too few stocks have the history)"],
+    rsCol]);
+  rankTable('#tb-themes','Theme',themeComposite(H),p,'themeSort',[['ETF return',i=>i.ret[p],'Return of the theme ETF'],rsCol]);
+  // % above SMA: sectors hold S&P 500, 400 and 600 members, so the grey comparison bar is every tracked stock with the flag
+  const k=S.sma;const share=m=>{m=m.filter(x=>x[k]!=null);return m.length?100*m.filter(x=>x[k]).length/m.length:null};
+  const rows=SECT.map(i=>({l:i.label,v:share(members(i.label))})).filter(r=>r.v!=null);
+  const ALL='All tracked stocks',base={l:ALL,v:share(D.stocks),all:true};if(base.v!=null)rows.push(base);rows.sort((a,b)=>b.v-a.v);
+  Plotly.react($('#ch-sma'),[{type:'bar',x:rows.map(r=>r.l),y:rows.map(r=>r.v),customdata:rows.map(r=>r.l),marker:{color:rows.map(r=>r.all?'#7d8794':'#f08c1a')},
     text:rows.map(r=>r.v.toFixed(0)+'%'),textposition:'outside',cliponaxis:false,hovertemplate:'%{x}<br><b>%{y:.0f}%</b> above '+(k==='a50'?'SMA 50':'SMA 200')+'<extra></extra>'}],
     layout({yaxis:{range:[0,Math.max(...rows.map(r=>r.v))*1.15+2]}}),CFG);
-  onClick('#ch-sma',l=>{S.pp.drawer=S.pp.sec;openIndex(IDX[l]?l:'S&P 500',true)})}
+  onClick('#ch-sma',l=>{S.pp.drawer=S.pp.sec;if(IDX[l]&&IDX[l].group==='sector')openIndex(l,true);
+    else openList(ALL,'Every S&P 500, S&P 400 and S&P 600 stock tracked here',D.stocks.filter(x=>x[k]!=null).map(x=>x.s),true)})}
 
 /* ---------- breadth ---------- */
 const SEGS=['S&P 500','S&P 400','S&P 600'];
@@ -426,6 +454,7 @@ const openStock=(sym,reset)=>push({t:'stock',sym},reset);
 
 function tiles(arr){return `<div class="tiles">${arr.map(([k,v,c])=>`<div class="tile"><div class="k">${esc(k)}</div><div class="v ${c||''}">${esc(v)}</div></div>`).join('')}</div>`}
 const csvSafe=x=>{if(typeof x!=='string')return x;const q=x.replace(/^"/,'');return /^[=+\-@\t\r]/.test(q)?"'"+x:x};   // blocks spreadsheet formula injection from text fields
+const csvq=x=>x==null?'':'"'+String(csvSafe(String(x))).replace(/"/g,'""')+'"';   // a quoted CSV text field: formula-guarded first, embedded double quotes doubled
 const trendBadges=s=>`${s.bs?'<span class="badge b-g">Brutal strength</span>':''}${s.bw?'<span class="badge b-r">Brutal weakness</span>':''}${s.gc==null?'':s.gc?'<span class="badge b-g">Golden</span>':'<span class="badge b-r">Death</span>'}${s.a200==null?'':s.a200?'<span class="badge b-n">&gt;200DMA</span>':'<span class="badge b-n">&lt;200DMA</span>'}`;
 const getv=(s,k)=>k==='ret'?s.r[PL()]:k==='n'||k==='i'?s[k]:k==='trend'?(s.bs?3:s.bw?-3:s.gc?1:s.gc===false?-1:0):k.startsWith('r:')?s.r[k.slice(2)]:s[k];
 
@@ -434,14 +463,15 @@ function renderDrawer(){
   $('#dback').style.display=S.stack.length>1?'':'none';
   const body=$('#dbody');
   if(v.t==='stock')return renderStock(v,body);
-  let syms,title,head='';
+  let syms,title,fname,head='';
   if(v.t==='index'){
-    const ix=IDX[v.label];syms=D.members[v.label]||[];title=ix.nse;
+    const ix=IDX[v.label];syms=D.members[v.label]||[];title=`${ix.label} (${ix.nse})`;fname=ix.label;
     const m=members(v.label);const a200=m.filter(x=>x.a200!=null);
     head=tiles([['Index level',num(ix.close,2)],['1D',fmt(ix.chg,2),cls(ix.chg)],[PL()+annNote(PL()).replace(' · ',' '),fmt(ix.ret[PL()],2),cls(ix.ret[PL()])],['P/E',ix.pe??'–'],['P/B',ix.pb??'–'],['Div yield',ix.dy!=null?ix.dy+'%':'–'],
       ['Stocks',m.length],['Above 200 DMA',a200.length?Math.round(100*a200.filter(x=>x.a200).length/a200.length)+'%':'–']])+
-      `<div id="d-idx" style="height:220px"></div>`;
-  }else{syms=v.syms;title=v.title;head=v.sub?`<div class="sub hint">${esc(v.sub)}</div>`:'';
+      `<div id="d-idx" style="height:220px"></div>`+
+      (D.members[v.label]?'':'<div class="hint" style="margin-top:6px">Constituent stocks are not tracked for this ETF; the chart above shows its weekly closes.</div>');
+  }else{syms=v.syms;title=fname=v.title;head=v.sub?`<div class="sub hint">${esc(v.sub)}</div>`:'';
     const m=syms.map(s=>STK[s]).filter(Boolean);const a200=m.filter(x=>x.a200!=null);
     head+=tiles([['Stocks',m.length],['Median '+PL(),fmt(median(m.map(x=>x.r[PL()])),2)],['Above 200 DMA',a200.length?Math.round(100*a200.filter(x=>x.a200).length/a200.length)+'%':'–'],['Golden cross',m.filter(x=>x.gc).length]])}
   $('#dtitle').textContent=title;
@@ -459,8 +489,8 @@ function renderDrawer(){
   $('#d-tbl').onclick=e=>{const th=e.target.closest('th');if(th){const nk=th.dataset.k;S.sort=S.sort.k===nk?{k:nk,dir:-S.sort.dir}:{k:nk,dir:nk==='n'||nk==='i'?1:-1};return renderDrawer()}
     const tr=e.target.closest('tr[data-s]');if(tr)openStock(tr.dataset.s,false)};
   $('#csv').onclick=()=>{const h=['Symbol','Name','Industry','Price','1D%','1W%','1M%','3M%','6M%','1Y%','3Y% ann','5Y% ann','52w pos %','SMA50','SMA200','Golden cross','Beta 1Y','Corr 1Y','Mcap $M'];
-    const L=[h.join(',')].concat(rows.map(s=>[s.s,'"'+s.n.replace(/"/g,'""')+'"','"'+s.i+'"',s.p,s.d1,s.r['1W'],s.r['1M'],s.r['3M'],s.r['6M'],s.r['1Y'],s.r['3Y'],s.r['5Y'],s.pos,s.sma50,s.sma200,s.gc,s.beta,s.corr,s.mc].map(x=>csvSafe(x??'')).join(',')));
-    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([L.join('\n')],{type:'text/csv'}));a.download=title.replace(/\W+/g,'_')+'.csv';a.click()};
+    const L=[h.join(',')].concat(rows.map(s=>[csvq(s.s),csvq(s.n),csvq(s.i),s.p,s.d1,s.r['1W'],s.r['1M'],s.r['3M'],s.r['6M'],s.r['1Y'],s.r['3Y'],s.r['5Y'],s.pos,s.sma50,s.sma200,s.gc,s.beta,s.corr,s.mc].map(x=>csvSafe(x??'')).join(',')));
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([L.join('\n')],{type:'text/csv'}));a.download=(fname.replace(/\W+/g,'_').replace(/^_+|_+$/g,'')||'stocks')+'.csv';a.click()};
   // bar chart of stocks
   const withR=rows.filter(s=>s.r[p]!=null).sort((a,b)=>b.r[p]-a.r[p]);
   const shown=withR.length>40?withR.slice(0,20).concat(withR.slice(-20)):withR;
@@ -494,7 +524,7 @@ const INFO={
   <p><b>Sector score.</b> The sector's composite rank from the Sectors tab (its ranks from 1W up to the horizon, added up; lowest sum = rank 1), turned into a 0-100 position among all sectors.</p>
   <p><b>Stock score.</b> The same method applied to the stock's own returns against the other stocks of its sector, turned into a 0-100 position within that sector. Using positions instead of raw ranks keeps a 5-stock sector and a 40-stock sector comparable.</p>
   <p><b>Weighted score = sector weight × sector score + stock weight × stock score.</b> The lowest weighted score is the top stock. If two stocks tie, the one with the bigger % rise over the horizon comes first. Change the weights in the two boxes; editing one sets the other to 1 minus it. They are remembered in your browser.</p>
-  <p><b>Which sector.</b> Each stock is counted once, under its sector (one of the 11 S&amp;P sectors). Stocks without a sector label, or that lack history for a period, are not listed. The universe is the current constituents of the S&amp;P 500, S&amp;P 400 and S&amp;P 600.</p>
+  <p><b>Which sector.</b> Each stock is counted once, under its sector (one of the 11 S&amp;P sectors). Stocks without a sector label, or that lack history for a period, are not listed. The universe is the current constituents of the S&amp;P 500, S&amp;P 400 and S&amp;P 600. Stocks under $5 or with under $5 million average daily dollar volume are hidden unless you tick <b>include illiquid</b>; they still count when the other stocks of their sector are ranked.</p>
   <p class="hint">Past returns only. Not investment advice.</p>`},
  seccomp:{t:'Composite sector rank',h:`<p><b>What it does.</b> A single rank that blends several time periods, so a sector that is consistently strong ranks above one that only had a good week.</p><ol><li>For each sector, take its separate rank (1 = best return) in every period from <b>1W</b> up to the horizon you choose. For 6M that is 1W, 1M, 3M and 6M. <b>1D is ignored.</b></li><li>Add those ranks together.</li><li>The <b>lowest sum gets composite rank 1</b>, the next lowest rank 2, and so on.</li></ol><p><b>Ties.</b> If two sectors have the same sum, the one with the better <b>short-term</b> rank wins (1W first, then 1M, and so on).</p><p><b>n/a.</b> A sector whose history is too short for one of the periods cannot be scored and is ranked last.</p><p><b>Example.</b> A sector ranked 2, 4, 3 and 1 in 1W, 1M, 3M and 6M has a sum of 10. Hover over the sum to see the individual ranks.</p><p class="hint">3Y and 5Y returns are annualised. A rank is relative to the other sectors, not a forecast. Not investment advice.</p>`},
  breadth:{t:'Whole-market breadth',h:`<p><b>What it is.</b> Every stock in the S&amp;P 500, S&amp;P 400 and S&amp;P 600 (about 1,500 current constituents, NYSE and Nasdaq listings) is compared with its previous close and counted as an advance, a decline or unchanged.</p>
@@ -565,7 +595,7 @@ function renderActivity(){
 }
 
 /* ---------- momentum stocks ---------- */
-const MOM={ws:0.6,wt:0.4,sec:''};
+const MOM={ws:0.5,wt:0.5,sec:'',illiq:false};      // illiq: also list stocks flagged illiquid (liq === false: under $5, or under $5M average daily dollar volume)
 try{const w=JSON.parse(localStorage.getItem('usp_mom_w')||'null');if(w&&w.ws>=0&&w.wt>=0&&w.ws<=1&&w.wt<=1){MOM.ws=+w.ws;MOM.wt=+w.wt}}catch(e){}
 const momSave=()=>{try{localStorage.setItem('usp_mom_w',JSON.stringify({ws:MOM.ws,wt:MOM.wt}))}catch(e){}};
 const pct0=(rank,n)=>n>1?(rank-1)/(n-1)*100:0;       // 0 = best, 100 = worst
@@ -596,7 +626,7 @@ function renderMethod(){
 function renderMomentum(){
   if(!$('#mm-box').firstChild)renderMethod();
   const H=S.secH||'6M';$('#mom-h').value=H;
-  const {rows}=momRows(H);
+  const all=momRows(H).rows,rows=MOM.illiq?all:all.filter(r=>r.s.liq!==false),nHid=all.length-rows.length;   // ranks below are among the listed stocks
   const ws=MOM.ws,wt=MOM.wt;
   rows.forEach(r=>r.w=Math.round((ws*r.sPct+wt*r.tPct)*1e4)/1e4);
   rows.sort((a,b)=>a.w-b.w||((b.ret??-1e9)-(a.ret??-1e9)));          // lowest weighted score first; tie -> bigger % rise
@@ -604,7 +634,7 @@ function renderMomentum(){
   const secs=[...new Set(rows.map(r=>r.sec))].sort();if(MOM.sec&&!secs.includes(MOM.sec))MOM.sec='';
   $('#mom-sec').innerHTML='<option value="">All sectors</option>'+secs.map(x=>`<option value="${esc(x)}"${x===MOM.sec?' selected':''}>${esc(x)}</option>`).join('');
   if(document.activeElement!==$('#mom-ws'))$('#mom-ws').value=ws;if(document.activeElement!==$('#mom-wt'))$('#mom-wt').value=wt;
-  $('#mom-sub').textContent=`Weighted score = ${ws} × sector score + ${wt} × stock score · both scores 0 (best) to 100 (worst) · lowest = top stock · horizon ${incFor(H)[0]||''}→${H}${MOMM.method==='slice'?' · non-overlapping periods':' · cumulative returns'} · ${rows.length} stocks`;
+  $('#mom-sub').textContent=`Weighted score = ${ws} × sector score + ${wt} × stock score · both scores 0 (best) to 100 (worst) · lowest = top stock · horizon ${incFor(H)[0]||''}→${H}${MOMM.method==='slice'?' · non-overlapping periods':' · cumulative returns'} · ${rows.length} stocks${nHid?` · ${nHid} illiquid hidden`:''}`;
   const shown=MOM.sec?rows.filter(r=>r.sec===MOM.sec):rows,n=rows.length;
   $('#tb-mom').innerHTML=`<thead><tr><th style="text-align:left">#</th><th style="text-align:left">Stock</th><th style="text-align:left">Sector</th><th style="text-align:center">Sector<br>rank</th><th style="text-align:center">Sector<br>score</th><th style="text-align:center">Rank in<br>sector</th><th style="text-align:center">Stock<br>score</th><th style="text-align:center;border-left:2px solid var(--line)">Weighted<br>score</th>${PERIODS.map(q=>`<th class="${q===H?'sel':''}" style="text-align:center">${esc(q)}</th>`).join('')}</tr></thead><tbody>`+
    shown.map(r=>`<tr class="click" data-s="${esc(r.s.s)}"><td style="text-align:left">${r.rank}</td><td style="text-align:left" title="${esc(r.s.n)}"><b>${esc(r.s.s)}</b> <span class="hint">${esc(r.s.n)}</span></td><td style="text-align:left">${esc(r.sec)}</td><td class="h" style="background:${heatColor((r.sRank-1)/Math.max(r.nSec-1,1))}">${r.sRank}<span class="hint">/${r.nSec}</span></td><td style="text-align:center">${r.sPct.toFixed(0)}</td><td class="h" style="background:${heatColor((r.tRank-1)/Math.max(r.nIn-1,1))}">${r.tRank}<span class="hint">/${r.nIn}</span></td><td style="text-align:center">${r.tPct.toFixed(0)}</td><td class="h" style="border-left:2px solid var(--line);background:${heatColor((r.rank-1)/Math.max(n-1,1))};font-size:14px">${r.w.toFixed(1)}</td>${PERIODS.map(q=>`<td class="${cls(r.s.r[q])}" style="text-align:center">${fmt(r.s.r[q])}</td>`).join('')}</tr>`).join('')+'</tbody>';
@@ -624,14 +654,17 @@ function renderMomentum(){
     $('#mom-ws').value=MOM.ws;$('#mom-wt').value=MOM.wt;momSave();renderMomentum()};
   $('#mom-ws').oninput=e=>{if(e.target.value!=='')setW('ws',+e.target.value)};
   $('#mom-wt').oninput=e=>{if(e.target.value!=='')setW('wt',+e.target.value)};
-  $('#mom-reset').onclick=()=>{MOM.ws=0.6;MOM.wt=0.4;$('#mom-ws').value=0.6;$('#mom-wt').value=0.4;momSave();renderMomentum()};
+  $('#mom-reset').onclick=()=>{MOM.ws=0.5;MOM.wt=0.5;$('#mom-ws').value=0.5;$('#mom-wt').value=0.5;momSave();renderMomentum()};
+  $('#mom-illiq').onchange=e=>{MOM.illiq=e.target.checked;renderMomentum()};
   $('#mom-h').onchange=()=>{S.secH=$('#mom-h').value;renderMomentum()};
   $('#mom-sec').onchange=()=>{MOM.sec=$('#mom-sec').value;renderMomentum()};
   $('#tb-mom').onclick=e=>{const tr=e.target.closest('tr[data-s]');if(tr)openStock(tr.dataset.s,true)};
 })();
 
 /* ---------- status footer ---------- */
-$('#status').innerHTML='<table>'+Object.entries(D.status).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="${/^(ok|cached)/.test(v)?'':'warn'}">${/^(ok|cached)/.test(v)?'✓':'⚠'} ${esc(v)}</td></tr>`).join('')+'</table><div style="margin-top:6px">'+esc(D.mcap_note)+'</div>';
+// OK: 'ok…', 'cached…' or 'fetched…', optionally after a source prefix such as 'sectors: fetched 12, cached 1488, …'
+const okStatus=v=>{v=String(v);return !/^(stale|failed|partial)/.test(v)&&/^([a-z]+: )?(ok|cached|fetched)\b/.test(v)};
+$('#status').innerHTML='<table>'+Object.entries(D.status).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="${okStatus(v)?'':'warn'}">${okStatus(v)?'✓':'⚠'} ${esc(v)}</td></tr>`).join('')+'</table><div style="margin-top:6px">'+esc(D.mcap_note)+'</div>';
 
 /* ---------- boot ---------- */
 const placeholder=()=>{};                    // Valuation, Risk Monitor and ETFs are static until later build steps fill them

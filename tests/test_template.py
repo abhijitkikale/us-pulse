@@ -156,6 +156,104 @@ def test_fixture_is_a_pipeline_payload():
     assert FIXTURE.stat().st_size < 300_000
 
 
+# ---------- Task 14: sectors, themes, momentum defaults ----------
+
+def _page_text():
+    return " ".join(_parsed().parts) + "\n" + _app_script(_html())
+
+
+def test_momentum_defaults_are_half_half():
+    js = _app_script(_html())
+    assert re.search(r"const MOM=\{ws:0\.5,wt:0\.5", js)
+    assert "ws:0.6" not in js and "wt:0.4" not in js
+
+
+def test_reset_button_restores_half_half():
+    js = _app_script(_html())
+    m = re.search(r"\$\('#mom-reset'\)\.onclick=.*", js)
+    assert m, "no reset handler"
+    line = m.group(0)
+    assert "MOM.ws=0.5" in line and "MOM.wt=0.5" in line
+    assert "0.6" not in line and "0.4" not in line
+    assert 'title="Back to 0.5 / 0.5"' in _html()
+
+
+def test_momentum_weights_keep_usp_prefix():
+    js = _app_script(_html())
+    keys = set(re.findall(r"localStorage\.(?:get|set)Item\('([^']+)'", js))
+    assert keys and all(k.startswith("usp_") for k in keys), keys
+
+
+def test_template_mentions_equal_weight_and_relative_strength():
+    text = _page_text()
+    assert "Equal-weight" in text and "vs S&P 500" in text and "Cap-weighted (ETF)" in text
+
+
+def test_themes_table_exists():
+    html = _html()
+    assert re.search(r"""<table[^>]*id=["']tb-themes["']""", html)
+    assert "Themes" in " ".join(_parsed().parts)
+
+
+def test_illiquid_checkbox_exists():
+    html = _html()
+    assert re.search(r"""<input type="checkbox" id="mom-illiq"[^>]*>\s*include illiquid""", html)
+    assert "MOM.illiq" in _app_script(html)
+    text = " ".join(" ".join(_parsed().parts).split())
+    assert ("Rankings use current index constituents (S&P 500, 400, 600); stocks under $5 or with under $5M "
+            "average daily dollar volume are hidden unless you include illiquid.") in text
+
+
+def test_themes_not_used_for_stock_assignment():
+    js = _app_script(_html())
+    assert re.search(r"const SECT = D\.indices\.filter\(i=>i\.group==='sector'\);", js)
+    assert re.search(r"const THEME = D\.indices\.filter\(i\s*=>\s*i\.group\s*===\s*'theme'\);", js)
+    body = re.search(r"function momRows\(H\)\{(.*?)\n\}", js, re.S).group(1)
+    assert "THEME" not in body and "'theme'" not in body
+    assert "sectSet=new Set(SECT.map(" in body
+    sc = re.search(r"function sectComposite\(H\)\{(.*?)\n\}", js, re.S).group(1)
+    assert "SECT.map(" in sc and "THEME" not in sc
+
+
+def test_drawer_title_uses_label():
+    js = _app_script(_html())
+    assert "title=`${ix.label} (${ix.nse})`" in js
+    assert "title=ix.nse" not in js
+    assert "a.download=(fname.replace(" in js
+
+
+def test_status_fetched_is_ok():
+    js = _app_script(_html())
+    m = re.search(r"const okStatus=.*", js)
+    assert m and "fetched" in m.group(0) and "cached" in m.group(0)
+    assert "okStatus(v)" in re.search(r"\$\('#status'\)\.innerHTML=.*", js).group(0)
+
+
+def test_et_clock_uses_format_to_parts():
+    js = _app_script(_html())
+    assert "formatToParts" in js and "America/New_York" in js
+    assert "new Date(new Date().toLocaleString(" not in js
+
+
+def test_banner_skips_freshness_status():
+    js = _app_script(_html())
+    line = re.search(r"const bad=Object\.entries\(D\.status.*", js).group(0)
+    assert "'freshness'" in line
+
+
+def test_csv_doubles_embedded_quotes():
+    js = _app_script(_html())
+    assert "const csvq=" in js
+    row = re.search(r"rows\.map\(s=>\[(.*?)\]\.map", js).group(1)
+    assert "csvq(s.n)" in row and "csvq(s.i)" in row and "'\"'+s.i+'\"'" not in row
+
+
+def test_sma_comparison_is_all_tracked_stocks():
+    html = _html()
+    assert "All tracked stocks" in _app_script(html)
+    assert "Grey bar = S&amp;P 500" not in html and "Grey bar = all tracked stocks" in html
+
+
 # ---------- optional: load the rendered fixture in headless Chromium ----------
 
 def _render_fixture(tmp_path, payload=None):
@@ -203,7 +301,8 @@ def test_page_loads_without_console_errors(tmp_path):
         page.evaluate("closeDrawer()")
         page.click("#tb-globrank tr.click")                 # a US row of the global rank table
         page.wait_for_timeout(250)
-        assert page.inner_text("#dtitle") in ("^GSPC", "^DJI", "^NDX", "^SP400", "^SP600")
+        assert page.inner_text("#dtitle") in ("S&P 500 (^GSPC)", "Dow Jones (^DJI)", "Nasdaq 100 (^NDX)",
+                                              "S&P 400 (^SP400)", "S&P 600 (^SP600)")
         page.evaluate("closeDrawer()")
         page.evaluate("openIndex('Technology',true)")       # a sector drawer
         page.wait_for_timeout(250)
@@ -215,6 +314,69 @@ def test_page_loads_without_console_errors(tmp_path):
         assert "data as of 13 Nov 2026" in page.inner_text("header")
         banner = page.inner_text("#stale-banner")           # the fixture's status has one stale source ('etf')
         assert page.is_visible("#stale-banner") and "etf" in banner
+    finally:
+        b.close()
+        pw.stop()
+
+
+def test_sectors_themes_and_momentum_render(tmp_path):
+    d = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    assert any(s["liq"] is False for s in d["stocks"]), "fixture needs an illiquid stock"
+    n_themes = sum(i["group"] == "theme" for i in d["indices"])
+    for ix in d["indices"]:                                  # the small fixture has too few stocks per sector for ew
+        if ix["label"] == "Technology":
+            ix["ew"]["1M"] = 1.234
+    out = _render_fixture(tmp_path, d)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        page.evaluate("try{localStorage.clear()}catch(e){}")
+        per_tab = {}
+        for t in TABS:
+            before = len(errors)
+            page.click(f'nav button[data-tab="{t}"]')
+            page.wait_for_timeout(200)
+            per_tab[t] = errors[before:]
+        assert all(v == [] for v in per_tab.values()), per_tab
+        page.click('nav button[data-tab="sectors"]')
+        page.click('#periods button[data-p="1M"]')
+        assert page.locator("#tb-secrank tbody tr").count() == 11
+        assert page.locator("#tb-themes tbody tr").count() == n_themes
+        head = page.inner_text("#tb-secrank thead")
+        assert "Cap-weighted (ETF)" in head and "Equal-weight" in head and "vs S&P 500" in head
+        assert "vs S&P 500" in page.inner_text("#tb-themes thead")
+        tech = page.locator('#tb-secrank tr[data-l="Technology"] td').all_inner_texts()
+        assert tech[2] == "+1.2%" and tech[3].endswith(" pts"), tech
+        for tbl in ("#tb-secrank", "#tb-themes"):
+            cells = page.locator(f"{tbl} td.rs").all_inner_texts()
+            assert cells and all(c.strip() not in ("", "–") for c in cells), (tbl, cells)
+        page.click("#tb-themes tbody tr.click >> nth=0")
+        page.wait_for_timeout(250)
+        assert page.is_visible("#drawer.open")
+        assert re.fullmatch(r".+ \([A-Z]+\)", page.inner_text("#dtitle"))
+        page.evaluate("closeDrawer()")
+        page.evaluate("openIndex('Technology',true)")
+        page.wait_for_timeout(250)
+        assert page.inner_text("#dtitle") == "Technology (XLK)"
+        with page.expect_download() as dl:
+            page.click("#csv")
+        assert dl.value.suggested_filename == "Technology.csv"
+        page.evaluate("closeDrawer()")
+        page.click('nav button[data-tab="momentum"]')
+        page.wait_for_timeout(200)
+        assert page.input_value("#mom-ws") == "0.5" and page.input_value("#mom-wt") == "0.5"
+        assert not page.is_checked("#mom-illiq")
+        n_off = page.locator("#tb-mom tbody tr").count()
+        page.check("#mom-illiq")
+        page.wait_for_timeout(200)
+        n_on = page.locator("#tb-mom tbody tr").count()
+        assert 0 < n_off < n_on, (n_off, n_on)
+        page.fill("#mom-ws", "0.8")
+        page.click("#mom-reset")
+        assert page.input_value("#mom-ws") == "0.5" and page.input_value("#mom-wt") == "0.5"
+        row = page.locator("#status tr", has_text="sectors").inner_text()
+        assert "⚠" not in row and "✓" in row
+        assert errors == [], errors
     finally:
         b.close()
         pw.stop()
@@ -271,6 +433,10 @@ def _hostile_payload():
     d["members"][sec_new] = d["members"].pop(sec_old)
     for s in d["stocks"]:
         s["x"] = [sec_new if x == sec_old else x for x in s["x"]]
+    for ix in d["indices"]:
+        if ix["group"] == "theme":
+            ix["label"], ix["nse"] = "Theme " + HOSTILE, "SMH" + HOSTILE
+            break
     d["status"]["src " + HOSTILE] = "stale: " + HOSTILE
     d["asof"] = d["stock_asof"] = "13 Nov 2026" + HOSTILE
     d["stale"], d["stale_note"] = True, "note " + HOSTILE
@@ -309,6 +475,18 @@ def test_hostile_payload_does_not_execute(tmp_path):
         page.click(f'#tb-secrank tr[data-l="{sec.replace(chr(34), chr(92) + chr(34))}"]')
         page.wait_for_timeout(250)
         assert page.is_visible("#drawer.open")
+        assert sec in page.inner_text("#dtitle")
+        page.evaluate("closeDrawer()")
+        theme = "Theme " + HOSTILE
+        assert theme in page.inner_text("#tb-themes")
+        page.click(f'#tb-themes tr[data-l="{theme.replace(chr(34), chr(92) + chr(34))}"]')
+        page.wait_for_timeout(250)
+        assert page.is_visible("#drawer.open") and theme in page.inner_text("#dtitle")
+        page.evaluate("closeDrawer()")
+        page.click('nav button[data-tab="momentum"]')
+        page.check("#mom-illiq")
+        page.wait_for_timeout(200)
+        page.click('nav button[data-tab="sectors"]')
         page.evaluate("s=>openStock(s,true)", sym)
         page.wait_for_timeout(250)
         assert sym in page.inner_text("#dtitle")

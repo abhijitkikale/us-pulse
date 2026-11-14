@@ -58,10 +58,12 @@ def main():
     close = pd.DataFrame(np.round(base * np.exp(np.cumsum(steps, axis=0)), 2), index=idx, columns=syms)
     for i, t in enumerate(uni["ticker"]):          # stock histories between 60 and 260 sessions
         close.iloc[: N_DAYS - (60 + (i * 7) % 201), close.columns.get_loc(t)] = np.nan
+    ill = close.columns.get_loc("TK20")          # one illiquid S&P 500 stock: trades under $5
+    close.iloc[:, ill] = np.round(close.iloc[:, ill] / close.iloc[-1, ill] * 3.2, 2)
     volume = pd.DataFrame(np.round(rng.uniform(4e5, 6e6, (N_DAYS, len(syms)))), index=idx, columns=syms)
     volume.iloc[-1, :6] *= 4                       # a few volume spikes on the last day
 
-    status = {"membership": "ok (30 names)", "prices": "ok", "sectors": "sectors: fetched 0",
+    status = {"membership": "ok (30 names)", "prices": "ok", "sectors": "sectors: fetched 0, cached 30, failed 0, 0 remaining (rounds: 1)",
               "etf": "stale: 1 ETF missing from the last download"}
     payload = run.build_payload(uni, etf_uni, close, volume, labels, status, today=pd.Timestamp("2026-11-16"))
     text = json.dumps(payload, separators=(",", ":"), allow_nan=False)
