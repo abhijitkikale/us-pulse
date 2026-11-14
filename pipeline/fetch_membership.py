@@ -11,8 +11,10 @@ BASE = ("https://www.ssga.com/us/en/intermediary/etfs/library-content/products/"
         "fund-data/etfs/us/holdings-daily-us-en-{t}.xlsx")  # ticker must be lowercase
 COLUMNS = ["ticker", "name", "universe", "sector"]
 TIMEOUT = 30
-_TICKER_RE = re.compile(r"^[A-Z0-9][A-Z0-9.\-]{0,9}$")
-_NON_HOLDINGS = {"CASH", "USD", "-", ""}
+# Real equity tickers: letters with an optional share-class suffix, checked after dot->dash.
+# Drops futures (IXTZ6), numeric ids (2602335D), CASH-like and blank rows.
+_TICKER_RE = re.compile(r"^[A-Z]{1,5}(-[A-Z]{1,2})?$")
+_NON_HOLDINGS = {"CASH", "USD"}
 
 
 def yahoo_ticker(t: str) -> str:
@@ -37,7 +39,7 @@ def parse_ssga_xlsx(content: bytes) -> pd.DataFrame:
         "name": body["Name"].map(lambda v: "" if pd.isna(v) else str(v).strip()) if "Name" in cols else "",
         "weight": pd.to_numeric(body["Weight"], errors="coerce") if "Weight" in cols else float("nan"),
     })
-    keep = out["ticker"].map(lambda t: bool(_TICKER_RE.match(t)) and t not in _NON_HOLDINGS)
+    keep = out["ticker"].map(lambda t: bool(_TICKER_RE.match(yahoo_ticker(t))) and t not in _NON_HOLDINGS)
     return out[keep].reset_index(drop=True)
 
 

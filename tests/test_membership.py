@@ -103,3 +103,35 @@ def test_share_classes_both_kept_once_each():
     df, _ = fetch_membership(get=fake_get(files))
     assert (df["ticker"] == "GOOG").sum() == 1 and (df["ticker"] == "GOOGL").sum() == 1
     assert "BRK-B" in set(df["ticker"])
+
+
+JUNK = [("Fut", "IXTZ6", 0.1), ("Fut2", "FAZ6", 0.1), ("Swap", "2602335D", 0.1), ("Cash", "CASH", 0.1), ("Dollar", "USD", 0.1)]
+REAL = [("Apple", "AAPL", 5.0), ("Berkshire", "BRK.B", 4.0), ("Brown", "BF.B", 3.0), ("Alphabet", "GOOG", 2.0)]
+
+
+def test_non_equity_rows_dropped():
+    df = parse_ssga_xlsx(make_xlsx(JUNK + REAL))
+    assert set(df["ticker"]) == {"AAPL", "BRK.B", "BF.B", "GOOG"}
+
+
+def test_fetch_drops_futures_and_keeps_share_classes():
+    files = _all_sectors({"xlk": JUNK + REAL})
+    df, _ = fetch_membership(get=fake_get(files))
+    t = set(df["ticker"])
+    assert {"AAPL", "BRK-B", "BF-B", "GOOG"} <= t
+    assert not t & {"IXTZ6", "FAZ6", "2602335D", "CASH", "USD"}
+
+
+def _names(n):
+    import itertools, string
+    gen = ("".join(c) for c in itertools.product(string.ascii_uppercase, repeat=3))
+    return [(f"N{i}", next(gen), 1.0) for i in range(n)]
+
+
+def test_count_note_only_when_out_of_range():
+    in_range = _all_sectors({"xlk": _names(500), "spy": _names(500)})
+    _, st = fetch_membership(get=fake_get(in_range))
+    assert "outside 490-510" not in st
+    out = _all_sectors({"xlk": _names(515), "spy": _names(504)})
+    _, st = fetch_membership(get=fake_get(out))
+    assert "outside 490-510" in st
