@@ -8,6 +8,7 @@ from us_config import AVG_DAYS, MIN_AVG_DAYS, MIN_DOLLAR_VOL, MIN_PRICE, SECTOR_
 
 # universe code -> index membership label
 INDEX_LABELS = {"SP500": "S&P 500", "SP400": "S&P 400", "SP600": "S&P 600"}
+TREND_KEYS = ("sma50", "sma200", "a50", "a200", "gc", "bs", "bw")
 
 
 def _text(v):
@@ -58,7 +59,7 @@ def build_stocks(universe: pd.DataFrame, close: pd.DataFrame, volume: pd.DataFra
         mc = (_num(float(mcap) / 1e6, 0) or None) if mcap is not None and not pd.isna(mcap) else None
         if mc is not None and mc < 0:
             mc = None
-        flags = trend_flags(c) or {}
+        flags = trend_flags(c) or dict.fromkeys(TREND_KEYS)                 # <50 obs: keep keys, all None
         hi, lo = c.tail(252).max(), c.tail(252).min()
         dv = _dollar_vol(c, volume, sym)
         price = float(c.iloc[-1])

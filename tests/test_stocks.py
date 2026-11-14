@@ -114,6 +114,15 @@ def test_short_history_stock_kept_with_none_long_returns():
     assert st["IPO"]["ser"][0] is None and st["IPO"]["ser"][-1] is not None
 
 
+def test_30_obs_stock_has_all_keys_with_none_trend_flags():
+    stocks, _, _ = make([{"ticker": "SPIN", "universe": "SP400", "close": series(30)},
+                         {"ticker": "OLD", "universe": "SP500", "sector": "Utilities"}])
+    st = by_ticker(stocks)
+    assert set(st["SPIN"]) == set(st["OLD"])
+    for k in ("sma50", "sma200", "a50", "a200", "gc", "bs", "bw"):
+        assert k in st["SPIN"] and st["SPIN"][k] is None, k
+
+
 def test_very_short_history_dropped():
     stocks, _, _ = make([{"ticker": "NEW", "universe": "SP600", "close": series(19)},
                          {"ticker": "OLD", "universe": "SP500", "sector": "Utilities"}])
