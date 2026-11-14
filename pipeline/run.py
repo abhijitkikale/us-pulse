@@ -34,27 +34,65 @@ OUT = us_config.ROOT / "dashboard.html"
 TEMPLATE = None            # None = build.TEMPLATE (pipeline/template.html)
 PLOTLY_JS = None           # None = the installed plotly package's plotly.min.js
 MIN_KEEP = 0.6             # refuse to publish when the universe shrinks below this share of the last run
-BAD = ("stale:", "failed")
+BAD = ("stale:", "failed", "partial")
+UNIVERSES = ("SP500", "SP400", "SP600")
 
 
 def _today():
     return asm.today_ny()
 
 
+def _missing_groups(uni, last):
+    """[(label, mask_fn)]: every universe absent from `uni`, plus every S&P 500 sector (one SPDR file each) absent
+    from `uni` that the last good list has. A sector gap the last good list cannot fill leaves the status 'partial:'."""
+    have = set(uni["universe"])
+    out = [(u, lambda df, u=u: df["universe"] == u) for u in UNIVERSES if u not in have]
+    if "SP500" in have and last is not None and len(last):
+        fresh = set(uni.loc[uni["universe"] == "SP500", "sector"].dropna())
+        known = set(last.loc[last["universe"] == "SP500", "sector"].dropna())
+        out += [(f"SP500 ({s})", lambda df, s=s: (df["universe"] == "SP500") & (df["sector"] == s))
+                for s in us_config.SECTOR_ETFS if s in known and s not in fresh]
+    return out
+
+
 def _membership(cached):
-    """Fetch the S&P 500/400/600 lists; fall back to the last good copy when the fetch returns nothing."""
+    """Fetch the S&P 500/400/600 lists. A partial fetch is never used silently: each missing universe (or S&P 500
+    sector) is filled from the last good data/membership.csv and reported 'stale:', or reported 'failed:' when the
+    last good list lacks it too. membership.csv is only rewritten from a complete fetch."""
     cache = DATA / "membership.csv"
-    if cached and cache.exists():
-        return pd.read_csv(cache, dtype=str), "cached"
+    last = pd.read_csv(cache, dtype=str) if cache.exists() else None
+    if cached and last is not None:
+        return last, "cached"
     uni, status = fetch_membership.fetch_membership()
-    if len(uni):
+    if not len(uni):
+        if last is not None:
+            return last, f"stale: using last good list ({status})"
+        return uni, status
+    ok = status.startswith("ok")                    # fetch_membership says 'ok' only when every holdings file arrived
+    missing = [] if ok else _missing_groups(uni, last)
+    if not missing:                                 # a 'partial:' with no identifiable gap stays partial (BAD) and unsaved
         if status.startswith("ok"):
             DATA.mkdir(parents=True, exist_ok=True)
             uni.to_csv(cache, index=False)
         return uni, status
-    if cache.exists():
-        return pd.read_csv(cache, dtype=str), f"stale: using last good list ({status})"
-    return uni, status
+    filled, lacking, extra = [], [], []
+    for label, mask in missing:
+        rows = last[mask(last)] if last is not None and len(last) else None
+        if rows is not None and len(rows):
+            filled.append(label)
+            extra.append(rows)
+        else:
+            lacking.append(label)
+    if extra:
+        uni = (pd.concat([uni, *extra], ignore_index=True)
+               .drop_duplicates("ticker", keep="first").reset_index(drop=True))   # fresh rows win
+    if lacking:
+        note = f"failed: membership missing {', '.join(lacking)} (no last good rows)"
+        if filled:
+            note += f"; using last good list for {', '.join(filled)}"
+    else:
+        note = f"stale: partial membership, using last good list for {', '.join(filled)}"
+    return uni, f"{note} ({status})"
 
 
 def symbol_list(uni, etf_uni):

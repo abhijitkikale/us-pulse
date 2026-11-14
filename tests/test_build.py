@@ -147,3 +147,69 @@ def test_run_exits_1_when_prices_are_behind_the_calendar(monkeypatch, tmp_path, 
     assert e.value.code == 1
     d = _embedded((tmp_path / "dashboard.html").read_text(encoding="utf-8"))
     assert d["stale"] is True and d["status"]["freshness"].startswith("stale:")
+
+
+# ---------- membership: partial fetches never publish silently ----------
+
+def _members(tickers, universe, sector=None):
+    return pd.DataFrame({"ticker": tickers, "name": [f"Co {t}" for t in tickers], "universe": universe,
+                         "sector": sector})
+
+
+def test_partial_membership_fills_missing_universe_from_last_good(monkeypatch, tmp_path, tpl):
+    _fake_world(monkeypatch, tmp_path, tpl, n=30)
+    fresh = pd.concat([_members([f"T{i:02d}" for i in range(15)], "SP500", "Technology"),
+                       _members([f"T{i:02d}" for i in range(15, 20)], "SP400")], ignore_index=True)
+    cached = pd.concat([fresh, _members([f"T{i:02d}" for i in range(20, 30)], "SP600")], ignore_index=True)
+    cache = tmp_path / "membership.csv"
+    cached.to_csv(cache, index=False)
+    before = cache.read_bytes()
+    monkeypatch.setattr(run.fetch_membership, "fetch_membership",
+                        lambda: (fresh, "partial: failed SPSM (HTTPError)"))
+    with pytest.raises(SystemExit) as e:
+        run.main()
+    assert e.value.code == 1
+    d = _embedded((tmp_path / "dashboard.html").read_text(encoding="utf-8"))
+    st = d["status"]["membership"]
+    assert st.startswith("stale: partial membership, using last good list for SP600"), st
+    assert len(d["stocks"]) == 30
+    assert sorted(d["members"]["S&P 600"]) == [f"T{i:02d}" for i in range(20, 30)]
+    assert cache.read_bytes() == before                                   # last-good list not overwritten
+
+
+def test_partial_membership_without_cached_universe_is_failed(monkeypatch, tmp_path):
+    monkeypatch.setattr(run, "DATA", tmp_path)
+    fresh = pd.concat([_members(["A", "B"], "SP500", "Energy"), _members(["C"], "SP400")], ignore_index=True)
+    _members(["A", "B"], "SP500", "Energy").to_csv(tmp_path / "membership.csv", index=False)   # no SP600 rows
+    monkeypatch.setattr(run.fetch_membership, "fetch_membership",
+                        lambda: (fresh, "partial: failed SPSM (HTTPError)"))
+    uni, status = run._membership(False)
+    assert status.startswith("failed: "), status
+    assert "SP600" in status
+    assert sorted(uni["ticker"]) == ["A", "B", "C"]                       # run continues with what exists
+
+
+def test_partial_sp500_sector_filled_from_last_good(monkeypatch, tmp_path):
+    monkeypatch.setattr(run, "DATA", tmp_path)
+    fresh = pd.concat([_members(["A"], "SP500", "Energy"), _members(["C"], "SP400"), _members(["D"], "SP600")],
+                      ignore_index=True)
+    cached = pd.concat([fresh, _members(["X"], "SP500", "Utilities")], ignore_index=True)
+    cached.to_csv(tmp_path / "membership.csv", index=False)
+    monkeypatch.setattr(run.fetch_membership, "fetch_membership",
+                        lambda: (fresh, "partial: failed XLU (HTTPError)"))
+    uni, status = run._membership(False)
+    assert status.startswith("stale: partial membership, using last good list for SP500 (Utilities)"), status
+    assert sorted(uni["ticker"]) == ["A", "C", "D", "X"]
+
+
+def test_full_membership_fetch_overwrites_last_good(monkeypatch, tmp_path, tpl):
+    _fake_world(monkeypatch, tmp_path, tpl, n=30)
+    _members(["OLD"], "SP600").to_csv(tmp_path / "membership.csv", index=False)
+    run.main()                                                            # exits 0
+    saved = pd.read_csv(tmp_path / "membership.csv", dtype=str)
+    assert sorted(saved["ticker"]) == [f"T{i:02d}" for i in range(30)]
+
+
+def test_bad_statuses_include_partial():
+    assert all(s.startswith(run.BAD) for s in ("stale: x", "failed: x", "partial: x"))
+    assert not "ok (30 names)".startswith(run.BAD)
