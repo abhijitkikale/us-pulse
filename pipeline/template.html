@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>US Pulse — US Markets Dashboard</title>
+<style>
+:root{--bg:#0b0f16;--card:#141a24;--card2:#1a2230;--line:#263040;--txt:#e6edf3;--mut:#8b97a8;--pos:#2ecc9a;--neg:#ef5b5b;--acc:#4cc9f0;--amber:#f59f3a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.4 Inter,"Segoe UI",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:20;background:rgba(11,15,22,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+h1{font-size:15px;margin:0;font-weight:600;color:var(--mut);letter-spacing:.2px}
+.brand{display:block;font-size:24px;font-weight:800;color:var(--txt);text-decoration:none;letter-spacing:.3px;line-height:1.1}
+.brand span{color:var(--acc)}
+.asof{color:var(--mut);font-size:12px}
+.sp{flex:1}
+.meta{display:flex;flex-direction:column;gap:2px}
+.notice{background:#2a2112;border-bottom:1px solid #7a5a1c;color:#f0c674;padding:6px 20px;font-size:12.5px;text-align:center}
+.notice b{color:#ffd98a}
+#stale-banner{background:#3a1215;border-bottom:1px solid #a8383d;color:#ffc9c9;padding:7px 20px;font-size:13px;text-align:center;line-height:1.5}
+#stale-banner b{color:#ff8a8a}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;color:var(--mut);border:0;border-right:1px solid var(--line);padding:6px 11px;cursor:pointer;font:inherit;font-size:13px}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--txt);color:#0b0f16;font-weight:600}
+.seg button:hover:not(.on){color:var(--txt);background:var(--card2)}
+input.search{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 12px;width:260px;font:inherit}
+input.search:focus{outline:1px solid var(--acc)}
+nav{display:flex;gap:4px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--bg);overflow-x:auto}
+nav button{background:none;border:0;color:var(--mut);padding:12px 16px;cursor:pointer;font:inherit;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap}
+nav button.on{color:var(--txt);border-bottom-color:var(--acc)}
+main{padding:18px 20px 60px;max-width:1500px;margin:0 auto}
+.tab{display:none}.tab.on{display:block}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 16px 12px;min-width:0}
+.c12{grid-column:span 12}.c6{grid-column:span 6}.c5{grid-column:span 5}.c7{grid-column:span 7}
+@media(max-width:1000px){.c6,.c5,.c7{grid-column:span 12}}
+.card h2{margin:0 0 2px;font-size:16px}
+.card .sub{color:var(--mut);font-size:12px;margin-bottom:8px}
+.card .hd{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:6px}
+.hint{color:var(--mut);font-size:11px}
+.chart{width:100%;height:380px}
+.strip{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.strip .lbl{color:var(--mut);font-size:12px;margin-right:2px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap}
+.chip:hover{border-color:var(--acc)}
+.up{color:var(--pos)}.dn{color:var(--neg)}
+table{border-collapse:collapse;width:100%}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line);font-size:13px;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--mut);font-weight:600;font-size:12px;position:sticky;top:0;background:var(--card);cursor:pointer;user-select:none}
+th.sel{color:var(--acc)}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover td{background:var(--card2)}
+.heat td.h{text-align:center;font-weight:600;color:#fff;border-left:1px solid var(--bg)}
+.scroll{overflow:auto;max-height:520px;-webkit-overflow-scrolling:touch}
+#d-tbl td:nth-child(2){max-width:170px;overflow:hidden;text-overflow:ellipsis}
+#d-tbl td:first-child,#d-tbl th:first-child{position:sticky;left:0;background:var(--card);z-index:1}
+.bcell{position:relative;height:22px;min-width:150px}
+.bcell .b{position:absolute;top:3px;height:16px;border-radius:2px}
+.bcell .v{position:absolute;top:2px;font-size:11px;color:#fff;padding:0 4px;text-shadow:0 0 3px #000}
+.pbar{display:inline-block;width:90px;height:8px;background:var(--line);border-radius:4px;position:relative;vertical-align:middle}
+.pbar i{position:absolute;top:-2px;width:3px;height:12px;background:var(--acc);border-radius:1px}
+.badge{display:inline-block;padding:1px 7px;border-radius:999px;font-size:11px;margin-left:4px;border:1px solid}
+.b-g{color:var(--pos);border-color:#1f6b52}.b-r{color:var(--neg);border-color:#7a3030}.b-n{color:var(--mut);border-color:var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:10px 0}
+.tile{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.tile .k{color:var(--mut);font-size:11px}.tile .v{font-size:16px;font-weight:700}
+.btn{background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer;font:inherit;font-size:12px}
+.btn:hover{border-color:var(--acc)}
+input.num{width:64px;background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:5px 7px;font:inherit}
+select{background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:5px 9px;font:inherit}
+/* drawer */
+#scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30;display:none}
+#drawer{position:fixed;top:0;right:0;bottom:0;width:min(1240px,100vw);max-width:100vw;background:var(--bg);border-left:1px solid var(--line);z-index:40;transform:translateX(102%);transition:transform .22s;display:flex;flex-direction:column}
+#drawer.open{transform:none}
+#dhead{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+#dhead h3{margin:0;font-size:18px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#drawer.wide{width:100vw}
+#dbody{overflow:auto;padding:14px 16px 40px;flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+@media(max-width:700px){
+  header{padding:8px 12px;gap:8px 12px}
+  .brand{font-size:19px}
+  input.search{width:100%;order:5;flex:1 1 100%}
+  .sp{display:none}
+  .seg{max-width:100%;overflow-x:auto}
+  .seg button{padding:6px 9px;font-size:12px}
+  nav{padding:0 8px}nav button{padding:10px 12px;font-size:13px}
+  main{padding:12px 10px 40px}
+  .card{padding:12px 10px 8px;border-radius:10px}
+  .chart{height:300px}
+  .strip{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+  #dhead{padding:10px 12px}#dhead h3{font-size:15px}
+  #dbody{padding:10px 10px 40px}
+  th,td{padding:6px 6px;font-size:12px}
+  footer{margin:20px 12px}
+}
+footer{margin:30px 20px;color:var(--mut);font-size:12px}
+footer table td,footer table th{font-size:12px;padding:3px 10px;cursor:default;border:0}
+footer th{background:none;position:static}
+.warn{color:var(--amber)}
+.info{background:none;border:1px solid var(--line);color:var(--mut);border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;line-height:1;padding:0;margin-left:6px;vertical-align:middle}
+.info:hover{color:var(--txt);border-color:var(--acc)}
+#infoScrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;display:none}
+#infoBox{position:fixed;z-index:70;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100vw - 28px));max-height:min(82vh,740px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:none;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#infoBox.open{display:block}
+#infoBox .ih{display:flex;align-items:center;gap:10px;margin-bottom:6px}#infoBox h3{margin:0;font-size:17px;flex:1}
+#infoBody p{margin:8px 0}#infoBody ul{margin:6px 0 6px 18px;padding:0}#infoBody li{margin:5px 0}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="#" title="US Pulse — US Markets Dashboard">US <span>Pulse</span></a>
+  <div class="meta"><span class="asof" id="asof"></span><span class="asof" id="nextup"></span></div>
+  <span class="sp"></span>
+  <input class="search" id="search" list="searchlist" placeholder="Search stock or index…" autocomplete="off">
+  <datalist id="searchlist"></datalist>
+  <span class="asof">All charts:</span><div class="seg" id="periods" title="Sets the period on every chart. Each chart also has its own buttons. 3Y and 5Y are annualised."></div>
+</header>
+<nav id="nav">
+  <button data-tab="overview" class="on">Overview</button>
+  <button data-tab="sectors">Sectors</button>
+  <button data-tab="breadth">Breadth &amp; Trend</button>
+  <button data-tab="activity">Market Activity</button>
+  <button data-tab="valuation">Valuation</button>
+  <button data-tab="risk">Risk Monitor</button>
+  <button data-tab="momentum">Momentum Stocks</button>
+  <button data-tab="etfs">ETFs</button>
+</nav>
+<div id="stale-banner" role="alert" hidden></div>
+<div class="notice" role="note">⚠ <b>Data under validation / testing</b> — figures and calculations are still being verified and may contain errors. For educational use only; not investment advice.</div>
+<main>
+  <section class="tab on" id="tab-overview">
+    <div class="strip" id="movers"></div>
+    <div class="grid">
+      <div class="card c12"><div class="hd"><div><h2>Benchmark Indices Overview</h2><div class="sub" id="bench-sub"></div></div><div class="pseg seg" data-k="bench"></div></div><div id="ch-bench" class="chart" style="height:340px"></div></div>
+      <div class="card c12"><div class="hd"><div><h2>Global Indices Overview</h2><div class="sub" id="glob-sub"></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><div class="pseg seg" data-k="glob"></div><div class="seg" id="ccy"><button data-v="usd" class="on">In $ terms</button><button data-v="local">Local currency</button></div></div></div>
+        <div id="ch-glob" class="chart"></div></div>
+      <div class="card c12"><div class="hd"><div><h2>Global Indices Momentum</h2><div class="sub">Rank by return (1 = best). Rows for US indices tracked here (S&amp;P 500, Dow Jones, Nasdaq 100, S&amp;P 400, S&amp;P 600) are clickable.</div></div></div><div class="scroll" style="max-height:none"><table class="heat" id="tb-globrank"></table></div></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-sectors">
+    <div class="grid">
+      <div class="card c12"><div class="hd"><div><h2>Sector Performance</h2><div class="sub" id="sec-sub"></div></div><div class="pseg seg" data-k="sec"></div></div><div id="ch-sec" class="chart"></div></div>
+      <div class="card c12"><div class="hd"><div><h2>Sector Momentum Rank</h2><div class="sub">Rank by return in each period (1 = best). Click a sector row. The two right-hand columns combine the ranks from 1W up to the horizon you pick: lowest sum = composite rank 1.</div></div><div style="display:flex;gap:8px;align-items:center"><span class="hint">Composite horizon</span><select id="secH"><option value="1M">1M</option><option value="3M">3M</option><option value="6M" selected>6M</option><option value="1Y">1Y</option><option value="3Y">3Y</option><option value="5Y">5Y</option></select><button class="info" data-info="seccomp" title="How is the composite rank worked out?">ⓘ</button></div></div><div class="scroll" style="max-height:none"><table class="heat" id="tb-secrank"></table></div></div>
+      <div class="card c12"><div class="hd"><div><h2>% of stocks above moving average (sectors)</h2><div class="sub">Share of each sector's stocks trading above their SMA. Grey bar = S&amp;P 500.</div></div>
+        <div class="seg" id="smaSel"><button data-v="a50" class="on">SMA 50</button><button data-v="a200">SMA 200</button></div></div><div id="ch-sma" class="chart"></div></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-momentum">
+    <div class="grid">
+      <div class="card c12"><div class="hd"><div><h2>Momentum Stocks <button class="info" data-info="momstk" title="How is the score worked out?">ⓘ</button></h2><div class="sub" id="mom-sub"></div></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="hint">Horizon</span><select id="mom-h"><option value="1M">1M</option><option value="3M">3M</option><option value="6M" selected>6M</option><option value="1Y">1Y</option><option value="3Y">3Y</option><option value="5Y">5Y</option></select>
+          <span class="hint">Sector weight</span><input class="num" id="mom-ws" type="number" min="0" max="1" step="0.05"><span class="hint">Stock weight</span><input class="num" id="mom-wt" type="number" min="0" max="1" step="0.05">
+          <button class="btn" id="mom-reset" title="Back to 0.6 / 0.4">Reset</button><select id="mom-sec"></select></div></div>
+        <div id="mm-box" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:2px 0 10px"></div>
+        <div class="scroll" style="max-height:75vh"><table class="heat" id="tb-mom"></table></div></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-breadth">
+    <div class="grid">
+      <div class="card c12"><div class="hd"><div><h2>Advance / Decline</h2><div class="sub" id="ad-sub"></div></div><div class="pseg seg" data-k="ad"></div></div><div id="ch-ad" class="chart" style="height:340px"></div></div>
+      <div class="card c12"><div class="hd"><div><h2>Brutal Strength &amp; Brutal Weakness <button class="info" data-info="trend" title="What do these terms mean?">ⓘ</button></h2><div class="sub">Golden cross: 50 &gt; 200 DMA · Brutal strength: Price &gt; 25 &gt; 50 &gt; 200 DMA · Brutal weakness: Price &lt; 25 &lt; 50 &lt; 200 DMA</div></div></div><table id="tb-strength"></table></div>
+      <div class="card c12"><div class="hd"><div><h2>Market Breadth Analysis</h2><div class="sub" id="band-sub"></div></div><span class="hint">Click a band to see its stocks</span></div><div class="scroll" style="max-height:none"><table id="tb-bands"></table></div></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-activity">
+    <div class="grid" id="act-body">
+      <div class="card c12"><div class="hd"><div><h2>Whole-market breadth <button class="info" data-info="breadth" title="What is this chart?">ⓘ</button></h2><div class="sub" id="act-b-sub"></div></div>
+        <div class="seg aseg" data-key="range"><button data-v="1W">1W</button><button data-v="1M">1M</button><button data-v="3M">3M</button><button data-v="All" class="on">All</button></div></div>
+        <div class="tiles" id="act-b-tiles"></div><div id="act-b" class="chart" style="height:340px"></div></div>
+      <div class="card c12"><div class="hd"><div><h2>Volume leaders <button class="info" data-info="volume" title="What is this table?">ⓘ</button></h2><div class="sub" id="act-l-sub"></div></div>
+        <div class="seg aseg" data-key="lead"><button data-v="turnover" class="on">By dollar volume</button><button data-v="volume">By volume</button></div></div>
+        <div class="scroll" style="max-height:none"><table id="act-l"></table></div></div>
+      <div class="card c12"><div class="hd"><div><h2>Volume spikes <button class="info" data-info="volume" title="What is this table?">ⓘ</button></h2><div class="sub" id="act-s-sub"></div></div>
+        <div class="seg aseg" data-key="spk"><button data-v="all" class="on">All</button><button data-v="up">Up days</button><button data-v="down">Down days</button></div></div>
+        <div class="scroll" style="max-height:none"><table id="act-s"></table></div></div>
+      <div class="card c12 hint" style="line-height:1.6">Source: Yahoo Finance end-of-day price and volume for every stock in the S&amp;P 500, S&amp;P 400 and S&amp;P 600 (current constituents; NYSE and Nasdaq listings). Click a stock to open its detail view. Dollar volume = closing price × shares traded. Volume describes activity, not direction or intent. Educational use only, not investment advice.</div>
+    </div>
+  </section>
+  <section class="tab" id="tab-valuation">
+    <div class="grid" id="valuation-body">
+      <div class="card c12"><h2>Valuation</h2><div class="sub">This tab is filled in by a later build step.</div></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-risk">
+    <div class="grid" id="risk-body">
+      <div class="card c12"><h2>Risk Monitor</h2><div class="sub">This tab is filled in by a later build step.</div></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-etfs">
+    <div class="grid" id="etfs-body">
+      <div class="card c12"><h2>ETFs</h2><div class="sub">This tab is filled in by a later build step.</div></div>
+    </div>
+  </section>
+
+</main>
+<footer><div id="status"></div><p>US Pulse · built by Abhijit Kikale</p><p>Data: Yahoo Finance (index, sector and theme ETF, stock, ETF and global index closes, FX), State Street SPDR holdings files (index constituents). End-of-day data for NYSE and Nasdaq stocks; times are US Eastern (ET).</p><p>Index membership uses current constituents: rankings, breadth and returns are computed for today's index members over every period, so stocks that left an index are not counted (survivorship bias).</p><p>For educational use only — not investment advice.</p></footer>
+
+<div id="scrim"></div>
+<aside id="drawer"><div id="dhead"><button class="btn" id="dback" style="display:none">← Back</button><h3 id="dtitle"></h3><button class="btn" id="dwide" title="Toggle full width">⤢ Expand</button><button class="btn" id="dclose">✕ Close</button></div><div id="dbody"></div></aside>
+<div id="infoScrim"></div>
+<div id="infoBox" role="dialog" aria-modal="true" aria-labelledby="infoTitle"><div class="ih"><h3 id="infoTitle"></h3><button class="btn" id="infoClose">✕ Close</button></div><div id="infoBody"></div></div>
+
+<script>/*__PLOTLY__*/</script>
+<script>
+const D = /*__DATA__*/null;
+const C = {pos:'#2ecc9a', neg:'#ef5b5b', acc:'#4cc9f0', amber:'#f59f3a', grey:'#8b97a8', us:'#f5c542'};
+const CFG = {displayModeBar:false, responsive:true};
+const IDX = Object.fromEntries(D.indices.map(i=>[i.label,i]));
+const STK = Object.fromEntries(D.stocks.map(s=>[s.s,s]));
+const BENCH = D.indices.filter(i=>i.group==='benchmark'&&i.label!=='VIX');   // S&P 500, Nasdaq 100, Dow Jones, S&P 400, S&P 600 (VIX is a volatility gauge, not a return)
+const SECT = D.indices.filter(i=>i.group==='sector');                // the 11 Select Sector SPDRs (themes have group 'theme')
+const S = {pp:{bench:'1M',glob:'1M',sec:'1M',ad:'1M',drawer:'1M'}, tab:'overview', ccy:'usd', sma:'a50', stack:[], sort:{k:'ret',dir:-1}};
+const $ = s=>document.querySelector(s);
+const PL = (k='drawer')=>S.pp[k];
+const from = k=>l=>{S.pp.drawer=S.pp[k];openIndex(l,true)};
+
+/* ---------- helpers ---------- */
+const fmt = (v,d=1)=> v==null?'–':(v>0?'+':'')+v.toFixed(d)+'%';
+const num = (v,d=0)=> v==null?'–':v.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
+const cls = v=> v==null?'':v>0?'up':v<0?'dn':'';
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const annNote = p=> (p==='3Y'||p==='5Y')?' · annualised':'';
+function merge(a,b){for(const k in b){a[k]=(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])&&a[k]&&typeof a[k]==='object')?merge(a[k],b[k]):b[k]}return a}
+function layout(o){return merge({datarevision:Math.random(),paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#c9d1d9',family:'Inter,Segoe UI,system-ui,sans-serif',size:12},
+  margin:{l:50,r:16,t:16,b:100},xaxis:{tickangle:-55,gridcolor:'#1b2433',automargin:true,fixedrange:true},
+  yaxis:{gridcolor:'#263040',zerolinecolor:'#586174',ticksuffix:'%',fixedrange:true},hoverlabel:{bgcolor:'#1c2330',bordercolor:'#3a475c',font:{color:'#e6edf3'}},showlegend:false},o||{})}
+function onClick(el,fn){const d=typeof el==='string'?$(el):el;d.removeAllListeners&&d.removeAllListeners('plotly_click');d.on('plotly_click',e=>{const p=e.points[0];fn(p.customdata??p.x??p.y)})}
+function bar(sel,labels,vals,fn,colors){
+  Plotly.react($(sel),[{type:'bar',x:labels,y:vals,customdata:labels,marker:{color:colors||vals.map(v=>v==null?'#555':v>=0?C.pos:C.neg)},
+    text:vals.map(v=>v==null?'':v.toFixed(1)),textposition:'outside',cliponaxis:false,textfont:{size:11},hovertemplate:'%{x}<br><b>%{y:.2f}%</b><extra></extra>'}],layout(),CFG);
+  if(fn)onClick(sel,fn);
+}
+function heatColor(t){ // t 0 (best) .. 1 (worst)
+  const g=[31,150,106],m=[34,42,56],r=[200,72,72];const lerp=(a,b,x)=>a.map((v,i)=>Math.round(v+(b[i]-v)*x));
+  const c=t<.5?lerp(g,m,t*2):lerp(m,r,(t-.5)*2);return `rgb(${c})`}
+function ranks(items,get){ // 1 = highest value
+  const out={};PERIODS.forEach(p=>{const v=items.map(i=>[i,get(i,p)]).filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]);v.forEach((x,k)=>{(out[x[0].key]??={})[p]=[k+1,v.length]})});return out}
+const PERIODS = D.periods;
+function members(label){return (D.members[label]||[]).map(s=>STK[s]).filter(Boolean)}
+function median(a){a=a.filter(x=>x!=null).sort((x,y)=>x-y);return a.length?a[Math.floor(a.length/2)]:null}
+
+/* ---------- header ---------- */
+$('#asof').textContent = `End-of-day data as of ${D.stock_asof||'unknown'}${D.asof&&D.asof!==D.stock_asof?' · indices '+D.asof:''}`;
+(function nextUpdate(){                       // refresh runs weekdays about 17:35 ET; show the next one in ET whatever the viewer's timezone
+  const et=new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const t=new Date(et);t.setHours(17,35,0,0);
+  if(et>=t)t.setDate(t.getDate()+1);
+  while(t.getDay()===0||t.getDay()===6)t.setDate(t.getDate()+1);
+  const day=t.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const b=D.built?new Date(D.built).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' ET':null;
+  $('#nextup').textContent=`${b?'Page built '+b+' · ':''}Next update: ${day}, about 5:35 PM ET (weekdays)`;
+})();
+// Stale-data banner: shown when the build says prices are behind (D.stale), when the stock data is more than STALE_DAYS
+// calendar days older than today's date in ET, read from the viewer's clock (the daily update stopped), or when any source reports stale / failed / partial.
+const STALE_DAYS = 4;
+(function staleBanner(){
+  const MON={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const m=/^(\d{1,2}) ([A-Z][a-z]{2}) (\d{4})$/.exec(D.stock_asof||'');
+  const asofMs=m&&MON[m[2]]!=null?new Date(+m[3],MON[m[2]],+m[1]).getTime():null;
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));now.setHours(0,0,0,0);   // today's date in ET
+  const old=asofMs==null||Math.round((now.getTime()-asofMs)/864e5)>STALE_DAYS;      // whole calendar days, so Fri data on Tue after a Monday holiday is fine
+  const lines=[];
+  if(D.stale||old)lines.push('<b>⚠ Data may be out of date.</b> '+esc(D.stale_note||(asofMs==null?'The price date is unknown.':`Prices end ${D.stock_asof}, more than ${STALE_DAYS} days ago; the daily update may have stopped.`)));
+  const bad=Object.entries(D.status||{}).filter(([k,v])=>/^(stale|failed|partial)/.test(String(v))).map(([k])=>k);
+  if(bad.length)lines.push(`<b>⚠ Stale or failed sources:</b> ${bad.map(esc).join(', ')} (details at the bottom of the page)`);
+  const el=$('#stale-banner');
+  if(lines.length){el.innerHTML=lines.join('<br>');el.hidden=false}
+})();
+function renderPsegs(){
+  document.querySelectorAll('.pseg').forEach(el=>{const k=el.dataset.k;el.innerHTML=PERIODS.map(p=>`<button data-p="${p}" class="${p===S.pp[k]?'on':''}">${p}</button>`).join('')});
+  const vals=Object.values(S.pp),same=vals.every(v=>v===vals[0]);
+  $('#periods').innerHTML=PERIODS.map(p=>`<button data-p="${p}" class="${same&&p===vals[0]?'on':''}">${p}</button>`).join('')}
+document.addEventListener('click',e=>{const b=e.target.closest('.pseg button');if(!b)return;S.pp[b.parentElement.dataset.k]=b.dataset.p;renderTab();if(isOpen())renderDrawer()});
+$('#periods').onclick = e=>{const p=e.target.dataset.p;if(!p)return;Object.keys(S.pp).forEach(k=>S.pp[k]=p);renderTab();if(isOpen())renderDrawer()};
+$('#nav').onclick = e=>{const t=e.target.dataset.tab;if(!t)return;S.tab=t;[...$('#nav').children].forEach(b=>b.classList.toggle('on',b===e.target));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.id==='tab-'+t));renderTab()};
+function segBind(sel,key,after){$(sel).onclick=e=>{const v=e.target.dataset.v;if(v==null)return;S[key]=v;[...$(sel).children].forEach(b=>b.classList.toggle('on',b.dataset.v===v));after()}}
+segBind('#ccy','ccy',()=>renderOverview());segBind('#smaSel','sma',()=>renderSectors());
+
+/* ---------- search ---------- */
+$('#searchlist').innerHTML = D.indices.map(i=>`<option value="Index: ${esc(i.label)}">`).join('')+D.stocks.map(s=>`<option value="${esc(s.s)} — ${esc(s.n)}">`).join('');
+$('#search').addEventListener('change',e=>{
+  const v=e.target.value.trim();let m;
+  if(v.startsWith('Index: ')&&IDX[v.slice(7)])openIndex(v.slice(7),true);
+  else if((m=v.split(' — ')[0].toUpperCase())&&STK[m])openStock(m,true);
+  else{const q=v.toLowerCase();const hit=D.stocks.find(s=>s.n.toLowerCase().includes(q)||s.s.toLowerCase()===q);if(hit)openStock(hit.s,true)}
+  e.target.value='';e.target.blur()});
+
+/* ---------- overview ---------- */
+function renderMovers(){
+  const a=D.stocks.filter(s=>s.d1!=null).sort((x,y)=>y.d1-x.d1);
+  const chip=s=>`<span class="chip" data-s="${s.s}">${esc(s.s)} <b class="${cls(s.d1)}">${fmt(s.d1,2)}</b></span>`;
+  $('#movers').innerHTML=`<span class="lbl">Top gainers today</span>${a.slice(0,8).map(chip).join('')}<span class="lbl" style="margin-left:14px">Top losers</span>${a.slice(-8).reverse().map(chip).join('')}`;
+  $('#movers').onclick=e=>{const c=e.target.closest('.chip');if(c)openStock(c.dataset.s,true)}}
+// global rows -> the tracked US index they open ('S&P 500 (USA)' -> 'S&P 500'; S&P 400 / 600 and Nasdaq 100 come without a country)
+const globIdx=n=>{const l=String(n).replace(/ \(USA\)$/,'');return IDX[l]&&IDX[l].group==='benchmark'?l:null};
+const usRow=n=>/\(USA\)$/.test(n)||!!globIdx(n);
+function renderOverview(){
+  renderPsegs();
+  let p=S.pp.bench;
+  $('#bench-sub').textContent=`Index return over ${p}${annNote(p)} · price returns, USD · click a bar to see its stocks`;
+  const b=BENCH.filter(i=>i.ret[p]!=null).sort((x,y)=>y.ret[p]-x.ret[p]);
+  bar('#ch-bench',b.map(i=>i.label),b.map(i=>i.ret[p]),from('bench'));
+  p=S.pp.glob;
+  $('#glob-sub').textContent=`${p} return${annNote(p)} · ${S.ccy==='usd'?'converted to US dollars':'local currency'} · gold = US indices`;
+  const g=D.global.filter(x=>x[S.ccy][p]!=null).sort((x,y)=>y[S.ccy][p]-x[S.ccy][p]);
+  bar('#ch-glob',g.map(x=>x.name),g.map(x=>x[S.ccy][p]),n=>{const l=globIdx(n);if(l){S.pp.drawer=S.pp.glob;openIndex(l,true)}},
+    g.map(x=>usRow(x.name)?C.us:(x[S.ccy][p]>=0?C.pos:C.neg)));
+  // momentum rank table
+  const items=D.global.map(x=>({key:x.name,x}));const rk=ranks(items,(i,pp)=>i.x[S.ccy][pp]);
+  const sorted=items.slice().sort((a,b)=>((rk[a.key]['1M']||[99])[0])-((rk[b.key]['1M']||[99])[0]));
+  $('#tb-globrank').innerHTML=`<thead><tr><th>Index (Country)</th>${PERIODS.map(q=>`<th class="${q===p?'sel':''}" style="text-align:center">${q} Return</th>`).join('')}</tr></thead><tbody>`+
+   sorted.map(i=>`<tr class="${globIdx(i.key)?'click':''}" data-n="${esc(i.key)}"><td>${esc(i.key)}</td>${PERIODS.map(q=>{const r=(rk[i.key]||{})[q];return r?`<td class="h" style="background:${heatColor((r[0]-1)/Math.max(r[1]-1,1))}" title="${fmt(i.x[S.ccy][q],2)}">${r[0]}</td>`:'<td class="h">–</td>'}).join('')}</tr>`).join('')+'</tbody>';
+  $('#tb-globrank').onclick=e=>{const tr=e.target.closest('tr[data-n]');const l=tr&&globIdx(tr.dataset.n);if(l){S.pp.drawer=S.pp.glob;openIndex(l,true)}}}
+
+/* ---------- sectors ---------- */
+// Composite method (shared by the Sectors and Momentum Stocks tabs, chosen on the Momentum Stocks tab).
+// 'slice' (default): each period is its own slice of time (1M = the month BEFORE the latest week, 3M = the 2 months before the latest month ...),
+// so one big day only counts in the newest slice. 'cum': the plain cumulative 1W / 1M / 3M ... returns. Skip latest week (default on) leaves
+// out the 1W period. Every period has a weight (default 1) that multiplies its rank in the sum.
+const MOMM={method:'slice',skip:true,w:{}};
+try{const m=JSON.parse(localStorage.getItem('usp_mom_m')||'null');if(m){if(m.method==='cum'||m.method==='slice')MOMM.method=m.method;if(typeof m.skip==='boolean')MOMM.skip=m.skip;
+  if(m.w&&typeof m.w==='object')for(const q of Object.keys(m.w)){const v=+m.w[q];if(isFinite(v)&&v>=0&&v<=100)MOMM.w[q]=v}}}catch(e){}
+const mommSave=()=>{try{localStorage.setItem('usp_mom_m',JSON.stringify(MOMM))}catch(e){}};
+const wOf=q=>MOMM.w[q]??1;
+const SPREV={'1M':'1W','3M':'1M','6M':'3M','1Y':'6M','3Y':'1Y','5Y':'3Y'},SYRS={'3Y':3,'5Y':5};
+const stot=(r,q)=>Math.pow(1+r/100,SYRS[q]||1);                  // 3Y / 5Y returns are annualised: back to total growth
+const sliceGet=get=>(it,q)=>{const a=get(it,q);if(a==null||!SPREV[q])return a;const b=get(it,SPREV[q]);return b==null?null:(stot(a,q)/stot(b,SPREV[q])-1)*100};
+const incFor=H=>{const O=PERIODS.filter(q=>q!=='1D'),i=O.indexOf(H);let inc=O.slice(0,i<0?0:i+1);if(MOMM.skip)inc=inc.filter(q=>q!=='1W');return inc};
+// composite rank: weighted sum of an item's ranks over the periods up to the chosen horizon (1D ignored); lowest sum = 1,
+// ties go to the better short-term rank, and an item missing any of those periods is "n/a" and ranked last
+function composite(items,get,inc){
+  const rk=ranks(items,get),rc=MOMM.method==='slice'?ranks(items,sliceGet(get)):rk;          // rk: the cumulative ranks shown in the table, rc: the ranks the composite uses
+  const comp=items.map(it=>{const rs=inc.map(q=>(rc[it.key]||{})[q]);const ok=rs.every(r=>r);return {key:it.key,ok,rs:ok?rs.map(r=>r[0]):null,sum:ok?Math.round(inc.reduce((a,q,j)=>a+wOf(q)*rs[j][0],0)*100)/100:null}});
+  comp.sort((a,b)=>{if(a.ok!==b.ok)return a.ok?-1:1;if(!a.ok)return a.key.localeCompare(b.key);if(a.sum!==b.sum)return a.sum-b.sum;for(let k=0;k<a.rs.length;k++)if(a.rs[k]!==b.rs[k])return a.rs[k]-b.rs[k];return 0});
+  comp.forEach((c,k)=>c.rank=c.ok?k+1:null);
+  return {rk,cr:Object.fromEntries(comp.map(c=>[c.key,c])),nOk:comp.filter(c=>c.ok).length};
+}
+function sectComposite(H){
+  const inc=incFor(H);
+  const items=SECT.map(i=>({key:i.label,i}));
+  return {items,H,inc,...composite(items,(it,pp)=>it.i.ret[pp],inc)};
+}
+function renderSectors(){
+  renderPsegs();
+  const p=S.pp.sec;
+  $('#sec-sub').textContent=`Sector index return over ${p}${annNote(p)} · click a sector to see its stocks`;
+  const s=SECT.filter(i=>i.ret[p]!=null).sort((x,y)=>y.ret[p]-x.ret[p]);
+  bar('#ch-sec',s.map(i=>i.label),s.map(i=>i.ret[p]),from('sec'));
+  const {items,rk,H,inc,cr,nOk}=sectComposite(S.secH||'6M');
+  const sorted=items.slice().sort((a,b)=>((rk[a.key]||{})[p]||[99])[0]-((rk[b.key]||{})[p]||[99])[0]);
+  if(S.secSort)sorted.sort((a,b)=>{const x=cr[a.key],y=cr[b.key];if(x.ok!==y.ok)return x.ok?-1:1;return S.secSort==='asc'?x.rank-y.rank:y.rank-x.rank});
+  const arrow=S.secSort==='asc'?' ▲':S.secSort==='desc'?' ▼':' ⇅';
+  $('#secH').value=H;
+  const cmpCells=k=>{const c=cr[k];return c.ok?`<td style="border-left:2px solid var(--line);text-align:center" title="ranks ${inc.map((q,j)=>q+':'+c.rs[j]).join(', ')}">${c.sum}</td><td class="h" style="background:${heatColor((c.rank-1)/Math.max(nOk-1,1))};font-size:14px">${c.rank}</td>`:`<td style="border-left:2px solid var(--line);text-align:center" class="hint">n/a</td><td class="h" style="background:var(--card2);color:var(--mut)" title="history too short for one of the periods">n/a</td>`};
+  $('#tb-secrank').innerHTML=`<thead><tr><th>Sector</th>${PERIODS.map(q=>`<th class="${q===p?'sel':''}" style="text-align:center">${q}</th>`).join('')}<th data-sort="comp" title="Click to sort" style="text-align:center;border-left:2px solid var(--line);cursor:pointer">Σ ranks${arrow}<br><span class="hint">${inc[0]||''}→${H}${MOMM.method==='slice'?' · non-overlapping':''}</span></th><th data-sort="comp" title="Click to sort ascending / descending" style="text-align:center;cursor:pointer">Composite${arrow}<br>rank</th></tr></thead><tbody>`+
+   sorted.map(i=>`<tr class="click" data-l="${esc(i.key)}"><td>${esc(i.key)}</td>${PERIODS.map(q=>{const r=(rk[i.key]||{})[q];return r?`<td class="h" style="background:${heatColor((r[0]-1)/Math.max(r[1]-1,1))}" title="${fmt(i.i.ret[q],2)}">${r[0]}</td>`:'<td class="h">–</td>'}).join('')}${cmpCells(i.key)}</tr>`).join('')+'</tbody>';
+  $('#tb-secrank').onclick=e=>{
+    if(e.target.closest('th[data-sort]')){S.secSort=S.secSort==null?'asc':S.secSort==='asc'?'desc':null;return renderSectors()}      // asc -> desc -> default order
+    const tr=e.target.closest('tr[data-l]');if(tr){S.pp.drawer=S.pp.sec;openIndex(tr.dataset.l,true)}};
+  // % above SMA
+  const k=S.sma;const pct=l=>{const m=members(l).filter(x=>x[k]!=null);return m.length?100*m.filter(x=>x[k]).length/m.length:null};
+  const rows=SECT.map(i=>({l:i.label,v:pct(i.label)})).filter(r=>r.v!=null);
+  const base={l:'S&P 500',v:pct('S&P 500')};if(base.v!=null)rows.push(base);rows.sort((a,b)=>b.v-a.v);
+  Plotly.react($('#ch-sma'),[{type:'bar',x:rows.map(r=>r.l),y:rows.map(r=>r.v),customdata:rows.map(r=>r.l),marker:{color:rows.map(r=>r.l==='S&P 500'?'#7d8794':'#f08c1a')},
+    text:rows.map(r=>r.v.toFixed(0)+'%'),textposition:'outside',cliponaxis:false,hovertemplate:'%{x}<br><b>%{y:.0f}%</b> above '+(k==='a50'?'SMA 50':'SMA 200')+'<extra></extra>'}],
+    layout({yaxis:{range:[0,Math.max(...rows.map(r=>r.v))*1.15+2]}}),CFG);
+  onClick('#ch-sma',l=>{S.pp.drawer=S.pp.sec;openIndex(IDX[l]?l:'S&P 500',true)})}
+
+/* ---------- breadth ---------- */
+const SEGS=['S&P 500','S&P 400','S&P 600'];
+function renderBreadth(){
+  renderPsegs();
+  const p=S.pp.ad;
+  $('#ad-sub').textContent=`Share of stocks that rose / fell over ${p}${annNote(p)} · click a segment to see its stocks`;
+  const rows=SEGS.map(l=>{const m=members(l).filter(x=>x.r[p]!=null);const n=m.length||1;
+    return {l,a:100*m.filter(x=>x.r[p]>0).length/n,d:100*m.filter(x=>x.r[p]<0).length/n,f:100*m.filter(x=>x.r[p]===0).length/n,n:m.length}}).reverse();
+  const tr=(name,key,color)=>({type:'bar',orientation:'h',name,y:rows.map(r=>r.l),x:rows.map(r=>r[key]),customdata:rows.map(r=>r.l),marker:{color},
+    text:rows.map(r=>r[key]>=6?r[key].toFixed(0)+'%':''),textposition:'inside',insidetextanchor:'middle',hovertemplate:'%{y}<br>'+name+': <b>%{x:.1f}%</b><extra></extra>'});
+  Plotly.react($('#ch-ad'),[tr('Advances','a','#2aa88a'),tr('Declines','d','#cf3a3a'),tr('Flat','f','#556070')],
+    layout({barmode:'stack',showlegend:true,legend:{orientation:'h',y:1.1},margin:{l:140,b:30,t:30},xaxis:{ticksuffix:'%',tickangle:0,range:[0,100]},yaxis:{ticksuffix:'',automargin:true}}),CFG);
+  onClick('#ch-ad',from('ad'));
+  // strength
+  const srows=SEGS.map(l=>{const m=members(l).filter(x=>x.gc!=null);const n=m.length||1;const pc=f=>100*m.filter(f).length/n;
+    return {l,gc:pc(x=>x.gc),dc:pc(x=>!x.gc),bs:pc(x=>x.bs),bw:pc(x=>x.bw)}});
+  const cell=(v,col)=>`<td><div class="bcell"><div class="b" style="left:0;width:${Math.max(v,.5)*0.95}%;background:${col}"></div><div class="v" style="left:${Math.max(v,.5)*0.95}%;color:#cfd8e3;text-shadow:none">${v.toFixed(0)}%</div></div></td>`;
+  $('#tb-strength').innerHTML=`<thead><tr><th>Segment</th><th>Golden Cross<br><span class="hint">50 &gt; 200 DMA</span></th><th>Death Cross<br><span class="hint">50 &lt; 200 DMA</span></th><th style="color:#2ecc9a">Brutal Strength<br><span class="hint">Try to be here</span></th><th style="color:#ef5b5b">Brutal Weakness<br><span class="hint">Stay away from here</span></th></tr></thead><tbody>`+
+    srows.map(r=>`<tr class="click" data-l="${r.l}"><td>${r.l}</td>${cell(r.gc,'#19c39a')}${cell(r.dc,'#e8997a')}${cell(r.bs,'#0e8f74')}${cell(r.bw,'#cf3a3a')}</tr>`).join('')+'</tbody>';
+  $('#tb-strength').onclick=e=>{const t=e.target.closest('tr[data-l]');if(t){S.pp.drawer=S.pp.ad;openIndex(t.dataset.l,true)}};
+  // bands
+  const PB=['1D','1W','1M','3M','6M','1Y'];const ranked=D.stocks.filter(s=>s.rk);const bands=[];
+  for(let s=1;s<=ranked.length;s+=50)bands.push([s,Math.min(s+49,ranked.length)]);
+  const avg=(b,pp)=>{const v=ranked.filter(x=>x.rk>=b[0]&&x.rk<=b[1]&&x.r[pp]!=null).map(x=>x.r[pp]);return v.length?v.reduce((a,c)=>a+c,0)/v.length:null};
+  const A=bands.map(b=>PB.map(pp=>avg(b,pp)));const ext=PB.map((_,j)=>{const col=A.map(r=>r[j]).filter(v=>v!=null);return [Math.min(0,...col),Math.max(0,...col)]});
+  $('#band-sub').textContent=`Average performance of stock bands (ranked by market cap) across ${ranked.length} stocks in the S&P 500, S&P 400 and S&P 600 (current constituents)`;
+  $('#tb-bands').innerHTML=`<thead><tr><th>Stock Band</th>${PB.map(q=>`<th style="text-align:center">Performance % ${q}</th>`).join('')}</tr></thead><tbody>`+
+   bands.map((b,i)=>`<tr class="click" data-b="${i}"><td>${b[0]} – ${b[1]}</td>${PB.map((pp,j)=>{const v=A[i][j];if(v==null)return'<td></td>';const [lo,hi]=ext[j];const w=hi-lo||1;const z=-lo/w*100;
+      const left=v>=0?z:z-(-v/w*100);const wid=Math.abs(v)/w*100;
+      return `<td><div class="bcell"><div class="b" style="left:${left}%;width:${wid}%;background:${v>=0?'#17b898':'#cf3a3a'}"></div><div class="v" style="left:${v>=0?Math.min(left+wid,82):Math.max(left,0)}%;color:#e6edf3;text-shadow:none">${v.toFixed(1)}%</div></div></td>`}).join('')}</tr>`).join('')+'</tbody>';
+  $('#tb-bands').onclick=e=>{const t=e.target.closest('tr[data-b]');if(!t)return;const b=bands[+t.dataset.b];S.pp.drawer=S.pp.ad;
+    openList(`Market-cap rank ${b[0]} – ${b[1]}`,`Stocks ranked ${b[0]}–${b[1]} by market cap`,ranked.filter(x=>x.rk>=b[0]&&x.rk<=b[1]).map(x=>x.s),true)}}
+
+/* ---------- drawer ---------- */
+const isOpen=()=>$('#drawer').classList.contains('open');
+function openDrawer(){$('#drawer').classList.add('open');$('#scrim').style.display='block'}
+function closeDrawer(){$('#drawer').classList.remove('open','wide');$('#dwide').textContent='⤢ Expand';$('#scrim').style.display='none';S.stack=[]}
+$('#dwide').onclick=()=>{const w=$('#drawer').classList.toggle('wide');$('#dwide').textContent=w?'⤡ Shrink':'⤢ Expand';setTimeout(()=>window.dispatchEvent(new Event('resize')),260)};
+$('#dclose').onclick=closeDrawer;$('#scrim').onclick=closeDrawer;document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
+$('#dback').onclick=()=>{S.stack.pop();S.stack.length?renderDrawer():closeDrawer()};
+function push(v,reset){if(reset)S.stack=[];S.stack.push(v);S.sort={k:'ret',dir:-1};openDrawer();renderDrawer()}
+const openIndex=(label,reset)=>IDX[label]&&push({t:'index',label},reset);
+const openList=(title,sub,syms,reset)=>push({t:'list',title,sub,syms},reset);
+const openStock=(sym,reset)=>push({t:'stock',sym},reset);
+
+function tiles(arr){return `<div class="tiles">${arr.map(([k,v,c])=>`<div class="tile"><div class="k">${k}</div><div class="v ${c||''}">${v}</div></div>`).join('')}</div>`}
+const csvSafe=x=>{if(typeof x!=='string')return x;const q=x.replace(/^"/,'');return /^[=+\-@\t\r]/.test(q)?"'"+x:x};   // blocks spreadsheet formula injection from text fields
+const trendBadges=s=>`${s.bs?'<span class="badge b-g">Brutal strength</span>':''}${s.bw?'<span class="badge b-r">Brutal weakness</span>':''}${s.gc==null?'':s.gc?'<span class="badge b-g">Golden</span>':'<span class="badge b-r">Death</span>'}${s.a200==null?'':s.a200?'<span class="badge b-n">&gt;200DMA</span>':'<span class="badge b-n">&lt;200DMA</span>'}`;
+const getv=(s,k)=>k==='ret'?s.r[PL()]:k==='n'||k==='i'?s[k]:k==='trend'?(s.bs?3:s.bw?-3:s.gc?1:s.gc===false?-1:0):k.startsWith('r:')?s.r[k.slice(2)]:s[k];
+
+function renderDrawer(){
+  const v=S.stack.at(-1);if(!v)return;
+  $('#dback').style.display=S.stack.length>1?'':'none';
+  const body=$('#dbody');
+  if(v.t==='stock')return renderStock(v,body);
+  let syms,title,head='';
+  if(v.t==='index'){
+    const ix=IDX[v.label];syms=D.members[v.label]||[];title=ix.nse;
+    const m=members(v.label);const a200=m.filter(x=>x.a200!=null);
+    head=tiles([['Index level',num(ix.close,2)],['1D',fmt(ix.chg,2),cls(ix.chg)],[PL()+annNote(PL()).replace(' · ',' '),fmt(ix.ret[PL()],2),cls(ix.ret[PL()])],['P/E',ix.pe??'–'],['P/B',ix.pb??'–'],['Div yield',ix.dy!=null?ix.dy+'%':'–'],
+      ['Stocks',m.length],['Above 200 DMA',a200.length?Math.round(100*a200.filter(x=>x.a200).length/a200.length)+'%':'–']])+
+      `<div id="d-idx" style="height:220px"></div>`;
+  }else{syms=v.syms;title=v.title;head=v.sub?`<div class="sub hint">${esc(v.sub)}</div>`:'';
+    const m=syms.map(s=>STK[s]).filter(Boolean);const a200=m.filter(x=>x.a200!=null);
+    head+=tiles([['Stocks',m.length],['Median '+PL(),fmt(median(m.map(x=>x.r[PL()])),2)],['Above 200 DMA',a200.length?Math.round(100*a200.filter(x=>x.a200).length/a200.length)+'%':'–'],['Golden cross',m.filter(x=>x.gc).length]])}
+  $('#dtitle').textContent=title;
+  head=`<div class="hd"><span class="hint">Period for this panel</span><div class="pseg seg" data-k="drawer"></div></div>`+head;
+  let rows=syms.map(s=>STK[s]).filter(Boolean);
+  const k=S.sort.k,dir=S.sort.dir;
+  rows.sort((a,b)=>{const x=getv(a,k),y=getv(b,k);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return (typeof x==='string'?x.localeCompare(y):x-y)*dir});
+  const p=PL();
+  const cols=[['n','Stock'],['i','Industry'],['p','Price'],['d1','1D'],['r:1W','1W'],['r:1M','1M'],['r:3M','3M'],['r:6M','6M'],['r:1Y','1Y'],['pos','52w range'],['trend','Trend'],['beta','Beta (1Y)'],['mc','Mcap $M']];
+  const sorted=rows;
+  head+=`<div class="hint" style="margin-top:6px"><button class="info" data-info="trend" title="What do the Trend labels mean?">ⓘ</button> What do the Trend labels (Brutal strength, Golden, Death…) mean?</div><div class="hd" style="margin-top:8px"><div><b>Stocks by ${p} return${annNote(p)}</b> <span class="hint">${rows.length>40?'top 20 gainers / bottom 20 laggards':''}</span></div><button class="btn" id="csv">⬇ Export CSV</button></div><div id="d-bar" style="height:300px"></div>`;
+  body.innerHTML=head+`<div class="scroll" style="max-height:none"><table id="d-tbl"><thead><tr>${cols.map(([c,l])=>`<th data-k="${c}" class="${(c==='r:'+p||(p==='1D'&&c==='d1')||(c===k))?'sel':''}">${l}${c===k?(dir<0?' ▼':' ▲'):''}</th>`).join('')}</tr></thead><tbody>`+
+    rows.map(s=>`<tr class="click" data-s="${s.s}"><td title="${esc(s.n)}">${esc(s.s)}</td><td>${esc(s.i)}</td><td>${num(s.p,2)}</td><td class="${cls(s.d1)}">${fmt(s.d1,2)}</td>${['1W','1M','3M','6M','1Y'].map(q=>`<td class="${cls(s.r[q])}">${fmt(s.r[q])}</td>`).join('')}<td><span class="pbar"><i style="left:${s.pos??0}%"></i></span></td><td>${trendBadges(s)}</td><td>${s.beta??'–'}</td><td>${num(s.mc)}</td></tr>`).join('')+'</tbody></table></div>';
+  renderPsegs();
+  $('#d-tbl').onclick=e=>{const th=e.target.closest('th');if(th){const nk=th.dataset.k;S.sort=S.sort.k===nk?{k:nk,dir:-S.sort.dir}:{k:nk,dir:nk==='n'||nk==='i'?1:-1};return renderDrawer()}
+    const tr=e.target.closest('tr[data-s]');if(tr)openStock(tr.dataset.s,false)};
+  $('#csv').onclick=()=>{const h=['Symbol','Name','Industry','Price','1D%','1W%','1M%','3M%','6M%','1Y%','3Y% ann','5Y% ann','52w pos %','SMA50','SMA200','Golden cross','Beta 1Y','Corr 1Y','Mcap $M'];
+    const L=[h.join(',')].concat(rows.map(s=>[s.s,'"'+s.n.replace(/"/g,'""')+'"','"'+s.i+'"',s.p,s.d1,s.r['1W'],s.r['1M'],s.r['3M'],s.r['6M'],s.r['1Y'],s.r['3Y'],s.r['5Y'],s.pos,s.sma50,s.sma200,s.gc,s.beta,s.corr,s.mc].map(x=>csvSafe(x??'')).join(',')));
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([L.join('\n')],{type:'text/csv'}));a.download=title.replace(/\W+/g,'_')+'.csv';a.click()};
+  // bar chart of stocks
+  const withR=rows.filter(s=>s.r[p]!=null).sort((a,b)=>b.r[p]-a.r[p]);
+  const shown=withR.length>40?withR.slice(0,20).concat(withR.slice(-20)):withR;
+  Plotly.react($('#d-bar'),[{type:'bar',x:shown.map(s=>s.s),y:shown.map(s=>s.r[p]),customdata:shown.map(s=>s.s),marker:{color:shown.map(s=>s.r[p]>=0?C.pos:C.neg)},
+    text:shown.map(s=>s.r[p].toFixed(1)),textposition:'outside',cliponaxis:false,textfont:{size:10},hovertemplate:'%{x}<br><b>%{y:.2f}%</b><extra></extra>'}],layout({margin:{b:80,t:14}}),CFG);
+  onClick('#d-bar',s=>openStock(s,false));
+  if(v.t==='index'){const ix=IDX[v.label];Plotly.react($('#d-idx'),[{type:'scatter',mode:'lines',x:ix.wk.d,y:ix.wk.c,fill:'tozeroy',fillcolor:'rgba(76,201,240,.08)',line:{color:C.acc,width:1.6},hovertemplate:'%{x}<br>%{y:,.0f}<extra></extra>'}],
+    layout({xaxis:{tickangle:0,type:'date'},yaxis:{ticksuffix:'',rangemode:'normal',autorange:true},margin:{b:30,t:6}}),CFG)}
+}
+function renderStock(v,body){
+  const s=STK[v.sym];$('#dtitle').textContent=`${s.n} (${s.s})`;
+  const r=PERIODS.filter(q=>q!=='1D').map(q=>[q+(q==='3Y'||q==='5Y'?' ann.':''),fmt(s.r[q],1),cls(s.r[q])]);
+  body.innerHTML=tiles([['Price $',num(s.p,2)],['1D',fmt(s.d1,2),cls(s.d1)],...r,['52w high',num(s.hi,2)],['52w low',num(s.lo,2)],['SMA 50',num(s.sma50,2)],['SMA 200',num(s.sma200,2)],['Mcap $M',num(s.mc)],['Mcap rank',s.rk??'–'],['Beta (1Y)',s.beta??'–'],['Correlation (1Y)',s.corr??'–'],['Volatility (1Y)',s.vol!=null?s.vol+'%':'–'],['Max drawdown (1Y)',s.mdd!=null?s.mdd+'%':'–',s.mdd!=null?'dn':''],['vs S&P 500 (1Y)',(s.r['1Y']!=null&&IDX['S&P 500']&&IDX['S&P 500'].ret['1Y']!=null)?fmt(s.r['1Y']-IDX['S&P 500'].ret['1Y'],1).replace('%',' pts'):'–']])+`<div class="hint" style="margin:-2px 0 8px"><button class="info" data-info="beta" title="What do these mean?">ⓘ</button> Beta, correlation, volatility and drawdown are measured against the S&amp;P 500 over the last year.</div>`+
+    `<div>${trendBadges(s)} <button class="info" data-info="trend" title="What do these labels mean?">ⓘ</button> <span class="hint">${esc(s.i)}</span></div><div id="d-px" style="height:340px;margin-top:8px"></div>
+     <div class="sub hint" style="margin-top:6px">Member of (click to explore):</div><div class="chips">${s.x.map(l=>`<span class="chip" data-l="${esc(l)}">${esc(l)}</span>`).join('')||'<span class="hint">no tracked index</span>'}</div>
+     <div class="hint">Market cap basis: ${s.mck==='yahoo'?'total market cap from Yahoo (shares outstanding × price)':'n/a'}</div>`;
+  body.onclick=e=>{const c=e.target.closest('.chip[data-l]');if(c)openIndex(c.dataset.l,false)};
+  const line=(y,name,color,w)=>({type:'scatter',mode:'lines',name,x:D.dates,y,line:{color,width:w},connectgaps:false,hovertemplate:name+' %{y:,.2f}<extra></extra>'});
+  Plotly.react($('#d-px'),[line(s.ser,'Price','#e6edf3',1.8),line(s.s50,'SMA 50','#f5a623',1.2),line(s.s200,'SMA 200','#7c6cf0',1.2)],
+    layout({showlegend:true,legend:{orientation:'h',y:1.08},xaxis:{tickangle:0,type:'date'},yaxis:{ticksuffix:'',autorange:true},margin:{b:30,t:10}}),CFG);
+}
+
+
+/* ---------- small statistics helpers ---------- */
+const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
+
+/* ---------- info pop-outs (the small "i" buttons) ---------- */
+const INFO={
+ momstk:{t:'Momentum Stocks: how the score works',h:`<p><b>Two scores, both from 0 (best) to 100 (worst).</b></p>
+  <p><b>Method.</b> By default each period is its own slice of time (1M = the month before the latest week, 3M = the two months before the latest month, and so on), so a one-day jump counts only in the newest slice instead of in every column. The latest week is skipped by default. You can switch to the plain cumulative returns, include the latest week, and give each period its own weight (default 1). The same choice drives the composite rank on the Sectors tab.</p>
+  <p><b>Sector score.</b> The sector's composite rank from the Sectors tab (its ranks from 1W up to the horizon, added up; lowest sum = rank 1), turned into a 0-100 position among all sectors.</p>
+  <p><b>Stock score.</b> The same method applied to the stock's own returns against the other stocks of its sector, turned into a 0-100 position within that sector. Using positions instead of raw ranks keeps a 5-stock sector and a 40-stock sector comparable.</p>
+  <p><b>Weighted score = sector weight × sector score + stock weight × stock score.</b> The lowest weighted score is the top stock. If two stocks tie, the one with the bigger % rise over the horizon comes first. Change the weights in the two boxes; editing one sets the other to 1 minus it. They are remembered in your browser.</p>
+  <p><b>Which sector.</b> Each stock is counted once, under its sector (one of the 11 S&amp;P sectors). Stocks without a sector label, or that lack history for a period, are not listed. The universe is the current constituents of the S&amp;P 500, S&amp;P 400 and S&amp;P 600.</p>
+  <p class="hint">Past returns only. Not investment advice.</p>`},
+ seccomp:{t:'Composite sector rank',h:`<p><b>What it does.</b> A single rank that blends several time periods, so a sector that is consistently strong ranks above one that only had a good week.</p><ol><li>For each sector, take its separate rank (1 = best return) in every period from <b>1W</b> up to the horizon you choose. For 6M that is 1W, 1M, 3M and 6M. <b>1D is ignored.</b></li><li>Add those ranks together.</li><li>The <b>lowest sum gets composite rank 1</b>, the next lowest rank 2, and so on.</li></ol><p><b>Ties.</b> If two sectors have the same sum, the one with the better <b>short-term</b> rank wins (1W first, then 1M, and so on).</p><p><b>n/a.</b> A sector whose history is too short for one of the periods cannot be scored and is ranked last.</p><p><b>Example.</b> A sector ranked 2, 4, 3 and 1 in 1W, 1M, 3M and 6M has a sum of 10. Hover over the sum to see the individual ranks.</p><p class="hint">3Y and 5Y returns are annualised. A rank is relative to the other sectors, not a forecast. Not investment advice.</p>`},
+ breadth:{t:'Whole-market breadth',h:`<p><b>What it is.</b> Every stock in the S&amp;P 500, S&amp;P 400 and S&amp;P 600 (about 1,500 current constituents, NYSE and Nasdaq listings) is compared with its previous close and counted as an advance, a decline or unchanged.</p>
+  <ul><li><b>Advance / decline ratio</b> = advances ÷ declines. Above about 1.5 is a broad rally, below about 0.67 a broad sell-off, and near 1 a mixed day.</li><li><b>Dollar volume</b> is the total value traded (price × shares, in $), shown against its 20-day average to gauge participation.</li></ul>
+  <p><b>What you can get from it.</b> Whether an index move is broad or narrow. A rising S&amp;P 500 with more decliners than advancers means a few large stocks are carrying the index. Broad advances on rising dollar volume show wider participation.</p>
+  <p class="hint">Every stock counts equally, including thinly traded small caps. One day is a description, not a forecast. Not investment advice.</p>`},
+ volume:{t:'Volume leaders and volume spikes',h:`<p><b>Volume leaders.</b> The most actively traded stocks of the day.</p>
+  <ul><li><b>By dollar volume</b> – value traded in $ millions (price × shares). Shows where the money is.</li><li><b>By volume</b> – number of shares traded. This favours low-priced stocks.</li></ul>
+  <p><b>Volume spikes.</b> Stocks whose volume today is at least 2× their previous 20-day average and whose dollar volume is $5 million or more (this filters out illiquid noise). The "× avg" column is that multiple.</p>
+  <p><b>What you can get from it.</b> Unusual volume often goes with news, results, block deals or institutional activity. A big price move on a volume spike carries more weight than the same move on thin volume.</p>
+  <p class="hint">Volume does not say who traded or why, so check the news. Stock splits can distort volume comparisons. Not investment advice.</p>`},
+ beta:{t:'Beta, correlation, volatility and drawdown',h:`<p>All four are measured over the last year using daily returns, against the <b>S&amp;P 500</b>.</p>
+  <ul><li><b>Beta</b> – how much the stock tends to move when the S&amp;P 500 moves 1%. Beta 1.0 moves with the index, 1.5 moves about one and a half times as much, and below 1 moves less.</li><li><b>Correlation</b> – from −1 to +1: how closely it follows the index. Close to 1 means it tracks the market; low means it moves on its own news.</li><li><b>Volatility</b> – how much its daily returns vary, annualised. The S&amp;P 500 itself is typically 15–20%.</li><li><b>Max drawdown</b> – the worst peak-to-trough fall in the last year.</li><li><b>vs S&amp;P 500 (1Y)</b> – the stock's 1-year return minus the S&amp;P 500's, in percentage points.</li></ul>
+  <p><b>What you can get from it.</b> A quick read of how risky a stock is relative to the market, and whether it is a market-driven or a stock-specific story.</p>
+  <p class="hint">Beta changes over time and is unreliable when correlation is low. Past behaviour does not predict the future. Not investment advice.</p>`},
+ trend:{t:'Trend labels explained',h:`<p>These labels describe a stock's price against its <b>moving averages</b>. "DMA" = daily moving average, the simple average of the last N closing prices.</p>
+  <ul><li><b>Brutal strength</b> – price is above the 25-DMA, which is above the 50-DMA, which is above the 200-DMA. Short, medium and long trends all point up, in order. The strongest alignment.</li>
+  <li><b>Brutal weakness</b> – price is below the 25-DMA, which is below the 50-DMA, which is below the 200-DMA. All trends point down, in order. The weakest alignment.</li>
+  <li><b>Golden</b> – the 50-DMA is above the 200-DMA (medium-term trend above long-term: an uptrend). The "golden cross" is the day it first moves above.</li>
+  <li><b>Death</b> – the 50-DMA is below the 200-DMA (a downtrend). The "death cross" is the day it first moves below.</li>
+  <li><b>&gt;200DMA / &lt;200DMA</b> – the price is above or below its long-term (200-day) average.</li></ul>
+  <p><b>In the Strength &amp; Weakness table</b> each percentage is the share of the index's stocks in that state, so a high "brutal strength" share means broad, strong participation.</p>
+  <p class="hint">These are descriptions of the current trend, not buy or sell signals. Not investment advice.</p>`}
+};
+function openInfo(k){const i=INFO[k];if(!i)return;$('#infoTitle').textContent=i.t;$('#infoBody').innerHTML=i.h;$('#infoBox').classList.add('open');$('#infoScrim').style.display='block'}
+function closeInfo(){$('#infoBox').classList.remove('open');$('#infoScrim').style.display='none'}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-info]');if(b){e.preventDefault();e.stopPropagation();openInfo(b.dataset.info)}});
+$('#infoClose').onclick=closeInfo;$('#infoScrim').onclick=closeInfo;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInfo()});
+
+$('#secH').onchange=()=>{S.secH=$('#secH').value;renderSectors()};
+/* ---------- market activity: whole-market breadth, volume leaders, volume spikes ---------- */
+const AS={range:'All',lead:'turnover',spk:'all'};
+document.addEventListener('click',e=>{const b=e.target.closest('.aseg button');if(!b)return;AS[b.parentElement.dataset.key]=b.dataset.v;renderActivity()});
+const RNG={'1W':5,'1M':21,'3M':63,'6M':126,'1Y':252,'3Y':756,'All':1e9};
+const lastN=(a,k)=>a.slice(Math.max(a.length-(RNG[k]||1e9),0));
+const shares=v=>v==null?'–':v>=1e9?(v/1e9).toFixed(2)+' B':v>=1e6?(v/1e6).toFixed(v>=1e8?0:1)+' M':v>=1e3?(v/1e3).toFixed(0)+' K':String(v);
+function actTable(rows){
+  // row.tcr = dollar volume in $ millions; row.dp (delivery %) does not exist for US stocks and is not shown
+  return '<thead><tr><th>#</th><th>Stock</th><th>Price $</th><th>Change</th><th>Volume</th><th>20-day avg</th><th>× avg</th><th>Dollar volume $M</th></tr></thead><tbody>'+
+    rows.map((r,i)=>{const k=STK[r.s];
+      return `<tr class="${k?'click':''}" ${k?`data-s="${esc(r.s)}"`:''}><td>${i+1}</td><td><b>${esc(r.s)}</b>${k?` <span class="hint">${esc(k.n)}</span>`:''}</td><td>${num(r.p,2)}</td><td class="${cls(r.chg)}">${fmt(r.chg,2)}</td><td>${shares(r.vol)}</td><td>${shares(r.avg)}</td><td class="${r.x>=2?'up':''}">${r.x==null?'–':r.x.toFixed(1)+'×'}</td><td>${num(r.tcr,1)}</td></tr>`}).join('')+'</tbody>'}
+function renderActivity(){
+  const A=D.activity;
+  if(!A){$('#act-body').innerHTML='<div class="card c12">Market activity data is unavailable in this build (price or volume data was missing). The rest of the dashboard is unaffected.</div>';return}
+  document.querySelectorAll('.aseg').forEach(el=>[...el.children].forEach(b=>b.classList.toggle('on',AS[el.dataset.key]===b.dataset.v)));
+  const B=A.breadth,n=B.d.length,adv=B.adv[n-1],dec=B.dec[n-1],unch=B.unch[n-1],ratio=dec?adv/dec:null;
+  const prevT=B.turn.slice(Math.max(0,n-21),n-1).filter(x=>x!=null),avgT=prevT.length?mean(prevT):null,tdy=B.turn[n-1];
+  const reading=ratio==null?'':ratio>=1.5?'broad advance':ratio<=0.67?'broad decline':'mixed day';
+  const tile=(k,v,s,cl='')=>`<div class="tile"><div class="k">${k}</div><div class="v ${cl}">${v}</div><div class="k">${s}</div></div>`;
+  $('#act-b-sub').innerHTML=`${A.asof} · ${A.n_stocks.toLocaleString('en-US')} S&amp;P 500 / 400 / 600 stocks · compared with the previous close · ${n} trading days of history`;
+  $('#act-b-tiles').innerHTML=tile('Advances',num(adv,0),`${(100*adv/A.n_stocks).toFixed(0)}% of stocks`,'up')+tile('Declines',num(dec,0),`${(100*dec/A.n_stocks).toFixed(0)}% of stocks`,'dn')+tile('Unchanged',num(unch,0),'')+
+    tile('Advance / decline ratio',ratio==null?'–':ratio.toFixed(2),reading,ratio>=1.5?'up':ratio<=0.67?'dn':'')+tile('Dollar volume',tdy==null?'–':`$${num(tdy/1e3,1)} B`,avgT?`${(100*(tdy/avgT-1)>=0?'+':'')}${(100*(tdy/avgT-1)).toFixed(0)}% vs 20-day average`:'');
+  const dd=lastN(B.d,AS.range),ad=lastN(B.adv,AS.range),de=lastN(B.dec,AS.range),un=lastN(B.unch,AS.range),rt=ad.map((a,i)=>de[i]?+(a/de[i]).toFixed(2):null);
+  Plotly.react($('#act-b'),[{type:'bar',x:dd,y:ad,name:'Advances',marker:{color:'#2aa88a'},hovertemplate:'%{y:,} advances<extra></extra>'},{type:'bar',x:dd,y:de,name:'Declines',marker:{color:'#cf3a3a'},hovertemplate:'%{y:,} declines<extra></extra>'},
+    {type:'bar',x:dd,y:un,name:'Unchanged',marker:{color:'#556070'},hovertemplate:'%{y:,} unchanged<extra></extra>'},
+    {type:'scatter',mode:'lines',x:dd,y:rt,name:'A/D ratio (right)',yaxis:'y2',line:{color:'#f5a623',width:2},hovertemplate:'A/D ratio %{y:.2f}<extra></extra>'}],
+    layout({barmode:'stack',showlegend:true,legend:{orientation:'h',y:1.12},hovermode:'x unified',xaxis:{type:'date',tickangle:0},yaxis:{ticksuffix:'',title:{text:'stocks'}},
+      yaxis2:{overlaying:'y',side:'right',showgrid:false,ticksuffix:'',title:{text:'advance / decline ratio'}},margin:{b:36,t:10,r:60},
+      shapes:[{type:'line',xref:'paper',yref:'y2',x0:0,x1:1,y0:1,y1:1,line:{color:'#586174',width:1,dash:'dash'}}]}),CFG);
+  const rows=A.leaders[AS.lead];
+  $('#act-l-sub').innerHTML=`${A.asof} · top ${rows.length} stocks by ${AS.lead==='turnover'?'dollar volume ($ millions traded)':'shares traded'} · "× avg" is today's volume against the previous ${A.params.avg_days}-day average`;
+  $('#act-l').innerHTML=actTable(rows);
+  const sp=A.spikes.filter(r=>AS.spk==='all'||(AS.spk==='up'?r.chg>0:r.chg<0));
+  $('#act-s-sub').innerHTML=`${A.asof} · volume at least ${A.params.spike_x}× the previous ${A.params.avg_days}-day average and dollar volume of $${num(A.params.min_dollar_vol/1e6,0)} million or more · ${sp.length} stocks, strongest first`;
+  $('#act-s').innerHTML=sp.length?actTable(sp):'<tbody><tr><td>No stocks meet the spike rule on this view.</td></tr></tbody>';
+  const go=e=>{const tr=e.target.closest('tr[data-s]');if(tr)openStock(tr.dataset.s,true)};$('#act-l').onclick=go;$('#act-s').onclick=go;
+}
+
+/* ---------- momentum stocks ---------- */
+const MOM={ws:0.6,wt:0.4,sec:''};
+try{const w=JSON.parse(localStorage.getItem('usp_mom_w')||'null');if(w&&w.ws>=0&&w.wt>=0&&w.ws<=1&&w.wt<=1){MOM.ws=+w.ws;MOM.wt=+w.wt}}catch(e){}
+const momSave=()=>{try{localStorage.setItem('usp_mom_w',JSON.stringify({ws:MOM.ws,wt:MOM.wt}))}catch(e){}};
+const pct0=(rank,n)=>n>1?(rank-1)/(n-1)*100:0;       // 0 = best, 100 = worst
+function momRows(H){
+  const SC=sectComposite(H),sectSet=new Set(SECT.map(i=>i.label)),assigned={};
+  // each stock is counted once, under the smallest sector index it belongs to
+  D.stocks.forEach(s=>{
+    const c=(s.x||[]).filter(l=>sectSet.has(l)&&SC.cr[l]&&SC.cr[l].ok);
+    if(!c.length)return;
+    c.sort((a,b)=>(D.members[a].length-D.members[b].length)||(SC.cr[a].rank-SC.cr[b].rank));
+    (assigned[c[0]]??=[]).push(s);
+  });
+  const rows=[];
+  for(const [sec,list] of Object.entries(assigned)){
+    const mem=members(sec).map(s=>({key:s.s,s}));
+    const W=composite(mem,(it,pp)=>it.s.r[pp],SC.inc);
+    const sc=SC.cr[sec];
+    list.forEach(s=>{const c=W.cr[s.s];if(!c||!c.ok)return;
+      rows.push({s,sec,sRank:sc.rank,nSec:SC.nOk,sPct:pct0(sc.rank,SC.nOk),tRank:c.rank,nIn:W.nOk,tPct:pct0(c.rank,W.nOk),ret:s.r[H]});});
+  }
+  return {rows,H};
+}
+function renderMethod(){
+  const O=PERIODS.filter(q=>q!=='1D');
+  $('#mm-box').innerHTML=`<span class="hint">Method</span><select id="mm-method"><option value="slice"${MOMM.method==='slice'?' selected':''}>Non-overlapping periods (recommended)</option><option value="cum"${MOMM.method==='cum'?' selected':''}>Cumulative returns (old)</option></select>`+
+    `<label class="hint" style="display:flex;gap:4px;align-items:center"><input type="checkbox" id="mm-skip"${MOMM.skip?' checked':''}>Skip latest week</label><span class="hint" style="margin-left:8px">Weight of each period:</span>`+
+    O.map(q=>`<span class="hint">${q}</span><input class="num" style="width:54px" data-w="${q}" type="number" min="0" max="100" step="0.5" value="${wOf(q)}">`).join('')+`<button class="btn" id="mm-reset-w" title="All weights back to 1">Reset weights</button>`}
+function renderMomentum(){
+  if(!$('#mm-box').firstChild)renderMethod();
+  const H=S.secH||'6M';$('#mom-h').value=H;
+  const {rows}=momRows(H);
+  const ws=MOM.ws,wt=MOM.wt;
+  rows.forEach(r=>r.w=Math.round((ws*r.sPct+wt*r.tPct)*1e4)/1e4);
+  rows.sort((a,b)=>a.w-b.w||((b.ret??-1e9)-(a.ret??-1e9)));          // lowest weighted score first; tie -> bigger % rise
+  rows.forEach((r,k)=>r.rank=k+1);
+  const secs=[...new Set(rows.map(r=>r.sec))].sort();if(MOM.sec&&!secs.includes(MOM.sec))MOM.sec='';
+  $('#mom-sec').innerHTML='<option value="">All sectors</option>'+secs.map(x=>`<option value="${esc(x)}"${x===MOM.sec?' selected':''}>${esc(x)}</option>`).join('');
+  if(document.activeElement!==$('#mom-ws'))$('#mom-ws').value=ws;if(document.activeElement!==$('#mom-wt'))$('#mom-wt').value=wt;
+  $('#mom-sub').textContent=`Weighted score = ${ws} × sector score + ${wt} × stock score · both scores 0 (best) to 100 (worst) · lowest = top stock · horizon ${incFor(H)[0]||''}→${H}${MOMM.method==='slice'?' · non-overlapping periods':' · cumulative returns'} · ${rows.length} stocks`;
+  const shown=MOM.sec?rows.filter(r=>r.sec===MOM.sec):rows,n=rows.length;
+  $('#tb-mom').innerHTML=`<thead><tr><th style="text-align:left">#</th><th style="text-align:left">Stock</th><th style="text-align:left">Sector</th><th style="text-align:center">Sector<br>rank</th><th style="text-align:center">Sector<br>score</th><th style="text-align:center">Rank in<br>sector</th><th style="text-align:center">Stock<br>score</th><th style="text-align:center;border-left:2px solid var(--line)">Weighted<br>score</th>${PERIODS.map(q=>`<th class="${q===H?'sel':''}" style="text-align:center">${q}</th>`).join('')}</tr></thead><tbody>`+
+   shown.map(r=>`<tr class="click" data-s="${esc(r.s.s)}"><td style="text-align:left">${r.rank}</td><td style="text-align:left" title="${esc(r.s.n)}"><b>${esc(r.s.s)}</b> <span class="hint">${esc(r.s.n)}</span></td><td style="text-align:left">${esc(r.sec)}</td><td class="h" style="background:${heatColor((r.sRank-1)/Math.max(r.nSec-1,1))}">${r.sRank}<span class="hint">/${r.nSec}</span></td><td style="text-align:center">${r.sPct.toFixed(0)}</td><td class="h" style="background:${heatColor((r.tRank-1)/Math.max(r.nIn-1,1))}">${r.tRank}<span class="hint">/${r.nIn}</span></td><td style="text-align:center">${r.tPct.toFixed(0)}</td><td class="h" style="border-left:2px solid var(--line);background:${heatColor((r.rank-1)/Math.max(n-1,1))};font-size:14px">${r.w.toFixed(1)}</td>${PERIODS.map(q=>`<td class="${cls(r.s.r[q])}" style="text-align:center">${fmt(r.s.r[q])}</td>`).join('')}</tr>`).join('')+'</tbody>';
+}
+(function(){
+  const again=()=>{mommSave();renderMethod();renderMomentum()};
+  $('#mm-box').addEventListener('change',e=>{const t=e.target;
+    if(t.id==='mm-method')MOMM.method=t.value==='cum'?'cum':'slice';
+    else if(t.id==='mm-skip')MOMM.skip=t.checked;
+    else if(t.dataset.w){const v=+t.value;if(isFinite(v)&&v>=0&&v<=100&&t.value!=='')MOMM.w[t.dataset.w]=v;else{t.value=wOf(t.dataset.w);return}}
+    else return;
+    again()});
+  $('#mm-box').addEventListener('click',e=>{if(e.target.id==='mm-reset-w'){MOMM.w={};again()}});
+})();
+(function(){
+  const setW=(a,v)=>{if(!isFinite(v))return;v=Math.min(1,Math.max(0,v));if(a==='ws'){MOM.ws=v;MOM.wt=Math.round((1-v)*100)/100}else{MOM.wt=v;MOM.ws=Math.round((1-v)*100)/100}
+    $('#mom-ws').value=MOM.ws;$('#mom-wt').value=MOM.wt;momSave();renderMomentum()};
+  $('#mom-ws').oninput=e=>{if(e.target.value!=='')setW('ws',+e.target.value)};
+  $('#mom-wt').oninput=e=>{if(e.target.value!=='')setW('wt',+e.target.value)};
+  $('#mom-reset').onclick=()=>{MOM.ws=0.6;MOM.wt=0.4;$('#mom-ws').value=0.6;$('#mom-wt').value=0.4;momSave();renderMomentum()};
+  $('#mom-h').onchange=()=>{S.secH=$('#mom-h').value;renderMomentum()};
+  $('#mom-sec').onchange=()=>{MOM.sec=$('#mom-sec').value;renderMomentum()};
+  $('#tb-mom').onclick=e=>{const tr=e.target.closest('tr[data-s]');if(tr)openStock(tr.dataset.s,true)};
+})();
+
+/* ---------- status footer ---------- */
+$('#status').innerHTML='<table>'+Object.entries(D.status).map(([k,v])=>`<tr><td>${k}</td><td class="${/^(ok|cached)/.test(v)?'':'warn'}">${/^(ok|cached)/.test(v)?'✓':'⚠'} ${esc(v)}</td></tr>`).join('')+'</table><div style="margin-top:6px">'+esc(D.mcap_note)+'</div>';
+
+/* ---------- boot ---------- */
+const placeholder=()=>{};                    // Valuation, Risk Monitor and ETFs are static until later build steps fill them
+function renderTab(){({overview:renderOverview,sectors:renderSectors,breadth:renderBreadth,activity:renderActivity,valuation:placeholder,risk:placeholder,momentum:renderMomentum,etfs:placeholder})[S.tab]()}
+renderPsegs();renderMovers();renderTab();
+window.__ready=true;
+</script>
+</body>
+</html>

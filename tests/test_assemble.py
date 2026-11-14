@@ -82,8 +82,6 @@ _NOT_KEYS = {"length", "map", "on", "at", "getFullYear", "setFullYear", "toISOSt
 
 
 def test_assemble_has_every_key_the_template_reads():
-    if not TEMPLATE.exists():
-        pytest.skip("pipeline/template.html is added in Task 13")
     keys = set(re.findall(r"\bD\.([A-Za-z_]\w*)", TEMPLATE.read_text(encoding="utf-8"))) - _NOT_KEYS
     p = assemble(**_args(), today=pd.Timestamp("2026-11-16"))
     assert keys <= set(p), sorted(keys - set(p))
