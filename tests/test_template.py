@@ -246,3 +246,81 @@ def test_stale_banner_hidden_for_fresh_ok_payload(tmp_path):
     finally:
         b.close()
         pw.stop()
+
+
+# ---------- every payload string is escaped before it reaches HTML ----------
+
+HOSTILE = "\"><img src=x onerror=window.__xss=1>&'\""
+
+
+def _hostile_payload():
+    d = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    st = d["stocks"][0]
+    old, new = st["s"], "TK" + HOSTILE
+    st["s"], st["n"], st["i"] = new, "Name " + HOSTILE, "Industry " + HOSTILE
+    for k, syms in d["members"].items():
+        d["members"][k] = [new if s == old else s for s in syms]
+    for rows in (d["activity"]["leaders"]["turnover"], d["activity"]["leaders"]["volume"], d["activity"]["spikes"]):
+        for r in rows:
+            if r["s"] == old:
+                r["s"] = new
+    sec_old, sec_new = "Technology", "Tech " + HOSTILE
+    for ix in d["indices"]:
+        if ix["label"] == sec_old:
+            ix["label"], ix["nse"] = sec_new, "XLK" + HOSTILE
+    d["members"][sec_new] = d["members"].pop(sec_old)
+    for s in d["stocks"]:
+        s["x"] = [sec_new if x == sec_old else x for x in s["x"]]
+    d["status"]["src " + HOSTILE] = "stale: " + HOSTILE
+    d["asof"] = d["stock_asof"] = "13 Nov 2026" + HOSTILE
+    d["stale"], d["stale_note"] = True, "note " + HOSTILE
+    d["activity"]["asof"] = "2026-11-13" + HOSTILE
+    d["global"][0]["name"] = "Index " + HOSTILE + " (USA)"
+    d["etfs"][0]["n"], d["etfs"][0]["c"] = "ETF " + HOSTILE, "Cat " + HOSTILE
+    d["universe_note"] = d["mcap_note"] = "note " + HOSTILE
+    return d, new, sec_new
+
+
+def test_esc_escapes_quotes_too():
+    js = _app_script(_html())
+    m = re.search(r"const esc = .*", js)
+    assert m and "&quot;" in m.group(0) and "&#39;" in m.group(0)
+
+
+def test_hostile_strings_never_appear_raw_in_rendered_html(tmp_path):
+    d, _, _ = _hostile_payload()
+    html = build.render(d, tmp_path / "dashboard.html", plotly_js="").read_text(encoding="utf-8")
+    assert "<img src=x onerror" not in html and "onerror=window.__xss=1>" not in html
+
+
+def test_hostile_payload_does_not_execute(tmp_path):
+    d, sym, sec = _hostile_payload()
+    out = _render_fixture(tmp_path, d)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        for t in TABS:
+            page.click(f'nav button[data-tab="{t}"]')
+            page.wait_for_timeout(200)
+            for sel in ('#periods button[data-p="1Y"]', '#periods button[data-p="1D"]'):
+                page.click(sel)
+        page.click('nav button[data-tab="sectors"]')
+        assert sec in page.inner_text("#tb-secrank")             # shown as literal text
+        page.click(f'#tb-secrank tr[data-l="{sec.replace(chr(34), chr(92) + chr(34))}"]')
+        page.wait_for_timeout(250)
+        assert page.is_visible("#drawer.open")
+        page.evaluate("s=>openStock(s,true)", sym)
+        page.wait_for_timeout(250)
+        assert sym in page.inner_text("#dtitle")
+        page.evaluate("closeDrawer()")
+        page.click('nav button[data-tab="activity"]')
+        page.click(f'#act-l tr[data-s="{sym.replace(chr(34), chr(92) + chr(34))}"]')
+        page.wait_for_timeout(250)
+        assert sym in page.inner_text("#dtitle")
+        assert "src " + HOSTILE in page.inner_text("#status")
+        assert page.evaluate("window.__xss") is None
+        assert page.locator("img").count() == 0
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()

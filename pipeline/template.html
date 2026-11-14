@@ -228,10 +228,10 @@ const PL = (k='drawer')=>S.pp[k];
 const from = k=>l=>{S.pp.drawer=S.pp[k];openIndex(l,true)};
 
 /* ---------- helpers ---------- */
-const fmt = (v,d=1)=> v==null?'–':(v>0?'+':'')+v.toFixed(d)+'%';
-const num = (v,d=0)=> v==null?'–':v.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
+const fmt = (v,d=1)=> v==null?'–':typeof v==='number'?(v>0?'+':'')+v.toFixed(d)+'%':esc(v);
+const num = (v,d=0)=> v==null?'–':typeof v==='number'?v.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d}):esc(v);   // a non-number is shown escaped
 const cls = v=> v==null?'':v>0?'up':v<0?'dn':'';
-const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = s=>s==null?'':String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));   // every payload string that reaches HTML goes through this
 const annNote = p=> (p==='3Y'||p==='5Y')?' · annualised':'';
 function merge(a,b){for(const k in b){a[k]=(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])&&a[k]&&typeof a[k]==='object')?merge(a[k],b[k]):b[k]}return a}
 function layout(o){return merge({datarevision:Math.random(),paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#c9d1d9',family:'Inter,Segoe UI,system-ui,sans-serif',size:12},
@@ -280,9 +280,9 @@ const STALE_DAYS = 4;
   if(lines.length){el.innerHTML=lines.join('<br>');el.hidden=false}
 })();
 function renderPsegs(){
-  document.querySelectorAll('.pseg').forEach(el=>{const k=el.dataset.k;el.innerHTML=PERIODS.map(p=>`<button data-p="${p}" class="${p===S.pp[k]?'on':''}">${p}</button>`).join('')});
+  document.querySelectorAll('.pseg').forEach(el=>{const k=el.dataset.k;el.innerHTML=PERIODS.map(p=>`<button data-p="${esc(p)}" class="${p===S.pp[k]?'on':''}">${esc(p)}</button>`).join('')});
   const vals=Object.values(S.pp),same=vals.every(v=>v===vals[0]);
-  $('#periods').innerHTML=PERIODS.map(p=>`<button data-p="${p}" class="${same&&p===vals[0]?'on':''}">${p}</button>`).join('')}
+  $('#periods').innerHTML=PERIODS.map(p=>`<button data-p="${esc(p)}" class="${same&&p===vals[0]?'on':''}">${esc(p)}</button>`).join('')}
 document.addEventListener('click',e=>{const b=e.target.closest('.pseg button');if(!b)return;S.pp[b.parentElement.dataset.k]=b.dataset.p;renderTab();if(isOpen())renderDrawer()});
 $('#periods').onclick = e=>{const p=e.target.dataset.p;if(!p)return;Object.keys(S.pp).forEach(k=>S.pp[k]=p);renderTab();if(isOpen())renderDrawer()};
 $('#nav').onclick = e=>{const t=e.target.dataset.tab;if(!t)return;S.tab=t;[...$('#nav').children].forEach(b=>b.classList.toggle('on',b===e.target));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.id==='tab-'+t));renderTab()};
@@ -301,7 +301,7 @@ $('#search').addEventListener('change',e=>{
 /* ---------- overview ---------- */
 function renderMovers(){
   const a=D.stocks.filter(s=>s.d1!=null).sort((x,y)=>y.d1-x.d1);
-  const chip=s=>`<span class="chip" data-s="${s.s}">${esc(s.s)} <b class="${cls(s.d1)}">${fmt(s.d1,2)}</b></span>`;
+  const chip=s=>`<span class="chip" data-s="${esc(s.s)}">${esc(s.s)} <b class="${cls(s.d1)}">${fmt(s.d1,2)}</b></span>`;
   $('#movers').innerHTML=`<span class="lbl">Top gainers today</span>${a.slice(0,8).map(chip).join('')}<span class="lbl" style="margin-left:14px">Top losers</span>${a.slice(-8).reverse().map(chip).join('')}`;
   $('#movers').onclick=e=>{const c=e.target.closest('.chip');if(c)openStock(c.dataset.s,true)}}
 // global rows -> the tracked US index they open ('S&P 500 (USA)' -> 'S&P 500'; S&P 400 / 600 and Nasdaq 100 come without a country)
@@ -321,7 +321,7 @@ function renderOverview(){
   // momentum rank table
   const items=D.global.map(x=>({key:x.name,x}));const rk=ranks(items,(i,pp)=>i.x[S.ccy][pp]);
   const sorted=items.slice().sort((a,b)=>((rk[a.key]['1M']||[99])[0])-((rk[b.key]['1M']||[99])[0]));
-  $('#tb-globrank').innerHTML=`<thead><tr><th>Index (Country)</th>${PERIODS.map(q=>`<th class="${q===p?'sel':''}" style="text-align:center">${q} Return</th>`).join('')}</tr></thead><tbody>`+
+  $('#tb-globrank').innerHTML=`<thead><tr><th>Index (Country)</th>${PERIODS.map(q=>`<th class="${q===p?'sel':''}" style="text-align:center">${esc(q)} Return</th>`).join('')}</tr></thead><tbody>`+
    sorted.map(i=>`<tr class="${globIdx(i.key)?'click':''}" data-n="${esc(i.key)}"><td>${esc(i.key)}</td>${PERIODS.map(q=>{const r=(rk[i.key]||{})[q];return r?`<td class="h" style="background:${heatColor((r[0]-1)/Math.max(r[1]-1,1))}" title="${fmt(i.x[S.ccy][q],2)}">${r[0]}</td>`:'<td class="h">–</td>'}).join('')}</tr>`).join('')+'</tbody>';
   $('#tb-globrank').onclick=e=>{const tr=e.target.closest('tr[data-n]');const l=tr&&globIdx(tr.dataset.n);if(l){S.pp.drawer=S.pp.glob;openIndex(l,true)}}}
 
@@ -364,8 +364,8 @@ function renderSectors(){
   if(S.secSort)sorted.sort((a,b)=>{const x=cr[a.key],y=cr[b.key];if(x.ok!==y.ok)return x.ok?-1:1;return S.secSort==='asc'?x.rank-y.rank:y.rank-x.rank});
   const arrow=S.secSort==='asc'?' ▲':S.secSort==='desc'?' ▼':' ⇅';
   $('#secH').value=H;
-  const cmpCells=k=>{const c=cr[k];return c.ok?`<td style="border-left:2px solid var(--line);text-align:center" title="ranks ${inc.map((q,j)=>q+':'+c.rs[j]).join(', ')}">${c.sum}</td><td class="h" style="background:${heatColor((c.rank-1)/Math.max(nOk-1,1))};font-size:14px">${c.rank}</td>`:`<td style="border-left:2px solid var(--line);text-align:center" class="hint">n/a</td><td class="h" style="background:var(--card2);color:var(--mut)" title="history too short for one of the periods">n/a</td>`};
-  $('#tb-secrank').innerHTML=`<thead><tr><th>Sector</th>${PERIODS.map(q=>`<th class="${q===p?'sel':''}" style="text-align:center">${q}</th>`).join('')}<th data-sort="comp" title="Click to sort" style="text-align:center;border-left:2px solid var(--line);cursor:pointer">Σ ranks${arrow}<br><span class="hint">${inc[0]||''}→${H}${MOMM.method==='slice'?' · non-overlapping':''}</span></th><th data-sort="comp" title="Click to sort ascending / descending" style="text-align:center;cursor:pointer">Composite${arrow}<br>rank</th></tr></thead><tbody>`+
+  const cmpCells=k=>{const c=cr[k];return c.ok?`<td style="border-left:2px solid var(--line);text-align:center" title="ranks ${esc(inc.map((q,j)=>q+':'+c.rs[j]).join(', '))}">${c.sum}</td><td class="h" style="background:${heatColor((c.rank-1)/Math.max(nOk-1,1))};font-size:14px">${c.rank}</td>`:`<td style="border-left:2px solid var(--line);text-align:center" class="hint">n/a</td><td class="h" style="background:var(--card2);color:var(--mut)" title="history too short for one of the periods">n/a</td>`};
+  $('#tb-secrank').innerHTML=`<thead><tr><th>Sector</th>${PERIODS.map(q=>`<th class="${q===p?'sel':''}" style="text-align:center">${esc(q)}</th>`).join('')}<th data-sort="comp" title="Click to sort" style="text-align:center;border-left:2px solid var(--line);cursor:pointer">Σ ranks${arrow}<br><span class="hint">${esc(inc[0]||'')}→${esc(H)}${MOMM.method==='slice'?' · non-overlapping':''}</span></th><th data-sort="comp" title="Click to sort ascending / descending" style="text-align:center;cursor:pointer">Composite${arrow}<br>rank</th></tr></thead><tbody>`+
    sorted.map(i=>`<tr class="click" data-l="${esc(i.key)}"><td>${esc(i.key)}</td>${PERIODS.map(q=>{const r=(rk[i.key]||{})[q];return r?`<td class="h" style="background:${heatColor((r[0]-1)/Math.max(r[1]-1,1))}" title="${fmt(i.i.ret[q],2)}">${r[0]}</td>`:'<td class="h">–</td>'}).join('')}${cmpCells(i.key)}</tr>`).join('')+'</tbody>';
   $('#tb-secrank').onclick=e=>{
     if(e.target.closest('th[data-sort]')){S.secSort=S.secSort==null?'asc':S.secSort==='asc'?'desc':null;return renderSectors()}      // asc -> desc -> default order
@@ -397,7 +397,7 @@ function renderBreadth(){
     return {l,gc:pc(x=>x.gc),dc:pc(x=>!x.gc),bs:pc(x=>x.bs),bw:pc(x=>x.bw)}});
   const cell=(v,col)=>`<td><div class="bcell"><div class="b" style="left:0;width:${Math.max(v,.5)*0.95}%;background:${col}"></div><div class="v" style="left:${Math.max(v,.5)*0.95}%;color:#cfd8e3;text-shadow:none">${v.toFixed(0)}%</div></div></td>`;
   $('#tb-strength').innerHTML=`<thead><tr><th>Segment</th><th>Golden Cross<br><span class="hint">50 &gt; 200 DMA</span></th><th>Death Cross<br><span class="hint">50 &lt; 200 DMA</span></th><th style="color:#2ecc9a">Brutal Strength<br><span class="hint">Try to be here</span></th><th style="color:#ef5b5b">Brutal Weakness<br><span class="hint">Stay away from here</span></th></tr></thead><tbody>`+
-    srows.map(r=>`<tr class="click" data-l="${r.l}"><td>${r.l}</td>${cell(r.gc,'#19c39a')}${cell(r.dc,'#e8997a')}${cell(r.bs,'#0e8f74')}${cell(r.bw,'#cf3a3a')}</tr>`).join('')+'</tbody>';
+    srows.map(r=>`<tr class="click" data-l="${esc(r.l)}"><td>${esc(r.l)}</td>${cell(r.gc,'#19c39a')}${cell(r.dc,'#e8997a')}${cell(r.bs,'#0e8f74')}${cell(r.bw,'#cf3a3a')}</tr>`).join('')+'</tbody>';
   $('#tb-strength').onclick=e=>{const t=e.target.closest('tr[data-l]');if(t){S.pp.drawer=S.pp.ad;openIndex(t.dataset.l,true)}};
   // bands
   const PB=['1D','1W','1M','3M','6M','1Y'];const ranked=D.stocks.filter(s=>s.rk);const bands=[];
@@ -405,7 +405,7 @@ function renderBreadth(){
   const avg=(b,pp)=>{const v=ranked.filter(x=>x.rk>=b[0]&&x.rk<=b[1]&&x.r[pp]!=null).map(x=>x.r[pp]);return v.length?v.reduce((a,c)=>a+c,0)/v.length:null};
   const A=bands.map(b=>PB.map(pp=>avg(b,pp)));const ext=PB.map((_,j)=>{const col=A.map(r=>r[j]).filter(v=>v!=null);return [Math.min(0,...col),Math.max(0,...col)]});
   $('#band-sub').textContent=`Average performance of stock bands (ranked by market cap) across ${ranked.length} stocks in the S&P 500, S&P 400 and S&P 600 (current constituents)`;
-  $('#tb-bands').innerHTML=`<thead><tr><th>Stock Band</th>${PB.map(q=>`<th style="text-align:center">Performance % ${q}</th>`).join('')}</tr></thead><tbody>`+
+  $('#tb-bands').innerHTML=`<thead><tr><th>Stock Band</th>${PB.map(q=>`<th style="text-align:center">Performance % ${esc(q)}</th>`).join('')}</tr></thead><tbody>`+
    bands.map((b,i)=>`<tr class="click" data-b="${i}"><td>${b[0]} – ${b[1]}</td>${PB.map((pp,j)=>{const v=A[i][j];if(v==null)return'<td></td>';const [lo,hi]=ext[j];const w=hi-lo||1;const z=-lo/w*100;
       const left=v>=0?z:z-(-v/w*100);const wid=Math.abs(v)/w*100;
       return `<td><div class="bcell"><div class="b" style="left:${left}%;width:${wid}%;background:${v>=0?'#17b898':'#cf3a3a'}"></div><div class="v" style="left:${v>=0?Math.min(left+wid,82):Math.max(left,0)}%;color:#e6edf3;text-shadow:none">${v.toFixed(1)}%</div></div></td>`}).join('')}</tr>`).join('')+'</tbody>';
@@ -424,7 +424,7 @@ const openIndex=(label,reset)=>IDX[label]&&push({t:'index',label},reset);
 const openList=(title,sub,syms,reset)=>push({t:'list',title,sub,syms},reset);
 const openStock=(sym,reset)=>push({t:'stock',sym},reset);
 
-function tiles(arr){return `<div class="tiles">${arr.map(([k,v,c])=>`<div class="tile"><div class="k">${k}</div><div class="v ${c||''}">${v}</div></div>`).join('')}</div>`}
+function tiles(arr){return `<div class="tiles">${arr.map(([k,v,c])=>`<div class="tile"><div class="k">${esc(k)}</div><div class="v ${c||''}">${esc(v)}</div></div>`).join('')}</div>`}
 const csvSafe=x=>{if(typeof x!=='string')return x;const q=x.replace(/^"/,'');return /^[=+\-@\t\r]/.test(q)?"'"+x:x};   // blocks spreadsheet formula injection from text fields
 const trendBadges=s=>`${s.bs?'<span class="badge b-g">Brutal strength</span>':''}${s.bw?'<span class="badge b-r">Brutal weakness</span>':''}${s.gc==null?'':s.gc?'<span class="badge b-g">Golden</span>':'<span class="badge b-r">Death</span>'}${s.a200==null?'':s.a200?'<span class="badge b-n">&gt;200DMA</span>':'<span class="badge b-n">&lt;200DMA</span>'}`;
 const getv=(s,k)=>k==='ret'?s.r[PL()]:k==='n'||k==='i'?s[k]:k==='trend'?(s.bs?3:s.bw?-3:s.gc?1:s.gc===false?-1:0):k.startsWith('r:')?s.r[k.slice(2)]:s[k];
@@ -452,9 +452,9 @@ function renderDrawer(){
   const p=PL();
   const cols=[['n','Stock'],['i','Industry'],['p','Price'],['d1','1D'],['r:1W','1W'],['r:1M','1M'],['r:3M','3M'],['r:6M','6M'],['r:1Y','1Y'],['pos','52w range'],['trend','Trend'],['beta','Beta (1Y)'],['mc','Mcap $M']];
   const sorted=rows;
-  head+=`<div class="hint" style="margin-top:6px"><button class="info" data-info="trend" title="What do the Trend labels mean?">ⓘ</button> What do the Trend labels (Brutal strength, Golden, Death…) mean?</div><div class="hd" style="margin-top:8px"><div><b>Stocks by ${p} return${annNote(p)}</b> <span class="hint">${rows.length>40?'top 20 gainers / bottom 20 laggards':''}</span></div><button class="btn" id="csv">⬇ Export CSV</button></div><div id="d-bar" style="height:300px"></div>`;
+  head+=`<div class="hint" style="margin-top:6px"><button class="info" data-info="trend" title="What do the Trend labels mean?">ⓘ</button> What do the Trend labels (Brutal strength, Golden, Death…) mean?</div><div class="hd" style="margin-top:8px"><div><b>Stocks by ${esc(p)} return${annNote(p)}</b> <span class="hint">${rows.length>40?'top 20 gainers / bottom 20 laggards':''}</span></div><button class="btn" id="csv">⬇ Export CSV</button></div><div id="d-bar" style="height:300px"></div>`;
   body.innerHTML=head+`<div class="scroll" style="max-height:none"><table id="d-tbl"><thead><tr>${cols.map(([c,l])=>`<th data-k="${c}" class="${(c==='r:'+p||(p==='1D'&&c==='d1')||(c===k))?'sel':''}">${l}${c===k?(dir<0?' ▼':' ▲'):''}</th>`).join('')}</tr></thead><tbody>`+
-    rows.map(s=>`<tr class="click" data-s="${s.s}"><td title="${esc(s.n)}">${esc(s.s)}</td><td>${esc(s.i)}</td><td>${num(s.p,2)}</td><td class="${cls(s.d1)}">${fmt(s.d1,2)}</td>${['1W','1M','3M','6M','1Y'].map(q=>`<td class="${cls(s.r[q])}">${fmt(s.r[q])}</td>`).join('')}<td><span class="pbar"><i style="left:${s.pos??0}%"></i></span></td><td>${trendBadges(s)}</td><td>${s.beta??'–'}</td><td>${num(s.mc)}</td></tr>`).join('')+'</tbody></table></div>';
+    rows.map(s=>`<tr class="click" data-s="${esc(s.s)}"><td title="${esc(s.n)}">${esc(s.s)}</td><td>${esc(s.i)}</td><td>${num(s.p,2)}</td><td class="${cls(s.d1)}">${fmt(s.d1,2)}</td>${['1W','1M','3M','6M','1Y'].map(q=>`<td class="${cls(s.r[q])}">${fmt(s.r[q])}</td>`).join('')}<td><span class="pbar"><i style="left:${+s.pos||0}%"></i></span></td><td>${trendBadges(s)}</td><td>${esc(s.beta??'–')}</td><td>${num(s.mc)}</td></tr>`).join('')+'</tbody></table></div>';
   renderPsegs();
   $('#d-tbl').onclick=e=>{const th=e.target.closest('th');if(th){const nk=th.dataset.k;S.sort=S.sort.k===nk?{k:nk,dir:-S.sort.dir}:{k:nk,dir:nk==='n'||nk==='i'?1:-1};return renderDrawer()}
     const tr=e.target.closest('tr[data-s]');if(tr)openStock(tr.dataset.s,false)};
@@ -545,7 +545,7 @@ function renderActivity(){
   const prevT=B.turn.slice(Math.max(0,n-21),n-1).filter(x=>x!=null),avgT=prevT.length?mean(prevT):null,tdy=B.turn[n-1];
   const reading=ratio==null?'':ratio>=1.5?'broad advance':ratio<=0.67?'broad decline':'mixed day';
   const tile=(k,v,s,cl='')=>`<div class="tile"><div class="k">${k}</div><div class="v ${cl}">${v}</div><div class="k">${s}</div></div>`;
-  $('#act-b-sub').innerHTML=`${A.asof} · ${A.n_stocks.toLocaleString('en-US')} S&amp;P 500 / 400 / 600 stocks · compared with the previous close · ${n} trading days of history`;
+  $('#act-b-sub').innerHTML=`${esc(A.asof)} · ${num(A.n_stocks)} S&amp;P 500 / 400 / 600 stocks · compared with the previous close · ${n} trading days of history`;
   $('#act-b-tiles').innerHTML=tile('Advances',num(adv,0),`${(100*adv/A.n_stocks).toFixed(0)}% of stocks`,'up')+tile('Declines',num(dec,0),`${(100*dec/A.n_stocks).toFixed(0)}% of stocks`,'dn')+tile('Unchanged',num(unch,0),'')+
     tile('Advance / decline ratio',ratio==null?'–':ratio.toFixed(2),reading,ratio>=1.5?'up':ratio<=0.67?'dn':'')+tile('Dollar volume',tdy==null?'–':`$${num(tdy/1e3,1)} B`,avgT?`${(100*(tdy/avgT-1)>=0?'+':'')}${(100*(tdy/avgT-1)).toFixed(0)}% vs 20-day average`:'');
   const dd=lastN(B.d,AS.range),ad=lastN(B.adv,AS.range),de=lastN(B.dec,AS.range),un=lastN(B.unch,AS.range),rt=ad.map((a,i)=>de[i]?+(a/de[i]).toFixed(2):null);
@@ -556,10 +556,10 @@ function renderActivity(){
       yaxis2:{overlaying:'y',side:'right',showgrid:false,ticksuffix:'',title:{text:'advance / decline ratio'}},margin:{b:36,t:10,r:60},
       shapes:[{type:'line',xref:'paper',yref:'y2',x0:0,x1:1,y0:1,y1:1,line:{color:'#586174',width:1,dash:'dash'}}]}),CFG);
   const rows=A.leaders[AS.lead];
-  $('#act-l-sub').innerHTML=`${A.asof} · top ${rows.length} stocks by ${AS.lead==='turnover'?'dollar volume ($ millions traded)':'shares traded'} · "× avg" is today's volume against the previous ${A.params.avg_days}-day average`;
+  $('#act-l-sub').innerHTML=`${esc(A.asof)} · top ${rows.length} stocks by ${AS.lead==='turnover'?'dollar volume ($ millions traded)':'shares traded'} · "× avg" is today's volume against the previous ${esc(A.params.avg_days)}-day average`;
   $('#act-l').innerHTML=actTable(rows);
   const sp=A.spikes.filter(r=>AS.spk==='all'||(AS.spk==='up'?r.chg>0:r.chg<0));
-  $('#act-s-sub').innerHTML=`${A.asof} · volume at least ${A.params.spike_x}× the previous ${A.params.avg_days}-day average and dollar volume of $${num(A.params.min_dollar_vol/1e6,0)} million or more · ${sp.length} stocks, strongest first`;
+  $('#act-s-sub').innerHTML=`${esc(A.asof)} · volume at least ${esc(A.params.spike_x)}× the previous ${esc(A.params.avg_days)}-day average and dollar volume of $${num(A.params.min_dollar_vol/1e6,0)} million or more · ${sp.length} stocks, strongest first`;
   $('#act-s').innerHTML=sp.length?actTable(sp):'<tbody><tr><td>No stocks meet the spike rule on this view.</td></tr></tbody>';
   const go=e=>{const tr=e.target.closest('tr[data-s]');if(tr)openStock(tr.dataset.s,true)};$('#act-l').onclick=go;$('#act-s').onclick=go;
 }
@@ -592,7 +592,7 @@ function renderMethod(){
   const O=PERIODS.filter(q=>q!=='1D');
   $('#mm-box').innerHTML=`<span class="hint">Method</span><select id="mm-method"><option value="slice"${MOMM.method==='slice'?' selected':''}>Non-overlapping periods (recommended)</option><option value="cum"${MOMM.method==='cum'?' selected':''}>Cumulative returns (old)</option></select>`+
     `<label class="hint" style="display:flex;gap:4px;align-items:center"><input type="checkbox" id="mm-skip"${MOMM.skip?' checked':''}>Skip latest week</label><span class="hint" style="margin-left:8px">Weight of each period:</span>`+
-    O.map(q=>`<span class="hint">${q}</span><input class="num" style="width:54px" data-w="${q}" type="number" min="0" max="100" step="0.5" value="${wOf(q)}">`).join('')+`<button class="btn" id="mm-reset-w" title="All weights back to 1">Reset weights</button>`}
+    O.map(q=>`<span class="hint">${esc(q)}</span><input class="num" style="width:54px" data-w="${esc(q)}" type="number" min="0" max="100" step="0.5" value="${wOf(q)}">`).join('')+`<button class="btn" id="mm-reset-w" title="All weights back to 1">Reset weights</button>`}
 function renderMomentum(){
   if(!$('#mm-box').firstChild)renderMethod();
   const H=S.secH||'6M';$('#mom-h').value=H;
@@ -606,7 +606,7 @@ function renderMomentum(){
   if(document.activeElement!==$('#mom-ws'))$('#mom-ws').value=ws;if(document.activeElement!==$('#mom-wt'))$('#mom-wt').value=wt;
   $('#mom-sub').textContent=`Weighted score = ${ws} × sector score + ${wt} × stock score · both scores 0 (best) to 100 (worst) · lowest = top stock · horizon ${incFor(H)[0]||''}→${H}${MOMM.method==='slice'?' · non-overlapping periods':' · cumulative returns'} · ${rows.length} stocks`;
   const shown=MOM.sec?rows.filter(r=>r.sec===MOM.sec):rows,n=rows.length;
-  $('#tb-mom').innerHTML=`<thead><tr><th style="text-align:left">#</th><th style="text-align:left">Stock</th><th style="text-align:left">Sector</th><th style="text-align:center">Sector<br>rank</th><th style="text-align:center">Sector<br>score</th><th style="text-align:center">Rank in<br>sector</th><th style="text-align:center">Stock<br>score</th><th style="text-align:center;border-left:2px solid var(--line)">Weighted<br>score</th>${PERIODS.map(q=>`<th class="${q===H?'sel':''}" style="text-align:center">${q}</th>`).join('')}</tr></thead><tbody>`+
+  $('#tb-mom').innerHTML=`<thead><tr><th style="text-align:left">#</th><th style="text-align:left">Stock</th><th style="text-align:left">Sector</th><th style="text-align:center">Sector<br>rank</th><th style="text-align:center">Sector<br>score</th><th style="text-align:center">Rank in<br>sector</th><th style="text-align:center">Stock<br>score</th><th style="text-align:center;border-left:2px solid var(--line)">Weighted<br>score</th>${PERIODS.map(q=>`<th class="${q===H?'sel':''}" style="text-align:center">${esc(q)}</th>`).join('')}</tr></thead><tbody>`+
    shown.map(r=>`<tr class="click" data-s="${esc(r.s.s)}"><td style="text-align:left">${r.rank}</td><td style="text-align:left" title="${esc(r.s.n)}"><b>${esc(r.s.s)}</b> <span class="hint">${esc(r.s.n)}</span></td><td style="text-align:left">${esc(r.sec)}</td><td class="h" style="background:${heatColor((r.sRank-1)/Math.max(r.nSec-1,1))}">${r.sRank}<span class="hint">/${r.nSec}</span></td><td style="text-align:center">${r.sPct.toFixed(0)}</td><td class="h" style="background:${heatColor((r.tRank-1)/Math.max(r.nIn-1,1))}">${r.tRank}<span class="hint">/${r.nIn}</span></td><td style="text-align:center">${r.tPct.toFixed(0)}</td><td class="h" style="border-left:2px solid var(--line);background:${heatColor((r.rank-1)/Math.max(n-1,1))};font-size:14px">${r.w.toFixed(1)}</td>${PERIODS.map(q=>`<td class="${cls(r.s.r[q])}" style="text-align:center">${fmt(r.s.r[q])}</td>`).join('')}</tr>`).join('')+'</tbody>';
 }
 (function(){
@@ -631,7 +631,7 @@ function renderMomentum(){
 })();
 
 /* ---------- status footer ---------- */
-$('#status').innerHTML='<table>'+Object.entries(D.status).map(([k,v])=>`<tr><td>${k}</td><td class="${/^(ok|cached)/.test(v)?'':'warn'}">${/^(ok|cached)/.test(v)?'✓':'⚠'} ${esc(v)}</td></tr>`).join('')+'</table><div style="margin-top:6px">'+esc(D.mcap_note)+'</div>';
+$('#status').innerHTML='<table>'+Object.entries(D.status).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="${/^(ok|cached)/.test(v)?'':'warn'}">${/^(ok|cached)/.test(v)?'✓':'⚠'} ${esc(v)}</td></tr>`).join('')+'</table><div style="margin-top:6px">'+esc(D.mcap_note)+'</div>';
 
 /* ---------- boot ---------- */
 const placeholder=()=>{};                    // Valuation, Risk Monitor and ETFs are static until later build steps fill them
