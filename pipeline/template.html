@@ -524,7 +524,7 @@ const INFO={
   <p><b>Sector score.</b> The sector's composite rank from the Sectors tab (its ranks from 1W up to the horizon, added up; lowest sum = rank 1), turned into a 0-100 position among all sectors.</p>
   <p><b>Stock score.</b> The same method applied to the stock's own returns against the other stocks of its sector, turned into a 0-100 position within that sector. Using positions instead of raw ranks keeps a 5-stock sector and a 40-stock sector comparable.</p>
   <p><b>Weighted score = sector weight × sector score + stock weight × stock score.</b> The lowest weighted score is the top stock. If two stocks tie, the one with the bigger % rise over the horizon comes first. Change the weights in the two boxes; editing one sets the other to 1 minus it. They are remembered in your browser.</p>
-  <p><b>Which sector.</b> Each stock is counted once, under its sector (one of the 11 S&amp;P sectors). Stocks without a sector label, or that lack history for a period, are not listed. The universe is the current constituents of the S&amp;P 500, S&amp;P 400 and S&amp;P 600. Stocks under $5 or with under $5 million average daily dollar volume are hidden unless you tick <b>include illiquid</b>; they still count when the other stocks of their sector are ranked.</p>
+  <p><b>Which sector.</b> Each stock is counted once, under its sector (one of the 11 S&amp;P sectors). Stocks without a sector label, or that lack history for a period, are not listed. The universe is the current constituents of the S&amp;P 500, S&amp;P 400 and S&amp;P 600. Stocks under $5 or with under $5 million average daily dollar volume are hidden unless you tick <b>include illiquid</b>; while hidden they are left out of every rank, so they cannot push the stocks you see down.</p>
   <p class="hint">Past returns only. Not investment advice.</p>`},
  seccomp:{t:'Composite sector rank',h:`<p><b>What it does.</b> A single rank that blends several time periods, so a sector that is consistently strong ranks above one that only had a good week.</p><ol><li>For each sector, take its separate rank (1 = best return) in every period from <b>1W</b> up to the horizon you choose. For 6M that is 1W, 1M, 3M and 6M. <b>1D is ignored.</b></li><li>Add those ranks together.</li><li>The <b>lowest sum gets composite rank 1</b>, the next lowest rank 2, and so on.</li></ol><p><b>Ties.</b> If two sectors have the same sum, the one with the better <b>short-term</b> rank wins (1W first, then 1M, and so on).</p><p><b>n/a.</b> A sector whose history is too short for one of the periods cannot be scored and is ranked last.</p><p><b>Example.</b> A sector ranked 2, 4, 3 and 1 in 1W, 1M, 3M and 6M has a sum of 10. Hover over the sum to see the individual ranks.</p><p class="hint">3Y and 5Y returns are annualised. A rank is relative to the other sectors, not a forecast. Not investment advice.</p>`},
  breadth:{t:'Whole-market breadth',h:`<p><b>What it is.</b> Every stock in the S&amp;P 500, S&amp;P 400 and S&amp;P 600 (about 1,500 current constituents, NYSE and Nasdaq listings) is compared with its previous close and counted as an advance, a decline or unchanged.</p>
@@ -601,22 +601,26 @@ const momSave=()=>{try{localStorage.setItem('usp_mom_w',JSON.stringify({ws:MOM.w
 const pct0=(rank,n)=>n>1?(rank-1)/(n-1)*100:0;       // 0 = best, 100 = worst
 function momRows(H){
   const SC=sectComposite(H),sectSet=new Set(SECT.map(i=>i.label)),assigned={};
+  // illiquid stocks (liq === false) are left out of the ranking entirely unless "include illiquid" is ticked,
+  // so they can neither be listed nor push the liquid stocks of their sector down the within-sector ranks
+  const keep=s=>MOM.illiq||s.liq!==false;let hidden=0;
   // each stock is counted once, under the smallest sector index it belongs to
   D.stocks.forEach(s=>{
     const c=(s.x||[]).filter(l=>sectSet.has(l)&&SC.cr[l]&&SC.cr[l].ok);
     if(!c.length)return;
+    if(!keep(s)){hidden++;return}
     c.sort((a,b)=>(D.members[a].length-D.members[b].length)||(SC.cr[a].rank-SC.cr[b].rank));
     (assigned[c[0]]??=[]).push(s);
   });
   const rows=[];
   for(const [sec,list] of Object.entries(assigned)){
-    const mem=members(sec).map(s=>({key:s.s,s}));
+    const mem=members(sec).filter(keep).map(s=>({key:s.s,s}));
     const W=composite(mem,(it,pp)=>it.s.r[pp],SC.inc);
     const sc=SC.cr[sec];
     list.forEach(s=>{const c=W.cr[s.s];if(!c||!c.ok)return;
       rows.push({s,sec,sRank:sc.rank,nSec:SC.nOk,sPct:pct0(sc.rank,SC.nOk),tRank:c.rank,nIn:W.nOk,tPct:pct0(c.rank,W.nOk),ret:s.r[H]});});
   }
-  return {rows,H};
+  return {rows,H,hidden};
 }
 function renderMethod(){
   const O=PERIODS.filter(q=>q!=='1D');
@@ -626,7 +630,7 @@ function renderMethod(){
 function renderMomentum(){
   if(!$('#mm-box').firstChild)renderMethod();
   const H=S.secH||'6M';$('#mom-h').value=H;
-  const all=momRows(H).rows,rows=MOM.illiq?all:all.filter(r=>r.s.liq!==false),nHid=all.length-rows.length;   // ranks below are among the listed stocks
+  const {rows,hidden:nHid}=momRows(H);   // with the box unticked, illiquid stocks are already out of every rank
   const ws=MOM.ws,wt=MOM.wt;
   rows.forEach(r=>r.w=Math.round((ws*r.sPct+wt*r.tPct)*1e4)/1e4);
   rows.sort((a,b)=>a.w-b.w||((b.ret??-1e9)-(a.ret??-1e9)));          // lowest weighted score first; tie -> bigger % rise

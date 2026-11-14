@@ -382,6 +382,48 @@ def test_sectors_themes_and_momentum_render(tmp_path):
         pw.stop()
 
 
+MOM_BY_SECTOR = """() => { const out = {}; momRows(S.secH || '6M').rows.forEach(r => (out[r.sec] ??= []).push([r.s.s, r.tRank, r.nIn]));
+  return out; }"""
+
+
+def test_momentum_ranks_liquid_stocks_only(tmp_path):
+    d = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    ill = [s["s"] for s in d["stocks"] if s["liq"] is False]
+    assert ill == ["TK20"], ill
+    out = _render_fixture(tmp_path, d)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        page.click('nav button[data-tab="momentum"]')
+        page.wait_for_timeout(200)
+        assert not page.is_checked("#mom-illiq")
+        off = page.evaluate(MOM_BY_SECTOR)
+        for sec, rows in off.items():               # every sector's listed stocks are ranked among themselves only
+            assert all(s not in ill for s, _, _ in rows), (sec, rows)
+            assert sorted(r for _, r, _ in rows)[0] == 1, (sec, rows)
+            assert all(n == len(rows) for _, _, n in rows), (sec, rows)
+        cells = page.locator("#tb-mom tbody tr").evaluate_all(
+            "trs => trs.map(t => [t.dataset.s, t.cells[2].innerText, t.cells[5].innerText])")
+        by_sec = {}
+        for sym, sec, rank in cells:
+            by_sec.setdefault(sec, []).append(int(rank.split("/")[0]))
+        assert by_sec and all(min(v) == 1 for v in by_sec.values()), by_sec
+        assert "1 illiquid hidden" in page.inner_text("#mom-sub")
+        page.check("#mom-illiq")
+        page.wait_for_timeout(200)
+        on = page.evaluate(MOM_BY_SECTOR)
+        sec = next(k for k, rows in on.items() if any(s == "TK20" for s, _, _ in rows))
+        assert dict((s, r) for s, r, _ in on[sec])["TK20"] == 1, on[sec]   # the illiquid stock would have led its sector
+        assert all(r > 1 for s, r, _ in on[sec] if s != "TK20")
+        row = page.locator('#tb-mom tr[data-s="TK20"]')
+        assert row.count() == 1 and row.locator("td").nth(5).inner_text().startswith("1/")
+        assert "illiquid hidden" not in page.inner_text("#mom-sub")
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()
+
+
 def test_stale_banner_hidden_for_fresh_ok_payload(tmp_path):
     d = json.loads(FIXTURE.read_text(encoding="utf-8"))
     d["stock_asof"] = pd.Timestamp.now().strftime("%d %b %Y")
