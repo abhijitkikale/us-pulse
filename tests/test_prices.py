@@ -113,6 +113,23 @@ def test_refresh_keeps_cache_when_download_collapses(tmp_path):
     assert close["S0"].iloc[-1] == 104.0          # old values, not the 500-based ones
 
 
+def test_refresh_stale_check_ignores_cached_symbols_no_longer_requested(tmp_path):
+    syms, path = _cache_of(100, tmp_path)          # cache holds S0..S99; 40 of them since delisted
+    wanted = syms[:60]
+    d = Fake(lambda b: make_frame(b, base=300.0))
+    close, volume, status = fp.refresh(wanted, path, downloader=d, sleep=lambda s: None)
+    assert status == "ok"                          # 60 of 60 requested, not 60 of 100 cached
+    assert close["S0"].iloc[-1] == 304.0
+
+
+def test_refresh_stale_check_counts_requested_cached_symbols(tmp_path):
+    syms, path = _cache_of(100, tmp_path)
+    wanted = syms[:50]
+    d = Fake(lambda b: make_frame(b[:30], base=300.0))   # 30 of 50 requested -> under 80%
+    close, volume, status = fp.refresh(wanted, path, downloader=d, sleep=lambda s: None)
+    assert status.startswith("stale:") and "30 of 50" in status
+
+
 def test_refresh_keeps_cache_when_download_empty(tmp_path):
     syms, path = _cache_of(20, tmp_path)
     before = path.read_bytes()

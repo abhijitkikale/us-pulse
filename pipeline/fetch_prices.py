@@ -86,13 +86,17 @@ def save_cache(path, close, volume):
 
 def refresh(symbols, cache_path, **kw):
     """Download, merge into the cache, save. If the download returned under 80% of the symbols the
-    cache already holds (Yahoo outage / partial batch), keep the cache untouched and report 'stale:'."""
+    cache already holds (Yahoo outage / partial batch), keep the cache untouched and report 'stale:'.
+    Only cached symbols that are still requested count, so delisted names left in the cache never trip it."""
     old_c, old_v = load_cache(cache_path)
     new_c, new_v, status = download_prices(symbols, **kw)
     if old_c is not None and not old_c.empty:
-        if new_c.shape[1] < STALE_RATIO * old_c.shape[1]:
-            return old_c, old_v, (f"stale: download returned {new_c.shape[1]} of "
-                                  f"{old_c.shape[1]} cached symbols ({status}); cache kept")
+        wanted = set(symbols)
+        held = sum(c in wanted for c in old_c.columns)
+        got = sum(c in wanted for c in new_c.columns)
+        if got < STALE_RATIO * held:
+            return old_c, old_v, (f"stale: download returned {got} of "
+                                  f"{held} cached symbols ({status}); cache kept")
     elif new_c.empty:
         return pd.DataFrame(), pd.DataFrame(), status
     close = merge_prices(old_c, new_c)
