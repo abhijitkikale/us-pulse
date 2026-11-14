@@ -11,9 +11,14 @@ COLUMNS = ["ticker", "sector", "industry", "mcap", "asof"]
 FETCH_DELAY = 0.4  # seconds between Yahoo calls
 
 
+_TARGETS = frozenset(us_config.YAHOO_SECTOR_MAP.values())
+
+
 def normalize_sector(raw):
     if raw is None:
         return None
+    if raw in _TARGETS:
+        return raw
     return us_config.YAHOO_SECTOR_MAP.get(raw)
 
 
@@ -33,7 +38,9 @@ def _read_cache(cache_csv):
         return pd.DataFrame(columns=COLUMNS)
     try:
         df = pd.read_csv(p, dtype={"ticker": str, "asof": str})
-        return df.reindex(columns=COLUMNS)
+        df = df.reindex(columns=COLUMNS)
+        df["sector"] = [normalize_sector(x) if isinstance(x, str) else None for x in df["sector"]]
+        return df
     except Exception:
         return pd.DataFrame(columns=COLUMNS)
 
@@ -53,6 +60,12 @@ def _needs_fetch(tickers, cache, today, max_age_days):
 
 
 def load_sectors(tickers, cache_csv, fetcher=None, max_age_days=30, max_new=300, today=None, sleep=time.sleep):
+    df, status, _ = _load(tickers, cache_csv, fetcher, max_age_days, max_new, today, sleep)
+    return df, status
+
+
+def _load(tickers, cache_csv, fetcher, max_age_days, max_new, today, sleep):
+    """Returns (frame, status, counts) where counts = dict(fetched, failed, remaining)."""
     fetcher = fetcher or default_fetcher
     today = today or dt.date.today()
     cache = _read_cache(cache_csv)
@@ -69,7 +82,7 @@ def load_sectors(tickers, cache_csv, fetcher=None, max_age_days=30, max_new=300,
         if not info:
             failed += 1
             continue
-        new_rows.append({"ticker": t, "sector": info.get("sector"), "industry": info.get("industry"),
+        new_rows.append({"ticker": t, "sector": normalize_sector(info.get("sector")), "industry": info.get("industry"),
                          "mcap": info.get("marketCap"), "asof": today.isoformat()})
     if new_rows:
         got = {r["ticker"] for r in new_rows}
@@ -83,7 +96,7 @@ def load_sectors(tickers, cache_csv, fetcher=None, max_age_days=30, max_new=300,
     df = cache[cache.ticker.isin(wanted)].reset_index(drop=True)
     status = (f"sectors: fetched {len(new_rows)}, cached {len(df) - len(new_rows)}, "
               f"failed {failed}, {remaining} remaining")
-    return df, status
+    return df, status, {"fetched": len(new_rows), "failed": failed, "remaining": remaining}
 
 
 def fill_all(tickers, cache_csv, fetcher=None, max_age_days=30, batch=300, sleep=time.sleep, pause=5, today=None):
@@ -91,12 +104,12 @@ def fill_all(tickers, cache_csv, fetcher=None, max_age_days=30, batch=300, sleep
     today = today or dt.date.today()
     rounds = []
     while True:
-        df, status = load_sectors(tickers, cache_csv, fetcher, max_age_days, batch, today, sleep)
+        df, status, counts = _load(tickers, cache_csv, fetcher, max_age_days, batch, today, sleep)
         rounds.append(status)
         pending = _needs_fetch(tickers, _read_cache(cache_csv), today, max_age_days)
         if not pending:
             break
-        if " fetched 0," in status:  # no progress: every attempted fetch failed
+        if counts["fetched"] == 0:  # no progress: every attempted fetch failed
             break
         sleep(pause)
     return df, f"{status} (rounds: {len(rounds)})"

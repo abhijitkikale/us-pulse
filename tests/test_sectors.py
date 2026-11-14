@@ -81,3 +81,41 @@ def test_fill_all_stops_when_no_progress(tmp_path):
                              sleep=lambda s: None)
     assert len(df) == 0
     assert len(n) == 2  # one round only
+
+
+def test_fetched_sector_is_normalized(tmp_path):
+    raw = {"A": "Financial Services", "B": "Healthcare", "C": "Consumer Cyclical", "D": "Weird"}
+    df, _ = fs.load_sectors(list("ABCD"), tmp_path / "s.csv", fetcher=lambda t: _info(sector=raw[t]),
+                            today=TODAY, sleep=lambda s: None)
+    got = dict(zip(df.ticker, df.sector))
+    assert got["A"] == "Financials" and got["B"] == "Health Care" and got["C"] == "Consumer Discretionary"
+    assert got["D"] is None or pd.isna(got["D"])
+    assert "D" in set(df.ticker)
+    back = pd.read_csv(tmp_path / "s.csv")
+    assert back.set_index("ticker").loc["D", "industry"] == "Software"
+
+
+def test_old_cache_with_raw_names_normalized_on_load(tmp_path):
+    csv = tmp_path / "s.csv"
+    _seed(csv, [["A", "Financial Services", "X", 1e9, "2026-11-10"]])
+    df, _ = fs.load_sectors(["A"], csv, fetcher=lambda t: {}, today=TODAY, sleep=lambda s: None)
+    assert df.iloc[0]["sector"] == "Financials"
+
+
+def test_normalize_sector_idempotent():
+    assert fs.normalize_sector("Financials") == "Financials"
+    assert fs.normalize_sector("Health Care") == "Health Care"
+
+
+def test_fill_all_no_progress_independent_of_status_text(tmp_path, monkeypatch):
+    real = fs._load
+
+    def spoofed(*a, **k):
+        df, status, counts = real(*a, **k)
+        return df, "totally different text", counts
+
+    monkeypatch.setattr(fs, "_load", spoofed)
+    n = []
+    fs.fill_all(["A", "B"], tmp_path / "s.csv", fetcher=lambda t: n.append(t) or {}, today=TODAY,
+                sleep=lambda s: None)
+    assert len(n) == 2
