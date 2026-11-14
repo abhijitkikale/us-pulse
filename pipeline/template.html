@@ -204,7 +204,11 @@ footer th{background:none;position:static}
 
   <section class="tab" id="tab-etfs">
     <div class="grid" id="etfs-body">
-      <div class="card c12"><h2>ETFs</h2><div class="sub">This tab is filled in by a later build step.</div></div>
+      <div class="card c12"><div class="hd"><div><h2>ETFs</h2><div class="sub">Each ETF is ranked against the other funds of its category with the same composite as the sectors and momentum stocks: its ranks over the periods up to the horizon, added up (lowest sum = rank 1). Click a row for its price chart.</div></div>
+        <div style="display:flex;gap:8px;align-items:center"><span class="hint">Category</span><select id="etf-cat"><option value="All">All</option></select></div></div>
+        <div class="hint" id="etf-note" style="padding:2px 0 10px"></div>
+        <div class="scroll" style="max-height:75vh"><table class="heat" id="tb-etf"></table></div>
+        <div class="hint" style="margin-top:8px">The cross-category rank (mixes unlike funds) ranks every ETF together: bonds, gold and equity funds compared on returns alone. Period cells are coloured by rank among the funds shown. Avg $ volume = 20-day average dollar volume. ETFs whose history is too short for one of the periods are n/a and ranked last. Not investment advice.</div></div>
     </div>
   </section>
 
@@ -451,6 +455,10 @@ function push(v,reset){if(reset)S.stack=[];S.stack.push(v);S.sort={k:'ret',dir:-
 const openIndex=(label,reset)=>IDX[label]&&push({t:'index',label},reset);
 const openList=(title,sub,syms,reset)=>push({t:'list',title,sub,syms},reset);
 const openStock=(sym,reset)=>push({t:'stock',sym},reset);
+const openEtf=(sym,reset)=>EMAP[sym]&&push({t:'etf',sym},reset);
+// an ETF as a stock-like object for the stock drawer: no SMA series, no index membership; its `ser` holds its own last
+// closes, right-aligned to the latest date (not on the stock dates axis)
+const etfAsStock=e=>({s:e.t,n:e.n??e.t,p:e.p,d1:e.d1,r:e.r||{},ser:Array.isArray(e.ser)?e.ser:[],a50:e.a50,a200:e.a200,gc:e.gc,bs:e.bs,bw:e.bw,vol:e.vol,mdd:e.mdd,dv:e.dv,c:e.c,etf:true});
 
 function tiles(arr){return `<div class="tiles">${arr.map(([k,v,c])=>`<div class="tile"><div class="k">${esc(k)}</div><div class="v ${c||''}">${esc(v)}</div></div>`).join('')}</div>`}
 const csvSafe=x=>{if(typeof x!=='string')return x;const q=x.replace(/^"/,'');return /^[=+\-@\t\r]/.test(q)?"'"+x:x};   // blocks spreadsheet formula injection from text fields
@@ -462,7 +470,7 @@ function renderDrawer(){
   const v=S.stack.at(-1);if(!v)return;
   $('#dback').style.display=S.stack.length>1?'':'none';
   const body=$('#dbody');
-  if(v.t==='stock')return renderStock(v,body);
+  if(v.t==='stock'||v.t==='etf')return renderStock(v,body);
   let syms,title,fname,head='';
   if(v.t==='index'){
     const ix=IDX[v.label];syms=D.members[v.label]||[];title=`${ix.label} (${ix.nse})`;fname=ix.label;
@@ -501,9 +509,20 @@ function renderDrawer(){
     layout({xaxis:{tickangle:0,type:'date'},yaxis:{ticksuffix:'',rangemode:'normal',autorange:true},margin:{b:30,t:6}}),CFG)}
 }
 function renderStock(v,body){
-  const s=STK[v.sym];$('#dtitle').textContent=`${s.n} (${s.s})`;
+  const s=v.t==='etf'?etfAsStock(EMAP[v.sym]):STK[v.sym];$('#dtitle').textContent=`${s.n} (${s.s})`;
   const r=PERIODS.filter(q=>q!=='1D').map(q=>[q+(q==='3Y'||q==='5Y'?' ann.':''),fmt(s.r[q],1),cls(s.r[q])]);
-  body.innerHTML=tiles([['Price $',num(s.p,2)],['1D',fmt(s.d1,2),cls(s.d1)],...r,['52w high',num(s.hi,2)],['52w low',num(s.lo,2)],['SMA 50',num(s.sma50,2)],['SMA 200',num(s.sma200,2)],['Mcap $M',num(s.mc)],['Mcap rank',s.rk??'–'],['Beta (1Y)',s.beta??'–'],['Correlation (1Y)',s.corr??'–'],['Volatility (1Y)',s.vol!=null?s.vol+'%':'–'],['Max drawdown (1Y)',s.mdd!=null?s.mdd+'%':'–',s.mdd!=null?'dn':''],['vs S&P 500 (1Y)',(s.r['1Y']!=null&&IDX['S&P 500']&&IDX['S&P 500'].ret['1Y']!=null)?fmt(s.r['1Y']-IDX['S&P 500'].ret['1Y'],1).replace('%',' pts'):'–']])+`<div class="hint" style="margin:-2px 0 8px"><button class="info" data-info="beta" title="What do these mean?">ⓘ</button> Beta, correlation, volatility and drawdown are measured against the S&amp;P 500 over the last year.</div>`+
+  const vsSpx=['vs S&P 500 (1Y)',(s.r['1Y']!=null&&IDX['S&P 500']&&IDX['S&P 500'].ret['1Y']!=null)?fmt(s.r['1Y']-IDX['S&P 500'].ret['1Y'],1).replace('%',' pts'):'–'];
+  if(s.etf){
+    body.innerHTML=tiles([['Price $',num(s.p,2)],['1D',fmt(s.d1,2),cls(s.d1)],...r,['Volatility (1Y)',s.vol!=null?s.vol+'%':'–'],['Max drawdown (1Y)',s.mdd!=null?s.mdd+'%':'–',s.mdd!=null?'dn':''],vsSpx,['Avg $ volume (20d)',dollars(s.dv)]])+
+      `<div class="hint" style="margin:-2px 0 8px">Volatility and max drawdown use the ETF's daily closes over the last year.</div>`+
+      `<div>${trendBadges(s)} ${smaMark(s.a50,50)}${smaMark(s.a200,200)} <button class="info" data-info="trend" title="What do these labels mean?">ⓘ</button> <span class="hint">ETF · ${esc(s.c)}</span></div><div id="d-px" style="height:340px;margin-top:8px"></div>`;
+    body.onclick=null;
+    const n=Math.min(s.ser.length,D.dates.length);          // right-aligned: the last n closes on the last n dates (a longer ser is cut from the left)
+    Plotly.react($('#d-px'),[{type:'scatter',mode:'lines',name:'Price',x:D.dates.slice(D.dates.length-n),y:s.ser.slice(s.ser.length-n),line:{color:'#e6edf3',width:1.8},connectgaps:false,hovertemplate:'Price %{y:,.2f}<extra></extra>'}],
+      layout({showlegend:true,legend:{orientation:'h',y:1.08},xaxis:{tickangle:0,type:'date'},yaxis:{ticksuffix:'',autorange:true},margin:{b:30,t:10}}),CFG);
+    return;
+  }
+  body.innerHTML=tiles([['Price $',num(s.p,2)],['1D',fmt(s.d1,2),cls(s.d1)],...r,['52w high',num(s.hi,2)],['52w low',num(s.lo,2)],['SMA 50',num(s.sma50,2)],['SMA 200',num(s.sma200,2)],['Mcap $M',num(s.mc)],['Mcap rank',s.rk??'–'],['Beta (1Y)',s.beta??'–'],['Correlation (1Y)',s.corr??'–'],['Volatility (1Y)',s.vol!=null?s.vol+'%':'–'],['Max drawdown (1Y)',s.mdd!=null?s.mdd+'%':'–',s.mdd!=null?'dn':''],vsSpx])+`<div class="hint" style="margin:-2px 0 8px"><button class="info" data-info="beta" title="What do these mean?">ⓘ</button> Beta, correlation, volatility and drawdown are measured against the S&amp;P 500 over the last year.</div>`+
     `<div>${trendBadges(s)} <button class="info" data-info="trend" title="What do these labels mean?">ⓘ</button> <span class="hint">${esc(s.i)}</span></div><div id="d-px" style="height:340px;margin-top:8px"></div>
      <div class="sub hint" style="margin-top:6px">Member of (click to explore):</div><div class="chips">${s.x.map(l=>`<span class="chip" data-l="${esc(l)}">${esc(l)}</span>`).join('')||'<span class="hint">no tracked index</span>'}</div>
      <div class="hint">Market cap basis: ${s.mck==='yahoo'?'total market cap from Yahoo (shares outstanding × price)':'n/a'}</div>`;
@@ -665,14 +684,52 @@ function renderMomentum(){
   $('#tb-mom').onclick=e=>{const tr=e.target.closest('tr[data-s]');if(tr)openStock(tr.dataset.s,true)};
 })();
 
+/* ---------- ETFs ---------- */
+// each ETF is ranked within its category with the momentum composite (same method / weights / horizon as the Momentum Stocks tab),
+// plus one cross-category rank over every ETF; an ETF missing a period the composite needs is "n/a" and ranked last
+const ETF_CAT_ORDER=['US Sector','Theme','Size','Style & Factor','International Country','International Region','Bonds','Commodities','Dividend & Income','Real Estate','Currency & Other'];
+const ETFS=D.etfs||[];
+const EMAP=Object.fromEntries(ETFS.map(e=>[e.t,e]));
+S.etfCat='All';
+const dollars=v=>v==null||!isFinite(v)?'–':v>=1e9?'$'+(v/1e9).toFixed(2)+'B':'$'+(v/1e6).toFixed(v>=1e8?0:1)+'M';
+const smaMark=(v,l)=>v==null?`<span class="badge b-n" title="not enough history for the ${l}-day average">${l} –</span>`:v?`<span class="badge b-g" title="price above its ${l}-day average">&gt;${l}</span>`:`<span class="badge b-r" title="price below its ${l}-day average">&lt;${l}</span>`;
+function etfCats(){
+  const have=new Set([...(D.etf_categories||[]),...ETFS.map(e=>e.c)].filter(c=>c!=null).map(String));
+  return ETF_CAT_ORDER.filter(c=>have.has(c)).concat([...have].filter(c=>!ETF_CAT_ORDER.includes(c)).sort());
+}
+function etfComposite(list,inc){return composite(list.map(e=>({key:e.t,e})),(it,pp)=>(it.e.r||{})[pp]??null,inc)}
+function renderETFs(){
+  const H=S.secH||'6M',inc=incFor(H),cats=etfCats();
+  if(S.etfCat!=='All'&&!cats.includes(S.etfCat))S.etfCat='All';
+  $('#etf-cat').innerHTML=['All',...cats].map(c=>`<option value="${esc(c)}"${c===S.etfCat?' selected':''}>${esc(c)}</option>`).join('');
+  const all=etfComposite(ETFS,inc),inCat={};
+  cats.forEach(c=>inCat[c]=etfComposite(ETFS.filter(e=>String(e.c)===c),inc));
+  const shown=S.etfCat==='All'?ETFS.slice():ETFS.filter(e=>String(e.c)===S.etfCat);
+  const ord=S.etfCat==='All'?all:inCat[S.etfCat];
+  const byRank=(a,b)=>{const x=ord.cr[a.t],y=ord.cr[b.t];if(x.ok!==y.ok)return x.ok?-1:1;return x.ok?x.rank-y.rank:String(a.t).localeCompare(String(b.t))};
+  shown.sort(byRank);
+  const vis=etfComposite(shown,inc).rk;          // period ranks among the funds shown, for the cell colours
+  const PC=['1M','3M','6M','1Y'];
+  $('#etf-note').textContent=`Ranking uses the method and weights set on the Momentum Stocks tab · horizon ${inc[0]||''}→${H}${MOMM.method==='slice'?' · non-overlapping periods':' · cumulative returns'}${MOMM.skip?' · latest week skipped':''} · ${shown.length} ETFs`;
+  const rkCell=(c,n,st='')=>c&&c.ok?`<td class="h" style="${st}background:${heatColor((c.rank-1)/Math.max(n-1,1))}" title="Σ ranks ${c.sum}">${c.rank}<span class="hint">/${n}</span></td>`:`<td class="h" style="${st}background:var(--card2);color:var(--mut)" title="history too short for one of the periods">n/a</td>`;
+  $('#tb-etf').innerHTML=`<thead><tr><th style="text-align:left">#</th><th style="text-align:left">ETF</th><th style="text-align:left">Category</th><th style="text-align:center">Rank in<br>category</th>${PC.map(q=>`<th class="${q===H?'sel':''}" style="text-align:center">${esc(q)}</th>`).join('')}<th style="text-align:center">SMA 50 / 200</th><th>1D</th><th title="20-day average dollar volume">Avg $ volume</th><th style="text-align:center;border-left:2px solid var(--line)" title="Composite rank across all ETFs: bonds, commodities and equity funds compared on returns alone">Overall<br><span class="hint">cross-category (mixes unlike funds)</span></th></tr></thead><tbody>`+
+    shown.map((e,k)=>{const cc=inCat[String(e.c)];const r=e.r||{};
+      return `<tr class="click" data-t="${esc(e.t)}"><td style="text-align:left">${k+1}</td><td style="text-align:left" title="${esc(e.n)}"><b>${esc(e.t)}</b> <span class="hint">${esc(e.n)}</span></td><td style="text-align:left">${esc(e.c)}</td>${rkCell(cc&&cc.cr[e.t],cc?cc.nOk:0)}`+
+        PC.map(q=>{const v=(vis[e.t]||{})[q];return v?`<td class="h" style="background:${heatColor((v[0]-1)/Math.max(v[1]-1,1))}" title="rank ${v[0]} of ${v[1]}">${fmt(r[q])}</td>`:`<td class="h" style="color:var(--mut)">${fmt(r[q])}</td>`}).join('')+
+        `<td style="text-align:center">${smaMark(e.a50,50)}${smaMark(e.a200,200)}</td><td class="${cls(e.d1)}">${fmt(e.d1,2)}</td><td>${dollars(e.dv)}</td>`+
+        rkCell(all.cr[e.t],all.nOk,'border-left:2px solid var(--line);')+`</tr>`}).join('')+'</tbody>';
+}
+$('#etf-cat').onchange=()=>{S.etfCat=$('#etf-cat').value;renderETFs()};
+$('#tb-etf').onclick=e=>{const tr=e.target.closest('tr[data-t]');if(tr)openEtf(tr.dataset.t,true)};
+
 /* ---------- status footer ---------- */
 // OK: 'ok…', 'cached…' or 'fetched…', optionally after a source prefix such as 'sectors: fetched 12, cached 1488, …'
 const okStatus=v=>{v=String(v);return !/^(stale|failed|partial)/.test(v)&&/^([a-z]+: )?(ok|cached|fetched)\b/.test(v)};
 $('#status').innerHTML='<table>'+Object.entries(D.status).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="${okStatus(v)?'':'warn'}">${okStatus(v)?'✓':'⚠'} ${esc(v)}</td></tr>`).join('')+'</table><div style="margin-top:6px">'+esc(D.mcap_note)+'</div>';
 
 /* ---------- boot ---------- */
-const placeholder=()=>{};                    // Valuation, Risk Monitor and ETFs are static until later build steps fill them
-function renderTab(){({overview:renderOverview,sectors:renderSectors,breadth:renderBreadth,activity:renderActivity,valuation:placeholder,risk:placeholder,momentum:renderMomentum,etfs:placeholder})[S.tab]()}
+const placeholder=()=>{};                    // Valuation and Risk Monitor are static until later build steps fill them
+function renderTab(){({overview:renderOverview,sectors:renderSectors,breadth:renderBreadth,activity:renderActivity,valuation:placeholder,risk:placeholder,momentum:renderMomentum,etfs:renderETFs})[S.tab]()}
 renderPsegs();renderMovers();renderTab();
 window.__ready=true;
 </script>

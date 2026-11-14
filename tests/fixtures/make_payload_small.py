@@ -26,6 +26,13 @@ N_DAYS = 280
 SECTORS = list(us_config.SECTOR_ETFS)
 THEMES = ["Semiconductors", "Regional Banks", "Biotech", "Software"]
 ETFS = ["XLK", "XLF", "SPY", "QQQ", "TLT", "GLD"]
+# extra ETFs for the ETF tab (Task 15): 'US Sector' gets 5 funds (XLV, XLI and XLB reuse the sector ETF series
+# already priced above) and 'Size' 4. IWM, IJH and IEF are priced from their own generator with distinct daily
+# drifts, so the series above stay unchanged. IJH has only 90 closes: its 6M / 1Y returns are null and it must
+# rank "n/a" (last) in its category.
+SECTOR_EXTRA = ["XLV", "XLI", "XLB"]
+EXTRA_ETFS = {"IWM": 0.0020, "IJH": 0.0012, "IEF": 0.0002}
+SHORT_ETF, SHORT_LEN = "IJH", 90
 
 
 def main():
@@ -43,7 +50,7 @@ def main():
                            "industry": [f"Industry {i % 7}" for i in range(30)],
                            "mcap": [float(5e9 + 3e9 * (30 - i)) for i in range(30)], "asof": "2026-11-01"})
     etf_uni = compute_etf.load_universe()
-    etf_uni = etf_uni[etf_uni["ticker"].isin(ETFS)]
+    etf_uni = etf_uni[etf_uni["ticker"].isin(ETFS + SECTOR_EXTRA + list(EXTRA_ETFS))]
 
     syms = (list(uni["ticker"]) + list(us_config.BENCHMARKS.values()) + list(us_config.SECTOR_ETFS.values())
             + [us_config.THEMES[t] for t in THEMES] + ETFS)
@@ -63,6 +70,14 @@ def main():
     close.iloc[:, ill] = np.where(close.iloc[:, ill].isna(), np.nan, np.round(up, 2))
     volume = pd.DataFrame(np.round(rng.uniform(4e5, 6e6, (N_DAYS, len(syms)))), index=idx, columns=syms)
     volume.iloc[-1, :6] *= 4                       # a few volume spikes on the last day
+    erng = np.random.default_rng(1315)
+    ex = list(EXTRA_ETFS)
+    esteps = erng.normal(np.array(list(EXTRA_ETFS.values())), 0.009, (N_DAYS, len(ex)))
+    eclose = pd.DataFrame(np.round(erng.uniform(30, 300, len(ex)) * np.exp(np.cumsum(esteps, axis=0)), 2),
+                          index=idx, columns=ex)
+    eclose.iloc[: N_DAYS - SHORT_LEN, ex.index(SHORT_ETF)] = np.nan
+    evol = pd.DataFrame(np.round(erng.uniform(4e5, 6e6, (N_DAYS, len(ex)))), index=idx, columns=ex)
+    close, volume = pd.concat([close, eclose], axis=1), pd.concat([volume, evol], axis=1)
 
     status = {"membership": "ok (30 names)", "prices": "ok", "sectors": "sectors: fetched 0, cached 30, failed 0, 0 remaining (rounds: 1)",
               "etf": "stale: 1 ETF missing from the last download"}

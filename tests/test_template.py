@@ -254,6 +254,40 @@ def test_sma_comparison_is_all_tracked_stocks():
     assert "Grey bar = S&amp;P 500" not in html and "Grey bar = all tracked stocks" in html
 
 
+# ---------- Task 15: ETF tab ----------
+
+def test_etf_tab_markup_present():
+    html = _html()
+    for i in ("tab-etfs", "tb-etf", "etf-cat"):
+        assert re.search(rf"""id=["']{i}["']""", html), i
+    assert re.search(r"""<table[^>]*id=["']tb-etf["']""", html)
+    assert re.search(r"""<select[^>]*id=["']etf-cat["']""", html)
+
+
+def test_etf_overall_rank_note_present():
+    text = " ".join(" ".join(_parsed().parts).split()) + "\n" + _app_script(_html())
+    assert "mixes unlike funds" in text
+    assert "uses the method and weights set on the Momentum Stocks tab" in text
+
+
+def test_render_tab_map_includes_etfs():
+    js = _app_script(_html())
+    m = re.search(r"function renderTab\(\)\{\(\{(.*?)\}\)\[S\.tab\]\(\)\}", js)
+    assert m, "renderTab map not found"
+    entries = dict(kv.split(":", 1) for kv in m.group(1).split(","))
+    fn = entries["etfs"].strip()
+    assert fn != "placeholder" and re.fullmatch(r"[A-Za-z_]\w*", fn), fn
+    assert re.search(rf"function {fn}\(", js), fn
+
+
+def test_etf_categories_in_canonical_order():
+    js = _app_script(_html())
+    order = ["US Sector", "Theme", "Size", "Style & Factor", "International Country", "International Region",
+             "Bonds", "Commodities", "Dividend & Income", "Real Estate", "Currency & Other"]
+    m = re.search(r"const ETF_CAT_ORDER=\[(.*?)\];", js)
+    assert m and re.findall(r"'([^']+)'", m.group(1)) == order
+
+
 # ---------- optional: load the rendered fixture in headless Chromium ----------
 
 def _render_fixture(tmp_path, payload=None):
@@ -484,7 +518,8 @@ def _hostile_payload():
     d["stale"], d["stale_note"] = True, "note " + HOSTILE
     d["activity"]["asof"] = "2026-11-13" + HOSTILE
     d["global"][0]["name"] = "Index " + HOSTILE + " (USA)"
-    d["etfs"][0]["n"], d["etfs"][0]["c"] = "ETF " + HOSTILE, "Cat " + HOSTILE
+    d["etfs"][0]["t"], d["etfs"][0]["n"], d["etfs"][0]["c"] = "ET" + HOSTILE, "ETF " + HOSTILE, "Cat " + HOSTILE
+    d["etf_categories"] = sorted({e["c"] for e in d["etfs"]})
     d["universe_note"] = d["mcap_note"] = "note " + HOSTILE
     return d, new, sec_new
 
@@ -538,8 +573,127 @@ def test_hostile_payload_does_not_execute(tmp_path):
         page.wait_for_timeout(250)
         assert sym in page.inner_text("#dtitle")
         assert "src " + HOSTILE in page.inner_text("#status")
+        page.evaluate("closeDrawer()")
+        page.click('nav button[data-tab="etfs"]')
+        page.select_option("#etf-cat", "Cat " + HOSTILE)
+        page.wait_for_timeout(150)
+        assert page.locator("#tb-etf tbody tr").count() == 1
+        assert "ETF " + HOSTILE in page.inner_text("#tb-etf") and "Cat " + HOSTILE in page.inner_text("#tb-etf")
+        page.click("#tb-etf tbody tr")
+        page.wait_for_timeout(250)
+        assert page.inner_text("#dtitle") == "ETF " + HOSTILE + " (ET" + HOSTILE + ")"
+        page.evaluate("closeDrawer()")
         assert page.evaluate("window.__xss") is None
         assert page.locator("img").count() == 0
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()
+
+
+# ---------- Task 15: the ETF tab in a browser ----------
+
+def _expected_category_order(etfs, horizon="6M"):
+    """Hand calculation of the page's default composite (method 'slice', skip the latest week, weights 1)."""
+    order = ["1W", "1M", "3M", "6M", "1Y", "3Y", "5Y"]
+    inc = [q for q in order[: order.index(horizon) + 1] if q != "1W"]
+    prev = {"1M": "1W", "3M": "1M", "6M": "3M", "1Y": "6M", "3Y": "1Y", "5Y": "3Y"}
+    yrs = {"3Y": 3, "5Y": 5}
+
+    def tot(r, q):
+        return (1 + r / 100) ** yrs.get(q, 1)
+
+    def sliced(e, q):          # this period's own slice of time: growth over q divided by growth over the period before
+        a, b = e["r"].get(q), e["r"].get(prev[q])
+        return None if a is None or b is None else (tot(a, q) / tot(b, prev[q]) - 1) * 100
+
+    rank = {}
+    for q in inc:
+        vals = sorted(((sliced(e, q), e["t"]) for e in etfs if sliced(e, q) is not None), key=lambda x: -x[0])
+        for k, (_, t) in enumerate(vals):
+            rank.setdefault(t, {})[q] = k + 1
+    ok = [e["t"] for e in etfs if all(q in rank.get(e["t"], {}) for q in inc)]
+    bad = sorted(e["t"] for e in etfs if e["t"] not in ok)
+    ok.sort(key=lambda t: (sum(rank[t][q] for q in inc), [rank[t][q] for q in inc]))
+    return ok, bad
+
+
+def test_etf_tab_renders_ranks_and_drawer(tmp_path):
+    d = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    by_cat = {}
+    for e in d["etfs"]:
+        by_cat.setdefault(e["c"], []).append(e)
+    big = sorted(c for c, v in by_cat.items() if len(v) >= 4)
+    assert len(big) >= 2, by_cat.keys()
+    short = [e["t"] for e in d["etfs"] if e["r"]["6M"] is None]
+    assert short, "fixture needs an ETF with a short history"
+    out = _render_fixture(tmp_path, d)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        page.evaluate("try{localStorage.clear()}catch(e){}")
+        per_tab = {}
+        for t in TABS:
+            before = len(errors)
+            page.click(f'nav button[data-tab="{t}"]')
+            page.wait_for_timeout(200)
+            per_tab[t] = errors[before:]
+        assert all(v == [] for v in per_tab.values()), per_tab
+        page.click('nav button[data-tab="etfs"]')
+        assert page.input_value("#etf-cat") == "All"
+        opts = page.locator("#etf-cat option").all_inner_texts()
+        assert opts == ["All", "US Sector", "Size", "Bonds", "Commodities"], opts
+        assert page.locator("#tb-etf tbody tr").count() == len(d["etfs"])
+        assert "mixes unlike funds" in page.inner_text("#tb-etf thead")
+        assert "uses the method and weights set on the Momentum Stocks tab" in page.inner_text("#tab-etfs")
+        all_rows = page.locator("#tb-etf tbody tr").evaluate_all("trs => trs.map(t => t.dataset.t)")
+        exp_all, bad_all = _expected_category_order(d["etfs"])
+        assert all_rows == exp_all + bad_all, (all_rows, exp_all, bad_all)
+        seen = set()
+        for cat in big:
+            page.select_option("#etf-cat", cat)
+            page.wait_for_timeout(150)
+            rows = page.locator("#tb-etf tbody tr").evaluate_all(
+                "trs => trs.map(t => [t.dataset.t, t.cells[3].innerText])")
+            exp, bad = _expected_category_order(by_cat[cat])
+            assert [r[0] for r in rows] == exp + bad, (cat, rows, exp, bad)
+            n = len(exp)
+            assert [r[1] for r in rows] == [f"{k + 1}/{n}" for k in range(n)] + ["n/a"] * len(bad), rows
+            seen.add(tuple(r[0] for r in rows))
+        assert len(seen) == len(big)                         # switching category changes the rows
+        cat = next(c for c in big if any(e["t"] in short for e in by_cat[c]))
+        page.select_option("#etf-cat", cat)
+        page.wait_for_timeout(150)
+        last = page.locator("#tb-etf tbody tr").last
+        assert last.get_attribute("data-t") in short and "n/a" in last.inner_text()
+        page.click(f'#tb-etf tr[data-t="{short[0]}"]')       # a drawer for the short-history ETF
+        page.wait_for_timeout(250)
+        assert page.is_visible("#drawer.open")
+        e = next(x for x in d["etfs"] if x["t"] == short[0])
+        assert page.inner_text("#dtitle") == f'{e["n"]} ({e["t"]})'
+        npts = page.evaluate("$('#d-px').data[0].x.length")
+        assert npts == len(e["ser"]) and page.evaluate("$('#d-px').data.length") == 1   # no SMA lines for ETFs
+        assert page.evaluate("$('#d-px').data[0].x.at(-1)") == d["dates"][-1]
+        page.evaluate("closeDrawer()")
+        page.evaluate("""() => { const e = D.etfs[1]; e.ser = Array(D.dates.length + 7).fill(10); openEtf(e.t, true); }""")
+        page.wait_for_timeout(250)                           # a ser longer than the dates axis is cut from the left
+        assert page.evaluate("$('#d-px').data[0].x.length") == len(d["dates"])
+        assert page.evaluate("$('#d-px').data[0].y.length") == len(d["dates"])
+        page.evaluate("closeDrawer()")
+        page.select_option("#etf-cat", "All")
+        page.click("#tb-etf tbody tr >> nth=0")
+        page.wait_for_timeout(250)
+        assert page.is_visible("#drawer.open")
+        page.evaluate("closeDrawer()")
+        page.evaluate("""() => { const e = D.etfs[0]; delete e.ser; renderETFs(); openEtf(e.t, true); }""")   # no ser at all
+        page.wait_for_timeout(250)
+        assert page.is_visible("#drawer.open")
+        page.evaluate("closeDrawer()")
+        page.click('nav button[data-tab="momentum"]')        # a method change re-ranks the ETFs
+        page.select_option("#mm-method", "cum")
+        page.wait_for_timeout(150)
+        page.click('nav button[data-tab="etfs"]')
+        assert "cumulative" in page.inner_text("#etf-note")
         assert errors == [], errors
     finally:
         b.close()
