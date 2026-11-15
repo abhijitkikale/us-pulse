@@ -31,7 +31,7 @@ Published page: `https://<owner>.github.io/<repo>/` (fill in after the first dep
 The workflow "Refresh US Pulse" runs on weekdays after the US close (17:35 New York time; two UTC cron entries cover both
 daylight-saving states, plus a few retry slots because GitHub's scheduler is best-effort). A guard step builds only on a
 trading day once the market has been closed for 20 minutes (16:00, or 13:00 on early-close days). The job runs the tests and
-the repo scanner, builds the page, commits the three small data files, and deploys to Pages. If the build fails, the deploy
+the repo scanner, builds the page, commits the four small data files, and deploys to Pages. If the build fails, the deploy
 is skipped and the previously published page stays up. You can also start it by hand with "Run workflow".
 
 ## Data sources
@@ -60,6 +60,6 @@ This repository is public, so everything committed is visible to everyone.
 - [ ] Settings -> Pages -> Build and deployment -> Source: GitHub Actions (without it the deploy step fails).
 - [ ] The default branch must be `main`. The first publish pushes the local branch as `main`: `git push origin build/initial:main`. Never use `git push --all`: a local branch `wip/task-16` holds parked, unreviewed work.
 - [ ] Settings -> Actions -> General: restrict Actions to selected actions (allow "actions created by GitHub": all five actions used are `actions/*`), and set workflow permissions to read.
-- [ ] Branch protection on `main`: block force-pushes and deletions only. Do NOT require pull requests or status checks on `main`: the nightly job commits three small data files straight to `main`, and a PR-required rule would make that push fail and block publishing.
+- [ ] Branch protection on `main`: block force-pushes and deletions only. Do NOT require pull requests or status checks on `main`: the nightly job commits four small data files straight to `main`, and a PR-required rule would make that push fail and block publishing.
 - [ ] Never commit raw or private data (pickles, caches, `.env`, tokens). Only reviewed CSV outputs belong in `data/`.
 - [ ] Remember: the repo is public, so nothing secret, personal, or account-related may ever be committed.
