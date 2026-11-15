@@ -213,3 +213,17 @@ def test_full_membership_fetch_overwrites_last_good(monkeypatch, tmp_path, tpl):
 def test_bad_statuses_include_partial():
     assert all(s.startswith(run.BAD) for s in ("stale: x", "failed: x", "partial: x"))
     assert not "ok (30 names)".startswith(run.BAD)
+
+
+def test_run_out_option_writes_to_given_path(monkeypatch, tmp_path, tpl):
+    _fake_world(monkeypatch, tmp_path, tpl, n=30)
+    target = tmp_path / "elsewhere" / "page.html"
+    run.main(out=target)
+    assert target.exists()
+    assert not (tmp_path / "dashboard.html").exists()
+    assert len(_embedded(target.read_text(encoding="utf-8"))["stocks"]) == 30
+
+
+def test_cli_out_flag_parsing():
+    assert run._cli_out(["run.py", "--out", "X/y.html"]) == run.Path("X/y.html")
+    assert run._cli_out(["run.py", "--cached"]) is None

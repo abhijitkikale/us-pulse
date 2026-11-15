@@ -137,7 +137,7 @@ def build_payload(uni, etf_uni, close, volume, labels, status, today=None) -> di
     return asm.sanitize(payload)
 
 
-def main(cached: bool = False, fill_sectors: bool = False):
+def main(cached: bool = False, fill_sectors: bool = False, out=None):
     status = {}
     uni, status["membership"] = _membership(cached)
     etf_uni = compute_etf.load_universe()
@@ -167,7 +167,7 @@ def main(cached: bool = False, fill_sectors: bool = False):
         raise SystemExit(f"Refusing to build: {len(stocks)} stocks vs {prev} last run "
                          f"(below {MIN_KEEP:.0%}); previous page kept. Status: {status}")
 
-    out = build.render(payload, OUT, template_path=TEMPLATE, plotly_js=PLOTLY_JS)
+    out = build.render(payload, Path(out) if out else OUT, template_path=TEMPLATE, plotly_js=PLOTLY_JS)
     DATA.mkdir(parents=True, exist_ok=True)
     (DATA / "last_count.txt").write_text(str(len(stocks)), encoding="utf-8")
     print("Built", out, f"({out.stat().st_size / 1e6:.1f} MB, {len(stocks)} stocks, {len(payload['etfs'])} ETFs)")
@@ -180,5 +180,14 @@ def main(cached: bool = False, fill_sectors: bool = False):
     return out
 
 
+def _cli_out(argv):
+    if "--out" in argv:
+        i = argv.index("--out")
+        if i + 1 >= len(argv):
+            raise SystemExit("--out needs a path")
+        return Path(argv[i + 1])
+    return None
+
+
 if __name__ == "__main__":
-    main(cached="--cached" in sys.argv, fill_sectors="--fill-sectors" in sys.argv)
+    main(cached="--cached" in sys.argv, fill_sectors="--fill-sectors" in sys.argv, out=_cli_out(sys.argv))
