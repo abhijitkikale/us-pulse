@@ -1,0 +1,1505 @@
+ticker,sector,industry,mcap,asof
+AAPL,Technology,Consumer Electronics,5177380175872,2026-11-15
+NVDA,Technology,Semiconductors,3932339044352,2026-11-15
+MSFT,Technology,Software - Infrastructure,3890434801664,2026-11-15
+AVGO,Technology,Semiconductors,1656497373184,2026-11-15
+AMD,Technology,Semiconductors,875905024000,2026-11-15
+MU,Technology,Semiconductors,880597991424,2026-11-15
+CSCO,Technology,Communication Equipment,376532795392,2026-11-15
+PLTR,Technology,Software - Infrastructure,404771504128,2026-11-15
+INTC,Technology,Semiconductors,317092888576,2026-11-15
+AMAT,Technology,Semiconductor Equipment & Materials,294027853824,2026-11-15
+LRCX,Technology,Semiconductor Equipment & Materials,282212696064,2026-11-15
+TXN,Technology,Semiconductors,277420670976,2026-11-15
+PANW,Technology,Software - Infrastructure,263840972800,2026-11-15
+ORCL,Technology,Software - Infrastructure,390804701184,2026-11-15
+CRWD,Technology,Software - Infrastructure,232033878016,2026-11-15
+IBM,Technology,Information Technology Services,233567715328,2026-11-15
+ANET,Technology,Computer Hardware,249256640512,2026-11-15
+KLAC,Technology,Semiconductor Equipment & Materials,198467239936,2026-11-15
+ADI,Technology,Semiconductors,192842514432,2026-11-15
+APH,Technology,Electronic Components,193170325504,2026-11-15
+QCOM,Technology,Semiconductors,184542904320,2026-11-15
+CRM,Technology,Software - Application,179282313216,2026-11-15
+ACN,Technology,Information Technology Services,147973832704,2026-11-15
+MRVL,Technology,Semiconductors,141047300096,2026-11-15
+SNDK,Technology,Computer Hardware,125927505920,2026-11-15
+STX,Technology,Computer Hardware,121274826752,2026-11-15
+WDC,Technology,Computer Hardware,110668668928,2026-11-15
+DELL,Technology,Computer Hardware,219056553984,2026-11-15
+NOW,Technology,Software - Application,106127015936,2026-11-15
+ADBE,Technology,Software - Application,94606737408,2026-11-15
+GLW,Technology,Electronic Components,98268635136,2026-11-15
+INTU,Technology,Software - Application,91314544640,2026-11-15
+CDNS,Technology,Software - Application,88627167232,2026-11-15
+SNPS,Technology,Software - Infrastructure,87233003520,2026-11-15
+MSI,Technology,Communication Equipment,87825391616,2026-11-15
+FTNT,Technology,Software - Infrastructure,93469777920,2026-11-15
+MPWR,Technology,Semiconductors,67813855232,2026-11-15
+NXPI,Technology,Semiconductors,66816724992,2026-11-15
+HPE,Technology,Communication Equipment,64103276544,2026-11-15
+TEL,Technology,Electronic Components,62023618560,2026-11-15
+DDOG,Technology,Software - Application,66489597952,2026-11-15
+LITE,Technology,Communication Equipment,54104432640,2026-11-15
+ADSK,Technology,Software - Application,55263780864,2026-11-15
+KEYS,Technology,Scientific & Technical Instruments,50678456320,2026-11-15
+ROP,Technology,Software - Application,47535013888,2026-11-15
+COHR,Technology,Scientific & Technical Instruments,42966532096,2026-11-15
+CIEN,Technology,Communication Equipment,39782965248,2026-11-15
+TER,Technology,Semiconductor Equipment & Materials,38960930816,2026-11-15
+WDAY,Technology,Software - Application,47344447488,2026-11-15
+P,Technology,Computer Hardware,35985211392,2026-11-15
+NTAP,Technology,Software - Infrastructure,35624513536,2026-11-15
+MCHP,Technology,Semiconductors,33567713280,2026-11-15
+TDY,Technology,Scientific & Technical Instruments,29635020800,2026-11-15
+FLEX,Technology,Electronic Components,27702171648,2026-11-15
+ON,Technology,Semiconductors,27662555136,2026-11-15
+CTSH,Technology,Information Technology Services,28167387136,2026-11-15
+JBL,Technology,Electronic Components,26181259264,2026-11-15
+HPQ,Technology,Computer Hardware,26476582912,2026-11-15
+Q,Technology,Semiconductor Equipment & Materials,24742371328,2026-11-15
+VRSN,Technology,Software - Infrastructure,28077893632,2026-11-15
+TWLO,Technology,Software - Infrastructure,32681375744,2026-11-15
+CDW,Technology,Information Technology Services,21423519744,2026-11-15
+PTC,Technology,Software - Application,21292097536,2026-11-15
+SWKS,Technology,Semiconductors,21122826240,2026-11-15
+OKTA,Technology,Software - Infrastructure,31969503232,2026-11-15
+FSLR,Technology,Solar,18421194752,2026-11-15
+FFIV,Technology,Software - Infrastructure,17562554368,2026-11-15
+TYL,Technology,Software - Application,16860423168,2026-11-15
+GEN,Technology,Software - Infrastructure,18035593216,2026-11-15
+FICO,Technology,Software - Application,15398330368,2026-11-15
+SMCI,Technology,Computer Hardware,17710143488,2026-11-15
+ZBRA,Technology,Communication Equipment,15256335360,2026-11-15
+GDDY,Technology,Software - Infrastructure,13839869952,2026-11-15
+TRMB,Technology,Scientific & Technical Instruments,12755081216,2026-11-15
+AKAM,Technology,Software - Infrastructure,12317170688,2026-11-15
+IT,Technology,Information Technology Services,12121081856,2026-11-15
+BRK-B,Financials,Insurance - Diversified,1259712413696,2026-11-15
+JPM,Financials,Banks - Diversified,919345496064,2026-11-15
+V,Financials,Credit Services,794383024128,2026-11-15
+MA,Financials,Credit Services,576012943360,2026-11-15
+BAC,Financials,Banks - Diversified,352048676864,2026-11-15
+GS,Financials,Capital Markets,264367603712,2026-11-15
+WFC,Financials,Banks - Diversified,258309226496,2026-11-15
+MS,Financials,Capital Markets,297994289152,2026-11-15
+C,Financials,Banks - Diversified,205261914112,2026-11-15
+BLK,Financials,Asset Management,188845948928,2026-11-15
+AXP,Financials,Credit Services,214978969600,2026-11-15
+SCHW,Financials,Capital Markets,160484196352,2026-11-15
+SPGI,Financials,Financial Data & Stock Exchanges,137293742080,2026-11-15
+PGR,Financials,Insurance - Property & Casualty,136602009600,2026-11-15
+CB,Financials,Insurance - Property & Casualty,143562440704,2026-11-15
+COF,Financials,Credit Services,117347098624,2026-11-15
+CME,Financials,Financial Data & Stock Exchanges,113812242432,2026-11-15
+BNY,Financials,Banks - Diversified,103229358080,2026-11-15
+ICE,Financials,Financial Data & Stock Exchanges,99761815552,2026-11-15
+MRSH,Financials,Insurance Brokers,98802368512,2026-11-15
+USB,Financials,Banks - Regional,95035154432,2026-11-15
+PNC,Financials,Banks - Regional,92167561216,2026-11-15
+BX,Financials,Asset Management,148359348224,2026-11-15
+TRV,Financials,Insurance - Property & Casualty,82640519168,2026-11-15
+MCO,Financials,Financial Data & Stock Exchanges,87625916416,2026-11-15
+AJG,Financials,Insurance Brokers,72550064128,2026-11-15
+AON,Financials,Insurance Brokers,71774896128,2026-11-15
+ALL,Financials,Insurance - Property & Casualty,66227388416,2026-11-15
+KKR,Financials,Asset Management,90019168256,2026-11-15
+HOOD,Financials,Capital Markets,70112247808,2026-11-15
+TFC,Financials,Banks - Regional,59888467968,2026-11-15
+APO,Financials,Asset Management,72900714496,2026-11-15
+AFL,Financials,Insurance - Life,63116808192,2026-11-15
+MET,Financials,Insurance - Life,64509583360,2026-11-15
+PYPL,Financials,Credit Services,49241423872,2026-11-15
+FITB,Financials,Banks - Regional,49248694272,2026-11-15
+NDAQ,Financials,Financial Data & Stock Exchanges,60196810752,2026-11-15
+STT,Financials,Asset Management,47191937024,2026-11-15
+MSCI,Financials,Financial Data & Stock Exchanges,47059152896,2026-11-15
+AMP,Financials,Asset Management,45093003264,2026-11-15
+XYZ,Technology,Software - Infrastructure,51130470400,2026-11-15
+AIG,Financials,Insurance - Diversified,42957844480,2026-11-15
+PRU,Financials,Insurance - Life,42377650176,2026-11-15
+CBOE,Financials,Financial Data & Stock Exchanges,39167655936,2026-11-15
+ACGL,Financials,Insurance - Diversified,35680833536,2026-11-15
+HIG,Financials,Insurance - Diversified,36763992064,2026-11-15
+IBKR,Financials,Capital Markets,139357175808,2026-11-15
+FISV,,,33934002176,2026-11-15
+NTRS,Financials,Asset Management,32282439680,2026-11-15
+HBAN,Financials,Banks - Regional,31883425792,2026-11-15
+MTB,Financials,Banks - Regional,31716220928,2026-11-15
+WTW,Financials,Insurance Brokers,30923790336,2026-11-15
+CPAY,Technology,Software - Infrastructure,29569058816,2026-11-15
+ARES,Financials,Asset Management,44684627968,2026-11-15
+CINF,Financials,Insurance - Property & Casualty,29113231360,2026-11-15
+COIN,Financials,Financial Data & Stock Exchanges,33795727360,2026-11-15
+RJF,Financials,Asset Management,32439879680,2026-11-15
+CFG,Financials,Banks - Regional,27356669952,2026-11-15
+RF,Financials,Banks - Regional,24497735680,2026-11-15
+SYF,Financials,Credit Services,22499002368,2026-11-15
+TROW,Financials,Asset Management,23237595136,2026-11-15
+PFG,Financials,Asset Management,24115347456,2026-11-15
+BRO,Financials,Insurance Brokers,23858593792,2026-11-15
+GPN,Industrials,Specialty Business Services,24320030720,2026-11-15
+KEY,Financials,Banks - Regional,22661324800,2026-11-15
+L,Financials,Insurance - Property & Casualty,22629003264,2026-11-15
+WRB,Financials,Insurance - Property & Casualty,28770183168,2026-11-15
+AIZ,Financials,Insurance - Property & Casualty,15804922880,2026-11-15
+EG,Financials,Insurance - Reinsurance,15824397312,2026-11-15
+FIS,Technology,Information Technology Services,15226991616,2026-11-15
+JKHY,Technology,Information Technology Services,12369156096,2026-11-15
+IVZ,Financials,Asset Management,12711176192,2026-11-15
+GL,Financials,Insurance - Life,12126183424,2026-11-15
+FDS,Financials,Financial Data & Stock Exchanges,11729205248,2026-11-15
+BEN,Financials,Asset Management,18460250112,2026-11-15
+ERIE,Financials,Insurance Brokers,14365595648,2026-11-15
+LLY,Health Care,Drug Manufacturers - General,1285790498816,2026-11-15
+JNJ,Health Care,Drug Manufacturers - General,687888924672,2026-11-15
+ABBV,Health Care,Drug Manufacturers - General,521499836416,2026-11-15
+UNH,Health Care,Healthcare Plans,365093355520,2026-11-15
+MRK,Health Care,Drug Manufacturers - General,364264685568,2026-11-15
+TMO,Health Care,Diagnostics & Research,259442606080,2026-11-15
+AMGN,Health Care,Drug Manufacturers - General,251886256128,2026-11-15
+GILD,Health Care,Drug Manufacturers - General,208476110848,2026-11-15
+ABT,Health Care,Medical Devices,187950301184,2026-11-15
+PFE,Health Care,Drug Manufacturers - General,164668768256,2026-11-15
+ISRG,Health Care,Medical Instruments & Supplies,153767690240,2026-11-15
+DHR,Health Care,Diagnostics & Research,163936747520,2026-11-15
+VRTX,Health Care,Biotechnology,136555388928,2026-11-15
+BMY,Health Care,Drug Manufacturers - General,129656365056,2026-11-15
+MCK,Health Care,Medical Distribution,127326773248,2026-11-15
+MDT,Health Care,Medical Devices,131572129792,2026-11-15
+CVS,Health Care,Healthcare Plans,114321014784,2026-11-15
+SYK,Health Care,Medical Devices,117877170176,2026-11-15
+REGN,Health Care,Biotechnology,98841321472,2026-11-15
+ELV,Health Care,Healthcare Plans,92837052416,2026-11-15
+MRNA,Health Care,Biotechnology,90380181504,2026-11-15
+CI,Health Care,Healthcare Plans,78260256768,2026-11-15
+HCA,Health Care,Medical Care Facilities,104247795712,2026-11-15
+COR,Health Care,Medical Distribution,68512677888,2026-11-15
+CAH,Health Care,Medical Distribution,64972517376,2026-11-15
+BSX,Health Care,Medical Devices,64269643776,2026-11-15
+EW,Health Care,Medical Devices,61611249664,2026-11-15
+BDX,Health Care,Medical Instruments & Supplies,59388497920,2026-11-15
+IDXX,Health Care,Diagnostics & Research,55483650048,2026-11-15
+HUM,Health Care,Healthcare Plans,54046461952,2026-11-15
+A,Health Care,Diagnostics & Research,49044348928,2026-11-15
+WAT,Health Care,Diagnostics & Research,90454654976,2026-11-15
+VEEV,Health Care,Health Information Services,48820375552,2026-11-15
+IQV,Health Care,Diagnostics & Research,43691773952,2026-11-15
+BIIB,Health Care,Drug Manufacturers - General,37457645568,2026-11-15
+GEHC,Health Care,Medical Devices,37536481280,2026-11-15
+CNC,Health Care,Healthcare Plans,35283492864,2026-11-15
+MTD,Health Care,Diagnostics & Research,34587623424,2026-11-15
+RMD,Health Care,Medical Instruments & Supplies,33691588608,2026-11-15
+ZTS,Health Care,Drug Manufacturers - Specialty & Generic,34057420800,2026-11-15
+ILMN,Health Care,Diagnostics & Research,31299911680,2026-11-15
+DXCM,Health Care,Medical Devices,31078000640,2026-11-15
+LH,Health Care,Diagnostics & Research,30082977792,2026-11-15
+WST,Health Care,Medical Instruments & Supplies,29008250880,2026-11-15
+DGX,Health Care,Diagnostics & Research,28560951296,2026-11-15
+STE,Health Care,Medical Devices,25667330048,2026-11-15
+VTRS,Health Care,Drug Manufacturers - Specialty & Generic,23869188096,2026-11-15
+INCY,Health Care,Biotechnology,24657616896,2026-11-15
+ZBH,Health Care,Medical Devices,19532894208,2026-11-15
+RVTY,Health Care,Diagnostics & Research,17235908608,2026-11-15
+CRL,Health Care,Diagnostics & Research,16194666496,2026-11-15
+BAX,Health Care,Medical Instruments & Supplies,13352756224,2026-11-15
+SOLV,Health Care,Medical Instruments & Supplies,15139760128,2026-11-15
+COO,Health Care,Medical Instruments & Supplies,11913229312,2026-11-15
+TECH,Health Care,Biotechnology,11436205056,2026-11-15
+ALGN,Health Care,Medical Instruments & Supplies,11864381440,2026-11-15
+PODD,Health Care,Medical Devices,10577695744,2026-11-15
+UHS,Health Care,Medical Care Facilities,11188546560,2026-11-15
+HSIC,Health Care,Medical Distribution,9530633216,2026-11-15
+DVA,Health Care,Medical Care Facilities,10979823616,2026-11-15
+XOM,Energy,Oil & Gas Integrated,695874551808,2026-11-15
+CVX,Energy,Oil & Gas Integrated,429061144576,2026-11-15
+COP,Energy,Oil & Gas E&P,168222638080,2026-11-15
+MPC,Energy,Oil & Gas Refining & Marketing,112901840896,2026-11-15
+PSX,Energy,Oil & Gas Refining & Marketing,103330160640,2026-11-15
+VLO,Energy,Oil & Gas Refining & Marketing,105928663040,2026-11-15
+WMB,Energy,Oil & Gas Midstream,86376488960,2026-11-15
+EOG,Energy,Oil & Gas E&P,82086428672,2026-11-15
+SLB,Energy,Oil & Gas Equipment & Services,76266446848,2026-11-15
+TRGP,Energy,Oil & Gas Midstream,63793344512,2026-11-15
+KMI,Energy,Oil & Gas Midstream,71108673536,2026-11-15
+OKE,Energy,Oil & Gas Midstream,56582926336,2026-11-15
+DVN,Energy,Oil & Gas E&P,53087895552,2026-11-15
+BKR,Energy,Oil & Gas Equipment & Services,49097797632,2026-11-15
+OXY,Energy,Oil & Gas E&P,58743816192,2026-11-15
+FANG,Energy,Oil & Gas E&P,51626508288,2026-11-15
+EQT,Energy,Oil & Gas E&P,33035266048,2026-11-15
+HAL,Energy,Oil & Gas Equipment & Services,27940327424,2026-11-15
+EXE,Energy,Oil & Gas E&P,20446652416,2026-11-15
+APA,Energy,Oil & Gas E&P,16264019968,2026-11-15
+TPL,Energy,Oil & Gas E&P,20134400000,2026-11-15
+AMZN,Consumer Discretionary,Internet Retail,2883431432192,2026-11-15
+TSLA,Consumer Discretionary,Auto Manufacturers,1542445203456,2026-11-15
+HD,Consumer Discretionary,Home Improvement Retail,347884388352,2026-11-15
+MCD,Consumer Discretionary,Restaurants,191952289792,2026-11-15
+TJX,Consumer Discretionary,Apparel Retail,148439121920,2026-11-15
+LOW,Consumer Discretionary,Home Improvement Retail,127768829952,2026-11-15
+SBUX,Consumer Discretionary,Restaurants,121352241152,2026-11-15
+BKNG,Consumer Discretionary,Travel Services,118679846912,2026-11-15
+MAR,Consumer Discretionary,Lodging,108965560320,2026-11-15
+HLT,Consumer Discretionary,Lodging,83014148096,2026-11-15
+RCL,Consumer Discretionary,Travel Services,86465323008,2026-11-15
+ROST,Consumer Discretionary,Apparel Retail,74010894336,2026-11-15
+ABNB,Consumer Discretionary,Travel Services,111459508224,2026-11-15
+GM,Consumer Discretionary,Auto Manufacturers,72545255424,2026-11-15
+ORLY,Consumer Discretionary,Auto Parts,73940869120,2026-11-15
+DASH,Consumer Discretionary,Internet Retail,74774298624,2026-11-15
+AZO,Consumer Discretionary,Auto Parts,52462723072,2026-11-15
+CVNA,Consumer Discretionary,Auto & Truck Dealerships,107969396736,2026-11-15
+EBAY,Consumer Discretionary,Internet Retail,53083877376,2026-11-15
+GRMN,Technology,Scientific & Technical Instruments,54538551296,2026-11-15
+F,Consumer Discretionary,Auto Manufacturers,47559221248,2026-11-15
+NKE,Consumer Discretionary,Footwear & Accessories,56426885120,2026-11-15
+CMG,Consumer Discretionary,Restaurants,44628316160,2026-11-15
+YUM,Consumer Discretionary,Restaurants,43278168064,2026-11-15
+CCL,Consumer Discretionary,Travel Services,39302955008,2026-11-15
+DHI,Consumer Discretionary,Residential Construction,39507456000,2026-11-15
+EXPE,Consumer Discretionary,Travel Services,30588612608,2026-11-15
+WSM,Consumer Discretionary,Specialty Retail,29918961664,2026-11-15
+ULTA,Consumer Discretionary,Specialty Retail,28248150016,2026-11-15
+TPR,Consumer Discretionary,Luxury Goods,26020749312,2026-11-15
+DRI,Consumer Discretionary,Restaurants,25880381440,2026-11-15
+PHM,Consumer Discretionary,Residential Construction,23380858880,2026-11-15
+BBY,Consumer Discretionary,Specialty Retail,21826361344,2026-11-15
+TSCO,Consumer Discretionary,Specialty Retail,18902011904,2026-11-15
+HAS,Consumer Discretionary,Leisure,16860435456,2026-11-15
+GPC,Consumer Discretionary,Auto Parts,17004229632,2026-11-15
+LEN,Consumer Discretionary,Residential Construction,19890839552,2026-11-15
+RL,Consumer Discretionary,Apparel Manufacturing,22830989312,2026-11-15
+NVR,Consumer Discretionary,Residential Construction,15488231424,2026-11-15
+DECK,Consumer Discretionary,Footwear & Accessories,11588731904,2026-11-15
+DPZ,Consumer Discretionary,Restaurants,11241240576,2026-11-15
+LULU,Consumer Discretionary,Apparel Retail,12237015040,2026-11-15
+LVS,Consumer Discretionary,Resorts & Casinos,25324132352,2026-11-15
+NCLH,Consumer Discretionary,Travel Services,8248586752,2026-11-15
+APTV,Consumer Discretionary,Auto Parts,7844165632,2026-11-15
+WYNN,Consumer Discretionary,Resorts & Casinos,8723039232,2026-11-15
+MGM,Consumer Discretionary,Resorts & Casinos,8473323520,2026-11-15
+WMT,Consumer Staples,Discount Stores,1016233525248,2026-11-15
+COST,Consumer Staples,Discount Stores,490194108416,2026-11-15
+PG,Consumer Staples,Household & Personal Products,393559572480,2026-11-15
+KO,Consumer Staples,Beverages - Non-Alcoholic,426963795968,2026-11-15
+PM,Consumer Staples,Tobacco,310110126080,2026-11-15
+MO,Consumer Staples,Tobacco,130812682240,2026-11-15
+CL,Consumer Staples,Household & Personal Products,79229722624,2026-11-15
+MDLZ,Consumer Staples,Confectioners,85494718464,2026-11-15
+PEP,Consumer Staples,Beverages - Non-Alcoholic,198197067776,2026-11-15
+TGT,Consumer Staples,Discount Stores,73345351680,2026-11-15
+KMB,Consumer Staples,Household & Personal Products,67154489344,2026-11-15
+MNST,Consumer Staples,Beverages - Non-Alcoholic,90946002944,2026-11-15
+KDP,Consumer Staples,Beverages - Non-Alcoholic,49456865280,2026-11-15
+KR,Consumer Staples,Grocery Stores,41813680128,2026-11-15
+SYY,Consumer Staples,Food Distribution,37954072576,2026-11-15
+ADM,Consumer Staples,Farm Products,34694508544,2026-11-15
+DG,Consumer Staples,Discount Stores,29593534464,2026-11-15
+EL,Consumer Staples,Household & Personal Products,40490430464,2026-11-15
+DLTR,Consumer Staples,Discount Stores,25907992576,2026-11-15
+CHD,Consumer Staples,Household & Personal Products,26671622144,2026-11-15
+CASY,Consumer Discretionary,Specialty Retail,26318596096,2026-11-15
+VYLR,Financials,Shell Companies,48406163456,2026-11-15
+HSY,Consumer Staples,Confectioners,35024850944,2026-11-15
+STZ,Consumer Staples,Beverages - Brewers,24640739328,2026-11-15
+KHC,Consumer Staples,Packaged Foods,29725945856,2026-11-15
+GIS,Consumer Staples,Packaged Foods,18350462976,2026-11-15
+TSN,Consumer Staples,Farm Products,20692965376,2026-11-15
+BG,Consumer Staples,Farm Products,19531415552,2026-11-15
+SJM,Consumer Staples,Packaged Foods,14174368768,2026-11-15
+CLX,Consumer Staples,Household & Personal Products,13260793856,2026-11-15
+MKC,Consumer Staples,Packaged Foods,12635268096,2026-11-15
+HRL,Consumer Staples,Packaged Foods,12157248512,2026-11-15
+BF-B,Consumer Staples,Beverages - Wineries & Distilleries,14064189440,2026-11-15
+GE,Industrials,Aerospace & Defense,342876487680,2026-11-15
+CAT,Industrials,Farm & Heavy Construction Machinery,274648023040,2026-11-15
+RTX,Industrials,Aerospace & Defense,267971903488,2026-11-15
+GEV,Industrials,Specialty Industrial Machinery,212570095616,2026-11-15
+UNP,Industrials,Railroads,179725107200,2026-11-15
+DE,Industrials,Farm & Heavy Construction Machinery,181603483648,2026-11-15
+UBER,Technology,Software - Application,142299889664,2026-11-15
+ETN,Industrials,Specialty Industrial Machinery,137128845312,2026-11-15
+BA,Industrials,Aerospace & Defense,135905165312,2026-11-15
+LMT,Industrials,Aerospace & Defense,137688006656,2026-11-15
+ADP,Technology,Software - Application,122347782144,2026-11-15
+PH,Industrials,Specialty Industrial Machinery,120508178432,2026-11-15
+CSX,Industrials,Railroads,95948881920,2026-11-15
+MMM,Industrials,Conglomerates,94902550528,2026-11-15
+TT,Industrials,Building Products & Equipment,91496062976,2026-11-15
+EMR,Industrials,Specialty Industrial Machinery,91276066816,2026-11-15
+GD,Industrials,Aerospace & Defense,98215510016,2026-11-15
+PWR,Industrials,Engineering & Construction,90709155840,2026-11-15
+WM,Industrials,Waste Management,96955318272,2026-11-15
+HWM,Industrials,Aerospace & Defense,87811391488,2026-11-15
+JCI,Industrials,Building Products & Equipment,83625828352,2026-11-15
+UPS,Industrials,Integrated Freight & Logistics,95705161728,2026-11-15
+VRT,Industrials,Electrical Equipment & Parts,77809164288,2026-11-15
+CTAS,Industrials,Specialty Business Services,89834274816,2026-11-15
+NSC,Industrials,Railroads,73647316992,2026-11-15
+ITW,Industrials,Specialty Industrial Machinery,81713184768,2026-11-15
+NOC,Industrials,Aerospace & Defense,78196555776,2026-11-15
+URI,Industrials,Rental & Leasing Services,69628919808,2026-11-15
+HON,Industrials,Conglomerates,70599581696,2026-11-15
+FDX,Industrials,Integrated Freight & Logistics,75913388032,2026-11-15
+TDG,Industrials,Aerospace & Defense,66451116032,2026-11-15
+GWW,Industrials,Industrial Distribution,69720309760,2026-11-15
+FAST,Industrials,Industrial Distribution,63319568384,2026-11-15
+CMI,Industrials,Specialty Industrial Machinery,61948657664,2026-11-15
+BE,Industrials,Electrical Equipment & Parts,56763133952,2026-11-15
+PCAR,Industrials,Farm & Heavy Construction Machinery,56157061120,2026-11-15
+AME,Industrials,Specialty Industrial Machinery,55520182272,2026-11-15
+HONA,Industrials,Aerospace & Defense,52313423872,2026-11-15
+DAL,Industrials,Airlines,56744943616,2026-11-15
+WAB,Industrials,Railroads,49998397440,2026-11-15
+LHX,Industrials,Aerospace & Defense,50711773184,2026-11-15
+RSG,Industrials,Waste Management,77070786560,2026-11-15
+FERG,Industrials,Industrial Distribution,49665056768,2026-11-15
+ROK,Industrials,Specialty Industrial Machinery,44173475840,2026-11-15
+CARR,Industrials,Building Products & Equipment,44344283136,2026-11-15
+FIX,Industrials,Engineering & Construction,38921818112,2026-11-15
+PAYX,Technology,Software - Application,41179820032,2026-11-15
+UAL,Industrials,Airlines,35514204160,2026-11-15
+ODFL,Industrials,Trucking,35962200064,2026-11-15
+IR,Industrials,Specialty Industrial Machinery,32664721408,2026-11-15
+EME,Industrials,Engineering & Construction,28868102144,2026-11-15
+OTIS,Industrials,Specialty Industrial Machinery,29505064960,2026-11-15
+VLTO,Industrials,Pollution & Treatment Controls,28751519744,2026-11-15
+DOV,Industrials,Specialty Industrial Machinery,27924963328,2026-11-15
+CPRT,Industrials,Specialty Business Services,29486610432,2026-11-15
+VRSK,Industrials,Consulting Services,26660483072,2026-11-15
+EXPD,Industrials,Integrated Freight & Logistics,25150758912,2026-11-15
+AXON,Industrials,Aerospace & Defense,25686319104,2026-11-15
+HUBB,Industrials,Electrical Equipment & Parts,23087855616,2026-11-15
+LUV,Industrials,Airlines,22002728960,2026-11-15
+EFX,Industrials,Consulting Services,22013270016,2026-11-15
+XYL,Industrials,Specialty Industrial Machinery,21598732288,2026-11-15
+BR,Technology,Information Technology Services,21767294976,2026-11-15
+DD,Materials,Specialty Chemicals,20380821504,2026-11-15
+FTV,Technology,Scientific & Technical Instruments,20216010752,2026-11-15
+SNA,Industrials,Tools & Accessories,19013873664,2026-11-15
+J,Industrials,Engineering & Construction,18683936768,2026-11-15
+IEX,Industrials,Specialty Industrial Machinery,17454589952,2026-11-15
+NDSN,Industrials,Specialty Industrial Machinery,18093846528,2026-11-15
+SWK,Industrials,Tools & Accessories,16842820608,2026-11-15
+JBHT,Industrials,Integrated Freight & Logistics,21705979904,2026-11-15
+MAS,Industrials,Building Products & Equipment,16323687424,2026-11-15
+LDOS,Technology,Information Technology Services,15923968000,2026-11-15
+ALLE,Industrials,Security & Protection Services,16188027904,2026-11-15
+CHRW,Industrials,Integrated Freight & Logistics,15589512192,2026-11-15
+FDXF,Industrials,Integrated Freight & Logistics,20025380864,2026-11-15
+TXT,Industrials,Aerospace & Defense,14170308608,2026-11-15
+HII,Industrials,Aerospace & Defense,12067710976,2026-11-15
+GNRC,Industrials,Specialty Industrial Machinery,11253328896,2026-11-15
+ROL,Consumer Discretionary,Personal Services,18586400768,2026-11-15
+LII,Industrials,Building Products & Equipment,12042051584,2026-11-15
+PNR,Industrials,Specialty Industrial Machinery,10904415232,2026-11-15
+AOS,Industrials,Specialty Industrial Machinery,8629292032,2026-11-15
+LIN,Materials,Specialty Chemicals,241505615872,2026-11-15
+NEM,Materials,Gold,117574320128,2026-11-15
+VMC,Materials,Building Materials,35760607232,2026-11-15
+ECL,Materials,Specialty Chemicals,86740262912,2026-11-15
+SHW,Materials,Specialty Chemicals,84529250304,2026-11-15
+APD,Materials,Specialty Chemicals,70486654976,2026-11-15
+CRH,Materials,Building Materials,61972897792,2026-11-15
+FCX,Materials,Copper,85005615104,2026-11-15
+MLM,Materials,Building Materials,36527165440,2026-11-15
+NUE,Materials,Steel,56625197056,2026-11-15
+STLD,Materials,Steel,32628957184,2026-11-15
+PPG,Materials,Specialty Chemicals,27073503232,2026-11-15
+DOW,Materials,Chemicals,23917060096,2026-11-15
+SW,Consumer Discretionary,Packaging & Containers,22213715968,2026-11-15
+PKG,Consumer Discretionary,Packaging & Containers,22364542976,2026-11-15
+IFF,Materials,Specialty Chemicals,20321759232,2026-11-15
+AMCR,Consumer Discretionary,Packaging & Containers,20228841472,2026-11-15
+CF,Materials,Agricultural Inputs,18298779648,2026-11-15
+IP,Consumer Discretionary,Packaging & Containers,18234214400,2026-11-15
+BALL,Consumer Discretionary,Packaging & Containers,17041287168,2026-11-15
+LYB,Materials,Specialty Chemicals,20826513408,2026-11-15
+AVY,Consumer Discretionary,Packaging & Containers,14198416384,2026-11-15
+ALB,Materials,Specialty Chemicals,11037460480,2026-11-15
+MOS,Materials,Agricultural Inputs,6968448000,2026-11-15
+NEE,Utilities,Utilities - Regulated Electric,178522701824,2026-11-15
+SO,Utilities,Utilities - Regulated Electric,108963184640,2026-11-15
+DUK,Utilities,Utilities - Regulated Electric,100707123200,2026-11-15
+CEG,Utilities,Utilities - Independent Power Producers,98520711168,2026-11-15
+AEP,Utilities,Utilities - Regulated Electric,70341910528,2026-11-15
+D,Utilities,Utilities - Regulated Electric,59511443456,2026-11-15
+ETR,Utilities,Utilities - Regulated Electric,53110484992,2026-11-15
+SRE,Utilities,Utilities - Diversified,52028674048,2026-11-15
+XEL,Utilities,Utilities - Regulated Electric,52383371264,2026-11-15
+EXC,Utilities,Utilities - Regulated Electric,47863971840,2026-11-15
+ED,Utilities,Utilities - Regulated Electric,44907184128,2026-11-15
+VST,Utilities,Utilities - Independent Power Producers,45142884352,2026-11-15
+WEC,Utilities,Utilities - Regulated Electric,38689497088,2026-11-15
+PEG,Utilities,Utilities - Regulated Electric,37827350528,2026-11-15
+AEE,Utilities,Utilities - Regulated Electric,31784116224,2026-11-15
+ATO,Utilities,Utilities - Regulated Gas,29792684032,2026-11-15
+AWK,Utilities,Utilities - Regulated Water,29786058752,2026-11-15
+DTE,Utilities,Utilities - Regulated Electric,29084547072,2026-11-15
+PCG,Utilities,Utilities - Regulated Electric,29182193664,2026-11-15
+CNP,Utilities,Utilities - Regulated Electric,27304009728,2026-11-15
+ES,Utilities,Utilities - Regulated Electric,27018881024,2026-11-15
+PPL,Utilities,Utilities - Regulated Electric,26850514944,2026-11-15
+FE,Utilities,Utilities - Regulated Electric,27207985152,2026-11-15
+EIX,Utilities,Utilities - Regulated Electric,23156496384,2026-11-15
+NI,Utilities,Utilities - Regulated Gas,22088740864,2026-11-15
+CMS,Utilities,Utilities - Regulated Electric,22072971264,2026-11-15
+NRG,Utilities,Utilities - Independent Power Producers,20393066496,2026-11-15
+EVRG,Utilities,Utilities - Regulated Electric,20817440768,2026-11-15
+LNT,Utilities,Utilities - Regulated Electric,19044925440,2026-11-15
+PNW,Utilities,Utilities - Regulated Electric,12968528896,2026-11-15
+AES,Utilities,Utilities - Diversified,10639249408,2026-11-15
+WELL,Real Estate,REIT - Healthcare Facilities,179338264576,2026-11-15
+PLD,Real Estate,REIT - Industrial,125102104576,2026-11-15
+EQIX,Real Estate,REIT - Specialty,104312905728,2026-11-15
+AMT,Real Estate,REIT - Specialty,88875646976,2026-11-15
+SPG,Real Estate,REIT - Retail,88187109376,2026-11-15
+PSA,Real Estate,REIT - Industrial,62142263296,2026-11-15
+VTR,Real Estate,REIT - Healthcare Facilities,47022673920,2026-11-15
+O,Real Estate,REIT - Retail,56095387648,2026-11-15
+VMRK,Real Estate,REIT - Residential,49757560832,2026-11-15
+DLR,Real Estate,REIT - Specialty,69294514176,2026-11-15
+CCI,Real Estate,REIT - Specialty,38646456320,2026-11-15
+CBRE,Real Estate,Real Estate Services,38364684288,2026-11-15
+IRM,Real Estate,REIT - Specialty,33878593536,2026-11-15
+EXR,Real Estate,REIT - Industrial,34577219584,2026-11-15
+VICI,Real Estate,REIT - Diversified,27538149376,2026-11-15
+SBAC,Real Estate,REIT - Specialty,19773440000,2026-11-15
+HST,Real Estate,REIT - Hotel & Motel,17711122432,2026-11-15
+ESS,Real Estate,REIT - Residential,18859616256,2026-11-15
+KIM,Real Estate,REIT - Retail,16977684480,2026-11-15
+WY,Real Estate,REIT - Specialty,14990358528,2026-11-15
+INVH,Real Estate,REIT - Residential,15528727552,2026-11-15
+DOC,Real Estate,REIT - Healthcare Facilities,14505853952,2026-11-15
+MAA,Real Estate,REIT - Residential,14019857408,2026-11-15
+REG,Real Estate,REIT - Retail,14229774336,2026-11-15
+CSGP,Real Estate,Real Estate Services,12456364032,2026-11-15
+UDR,Real Estate,REIT - Residential,13227310080,2026-11-15
+BXP,Real Estate,REIT - Office,11521292288,2026-11-15
+CPT,Real Estate,REIT - Residential,9921908736,2026-11-15
+FRT,Real Estate,REIT - Retail,9772996608,2026-11-15
+ARE,Real Estate,REIT - Office,7635202560,2026-11-15
+META,Communication Services,Internet Content & Information,1640314437632,2026-11-15
+GOOGL,Communication Services,Internet Content & Information,3636196016128,2026-11-15
+GOOG,Communication Services,Internet Content & Information,3596240551936,2026-11-15
+APP,Communication Services,Advertising Agencies,135543824384,2026-11-15
+DIS,Communication Services,Entertainment,205423935488,2026-11-15
+TTWO,Communication Services,Electronic Gaming & Multimedia,42650976256,2026-11-15
+CMCSA,Communication Services,Telecom Services,89343311872,2026-11-15
+TMUS,Communication Services,Telecom Services,180023377920,2026-11-15
+VZ,Communication Services,Telecom Services,192143572992,2026-11-15
+T,Communication Services,Telecom Services,149414985728,2026-11-15
+NFLX,Communication Services,Entertainment,255208161280,2026-11-15
+LYV,Communication Services,Entertainment,42060046336,2026-11-15
+OMC,Communication Services,Advertising Agencies,24005120000,2026-11-15
+FOXA,Communication Services,Entertainment,38856114176,2026-11-15
+CHTR,Communication Services,Telecom Services,24778944512,2026-11-15
+RDDT,Communication Services,Internet Content & Information,19010076672,2026-11-15
+ECHO,Communication Services,Telecom Services,29097814016,2026-11-15
+TKO,Communication Services,Entertainment,36855988224,2026-11-15
+NWSA,Communication Services,Entertainment,14473841664,2026-11-15
+FOX,Communication Services,Entertainment,25776283648,2026-11-15
+SKYD,Communication Services,Entertainment,37932552192,2026-11-15
+NWS,Communication Services,Entertainment,16038218752,2026-11-15
+ATI,Industrials,Metal Fabrication,24867778560,2026-11-15
+FTI,Energy,Oil & Gas Equipment & Services,25764098048,2026-11-15
+UTHR,Health Care,Drug Manufacturers - Specialty & Generic,25177178112,2026-11-15
+USFD,Consumer Staples,Food Distribution,23283320832,2026-11-15
+ENTG,Technology,Semiconductor Equipment & Materials,22450542592,2026-11-15
+THC,Health Care,Medical Care Facilities,22764556288,2026-11-15
+RS,Materials,Steel,21769007104,2026-11-15
+XPO,Industrials,Trucking,22464079872,2026-11-15
+ROIV,Health Care,Biotechnology,28641914880,2026-11-15
+RGLD,Materials,Gold,21718614016,2026-11-15
+WWD,Industrials,Aerospace & Defense,19476852736,2026-11-15
+SNX,Technology,Electronics & Computer Distribution,18953541632,2026-11-15
+ITT,Industrials,Specialty Industrial Machinery,18837256192,2026-11-15
+PR,Energy,Oil & Gas E&P,19332630528,2026-11-15
+NVT,Industrials,Electrical Equipment & Parts,18533683200,2026-11-15
+SN,Consumer Discretionary,"Furnishings, Fixtures & Appliances",31900954624,2026-11-15
+EWBC,Financials,Banks - Regional,17980667904,2026-11-15
+OVV,Energy,Oil & Gas E&P,17570820096,2026-11-15
+RGA,Financials,Insurance - Reinsurance,17896581120,2026-11-15
+CW,Industrials,Aerospace & Defense,17122682880,2026-11-15
+RBA,Industrials,Specialty Business Services,17250695168,2026-11-15
+PFGC,Consumer Staples,Food Distribution,17540904960,2026-11-15
+EXEL,Health Care,Biotechnology,16836751360,2026-11-15
+TLN,Utilities,Utilities - Independent Power Producers,16358432768,2026-11-15
+TOST,Technology,Software - Infrastructure,20149080064,2026-11-15
+NBIX,Health Care,Drug Manufacturers - Specialty & Generic,16944000000,2026-11-15
+MTSI,Technology,Semiconductors,17819320320,2026-11-15
+LSCC,Technology,Semiconductors,15979057152,2026-11-15
+JLL,Real Estate,Real Estate Services,16756544512,2026-11-15
+APG,Industrials,Engineering & Construction,18485985280,2026-11-15
+NTNX,Technology,Software - Infrastructure,16467575808,2026-11-15
+JHX,Materials,Building Materials,16169990144,2026-11-15
+WCC,Industrials,Industrial Distribution,15661464576,2026-11-15
+BURL,Consumer Discretionary,Apparel Retail,15255298048,2026-11-15
+DINO,Energy,Oil & Gas Refining & Marketing,17296128000,2026-11-15
+JAZZ,Health Care,Biotechnology,15504865280,2026-11-15
+CSL,Industrials,Building Products & Equipment,15309496320,2026-11-15
+TRU,Financials,Financial Data & Stock Exchanges,15460048896,2026-11-15
+LECO,Industrials,Tools & Accessories,15318839296,2026-11-15
+RBC,Industrials,Tools & Accessories,15373430784,2026-11-15
+DOCU,Technology,Software - Application,15094242304,2026-11-15
+MKSI,Technology,Scientific & Technical Instruments,14582353920,2026-11-15
+MANH,Technology,Software - Application,14930615296,2026-11-15
+PNFP,Financials,Banks - Regional,15270832128,2026-11-15
+MEDP,Health Care,Diagnostics & Research,18291804160,2026-11-15
+CRS,Industrials,Metal Fabrication,14444591104,2026-11-15
+WPC,Real Estate,REIT - Diversified,15111880704,2026-11-15
+RNR,Financials,Insurance - Reinsurance,14289511424,2026-11-15
+CLH,Industrials,Waste Management,15492553728,2026-11-15
+CDE,Materials,Gold,14286210048,2026-11-15
+GKOS,Health Care,Medical Devices,14545855488,2026-11-15
+SUI,Real Estate,REIT - Residential,14708069376,2026-11-15
+OHI,Real Estate,REIT - Healthcare Facilities,14972798976,2026-11-15
+CACI,Technology,Information Technology Services,14264884224,2026-11-15
+ARMK,Industrials,Specialty Business Services,14219934720,2026-11-15
+NXT,Technology,Solar,14490589184,2026-11-15
+BJ,Consumer Staples,Discount Stores,13937562624,2026-11-15
+EQH,Financials,Asset Management,14960596992,2026-11-15
+SGI,Consumer Discretionary,"Furnishings, Fixtures & Appliances",13989985280,2026-11-15
+LAMR,Real Estate,REIT - Specialty,16431635456,2026-11-15
+EHC,Health Care,Medical Care Facilities,13834448896,2026-11-15
+TOL,Consumer Discretionary,Residential Construction,13623934976,2026-11-15
+FIVE,Consumer Discretionary,Specialty Retail,13580729344,2026-11-15
+GWRE,Technology,Software - Application,13073907712,2026-11-15
+NLY,Real Estate,REIT - Mortgage,13905780736,2026-11-15
+ELAN,Health Care,Drug Manufacturers - Specialty & Generic,13385369600,2026-11-15
+RPM,Materials,Specialty Chemicals,13229070336,2026-11-15
+DT,Technology,Software - Application,12855096320,2026-11-15
+CCK,Consumer Discretionary,Packaging & Containers,13135817728,2026-11-15
+AHR,Real Estate,REIT - Healthcare Facilities,13408913408,2026-11-15
+FN,Technology,Electronic Components,11714631680,2026-11-15
+WTRG,Utilities,Utilities - Regulated Water,12952787968,2026-11-15
+PEN,Health Care,Medical Devices,12648470528,2026-11-15
+TXRH,Consumer Discretionary,Restaurants,12205006848,2026-11-15
+DTM,Energy,Oil & Gas Midstream,12214291456,2026-11-15
+BTSG,Health Care,Health Information Services,14169694208,2026-11-15
+MLI,Industrials,Metal Fabrication,11964613632,2026-11-15
+RRC,Energy,Oil & Gas E&P,12112195584,2026-11-15
+RRX,Industrials,Specialty Industrial Machinery,11748416512,2026-11-15
+ELS,Real Estate,REIT - Residential,12500527104,2026-11-15
+AR,Energy,Oil & Gas E&P,11898448896,2026-11-15
+GGG,Industrials,Specialty Industrial Machinery,11614366720,2026-11-15
+COKE,Consumer Staples,Beverages - Non-Alcoholic,14267390976,2026-11-15
+MTZ,Industrials,Engineering & Construction,14678137856,2026-11-15
+HALO,Health Care,Biotechnology,11431782400,2026-11-15
+UNM,Financials,Insurance - Life,12373765120,2026-11-15
+SEIC,Financials,Asset Management,12915404800,2026-11-15
+GLPI,Real Estate,REIT - Specialty,11778254848,2026-11-15
+BWXT,Industrials,Aerospace & Defense,11267150848,2026-11-15
+EVR,Financials,Capital Markets,11255598080,2026-11-15
+SMTC,Technology,Semiconductors,10694182912,2026-11-15
+FHN,Financials,Banks - Regional,11079425024,2026-11-15
+AFG,Financials,Insurance - Property & Casualty,13325627392,2026-11-15
+AIT,Industrials,Industrial Distribution,10866859008,2026-11-15
+FNF,Financials,Insurance - Specialty,11642251264,2026-11-15
+BMRN,Health Care,Biotechnology,11085149184,2026-11-15
+WSO,Industrials,Industrial Distribution,12754847744,2026-11-15
+MOH,Health Care,Healthcare Plans,10935377920,2026-11-15
+SF,Financials,Capital Markets,10856977408,2026-11-15
+SITM,Technology,Semiconductors,13429434368,2026-11-15
+ENSG,Health Care,Medical Care Facilities,10991965184,2026-11-15
+HUBS,Technology,Software - Application,10609721344,2026-11-15
+R,Industrials,Rental & Leasing Services,10777677824,2026-11-15
+AA,Materials,Aluminum,10490163200,2026-11-15
+FLS,Industrials,Specialty Industrial Machinery,10537585664,2026-11-15
+EGP,Real Estate,REIT - Industrial,10626945024,2026-11-15
+OGE,Utilities,Utilities - Regulated Electric,10658791424,2026-11-15
+SOLS,Materials,Specialty Chemicals,10394793984,2026-11-15
+AVTR,Health Care,Medical Instruments & Supplies,10530148352,2026-11-15
+RGEN,Health Care,Medical Instruments & Supplies,10725763072,2026-11-15
+GME,Consumer Discretionary,Specialty Retail,13041350656,2026-11-15
+WTFC,Financials,Banks - Regional,10492463104,2026-11-15
+CR,Industrials,Specialty Industrial Machinery,12129927168,2026-11-15
+ALLY,Financials,Credit Services,11493678080,2026-11-15
+BAH,Industrials,Consulting Services,10225920000,2026-11-15
+BWA,Consumer Discretionary,Auto Parts,10219427840,2026-11-15
+CG,Financials,Asset Management,14075190272,2026-11-15
+ALSN,Consumer Discretionary,Auto Parts,10405549056,2026-11-15
+CNH,Industrials,Farm & Heavy Construction Machinery,19125630976,2026-11-15
+NYT,Communication Services,Publishing,11642707968,2026-11-15
+ONTO,Technology,Semiconductor Equipment & Materials,9994550272,2026-11-15
+SCI,Consumer Discretionary,Personal Services,10190332928,2026-11-15
+AMH,Real Estate,REIT - Residential,13215459328,2026-11-15
+TTC,Industrials,Tools & Accessories,10023905280,2026-11-15
+AMG,Financials,Asset Management,9746923520,2026-11-15
+SSB,Financials,Banks - Regional,10113772544,2026-11-15
+TTEK,Industrials,Engineering & Construction,9835018240,2026-11-15
+ARW,Technology,Electronics & Computer Distribution,9752544256,2026-11-15
+DCI,Industrials,Specialty Industrial Machinery,10041639936,2026-11-15
+LFUS,Technology,Electronic Components,9847432192,2026-11-15
+KNX,Industrials,Trucking,10385171456,2026-11-15
+CFR,Financials,Banks - Regional,9835092992,2026-11-15
+AYI,Industrials,Electrical Equipment & Parts,9815260160,2026-11-15
+WTS,Industrials,Specialty Industrial Machinery,12028143616,2026-11-15
+MOG-A,Industrials,Aerospace & Defense,10752678912,2026-11-15
+AGNC,Real Estate,REIT - Mortgage,10483420160,2026-11-15
+UMBF,Financials,Banks - Regional,10167021568,2026-11-15
+ZION,Financials,Banks - Regional,9615715328,2026-11-15
+DKS,Consumer Discretionary,Specialty Retail,13312306176,2026-11-15
+CUBE,Real Estate,REIT - Industrial,10077215744,2026-11-15
+CRBG,Financials,Asset Management,15938598912,2026-11-15
+CART,Consumer Discretionary,Internet Retail,13930413056,2026-11-15
+OC,Industrials,Building Products & Equipment,8942210048,2026-11-15
+BRX,Real Estate,REIT - Retail,9298231296,2026-11-15
+VOYA,Financials,Financial Conglomerates,9110628352,2026-11-15
+STRL,Industrials,Engineering & Construction,8918636544,2026-11-15
+RMBS,Technology,Semiconductors,8806503424,2026-11-15
+AEIS,Industrials,Electrical Equipment & Parts,8893083648,2026-11-15
+ACM,Industrials,Engineering & Construction,9073097728,2026-11-15
+CTRE,Real Estate,REIT - Healthcare Facilities,9809038336,2026-11-15
+ATR,Health Care,Medical Instruments & Supplies,9070328832,2026-11-15
+PRI,Financials,Insurance - Life,8903393280,2026-11-15
+HL,Materials,Other Precious Metals & Mining,8800283648,2026-11-15
+MUSA,Consumer Discretionary,Specialty Retail,9844179968,2026-11-15
+ORI,Financials,Insurance - Property & Casualty,9515584512,2026-11-15
+SAIA,Industrials,Trucking,9132423168,2026-11-15
+SANM,Technology,Electronic Components,8484997120,2026-11-15
+AAL,Industrials,Airlines,8726684672,2026-11-15
+DOCN,Technology,Software - Infrastructure,10185485312,2026-11-15
+PINS,Communication Services,Internet Content & Information,10982674432,2026-11-15
+DAR,Consumer Staples,Packaged Foods,8674814976,2026-11-15
+PB,Financials,Banks - Regional,8756736000,2026-11-15
+OSK,Industrials,Farm & Heavy Construction Machinery,8644612096,2026-11-15
+WMS,Industrials,Building Products & Equipment,9271521280,2026-11-15
+COLB,Financials,Banks - Regional,8654199808,2026-11-15
+THG,Financials,Insurance - Property & Casualty,8533537280,2026-11-15
+HQY,Health Care,Health Information Services,8557724672,2026-11-15
+ADC,Real Estate,REIT - Retail,9049223168,2026-11-15
+CGNX,Technology,Scientific & Technical Instruments,8420586496,2026-11-15
+EAT,Consumer Discretionary,Restaurants,8239163904,2026-11-15
+IDA,Utilities,Utilities - Regulated Electric,8627001344,2026-11-15
+KNSL,Financials,Insurance - Property & Casualty,8911462400,2026-11-15
+ONB,Financials,Banks - Regional,9475361792,2026-11-15
+REXR,Real Estate,REIT - Industrial,8176932864,2026-11-15
+CNM,Industrials,Industrial Distribution,8299957760,2026-11-15
+VMI,Industrials,Conglomerates,8056375296,2026-11-15
+SSD,Materials,Lumber & Wood Production,8027614208,2026-11-15
+KRYS,Health Care,Biotechnology,9045024768,2026-11-15
+GMED,Health Care,Medical Devices,9556507648,2026-11-15
+CHRD,Energy,Oil & Gas E&P,7973755392,2026-11-15
+UGI,Utilities,Utilities - Regulated Gas,8090749952,2026-11-15
+TTMI,Technology,Electronic Components,7806218752,2026-11-15
+VIAV,Technology,Communication Equipment,7554727424,2026-11-15
+VNOM,Energy,Oil & Gas Midstream,22111983616,2026-11-15
+ALV,Consumer Discretionary,Auto Parts,8671046656,2026-11-15
+NNN,Real Estate,REIT - Retail,7986858496,2026-11-15
+CYTK,Health Care,Biotechnology,7819097088,2026-11-15
+AXTA,Materials,Specialty Chemicals,7825489408,2026-11-15
+H,Consumer Discretionary,Lodging,17529319424,2026-11-15
+HLI,Financials,Capital Markets,9915423744,2026-11-15
+IDCC,Technology,Software - Application,7432900608,2026-11-15
+WAL,Financials,Banks - Regional,8043670528,2026-11-15
+PCTY,Technology,Software - Application,9260901376,2026-11-15
+SPXC,Industrials,Building Products & Equipment,7757295104,2026-11-15
+CROX,Consumer Discretionary,Footwear & Accessories,7486103552,2026-11-15
+CBSH,Financials,Banks - Regional,7890369024,2026-11-15
+CLF,Materials,Steel,7217899520,2026-11-15
+SLAB,Technology,Semiconductors,7392274432,2026-11-15
+FR,Real Estate,REIT - Industrial,7560972800,2026-11-15
+NFG,Energy,Oil & Gas Integrated,7292081152,2026-11-15
+FCFS,Financials,Credit Services,7921352704,2026-11-15
+FORM,Technology,Semiconductor Equipment & Materials,6847939584,2026-11-15
+CHE,Health Care,Medical Care Facilities,7104648192,2026-11-15
+STAG,Real Estate,REIT - Industrial,7274384896,2026-11-15
+JEF,Financials,Capital Markets,10493604864,2026-11-15
+CMC,Industrials,Metal Fabrication,6832926720,2026-11-15
+BSY,Technology,Software - Application,13407086592,2026-11-15
+TKR,Industrials,Tools & Accessories,7475618304,2026-11-15
+AVT,Technology,Electronics & Computer Distribution,6905264128,2026-11-15
+CORT,Health Care,Biotechnology,7982780928,2026-11-15
+PBF,Energy,Oil & Gas Refining & Marketing,8648055808,2026-11-15
+CVLT,Technology,Software - Application,6221578240,2026-11-15
+VLY,Financials,Banks - Regional,7883640832,2026-11-15
+KEX,Industrials,Marine Shipping,6745440256,2026-11-15
+AM,Energy,Oil & Gas Midstream,9664198656,2026-11-15
+DY,Industrials,Engineering & Construction,6681858048,2026-11-15
+BIO,Health Care,Medical Devices,9852498944,2026-11-15
+SWX,Utilities,Utilities - Regulated Gas,6788259840,2026-11-15
+BRKR,Health Care,Medical Devices,9406172160,2026-11-15
+ELF,Consumer Staples,Household & Personal Products,6978238464,2026-11-15
+VFC,Consumer Discretionary,Apparel Manufacturing,8140455936,2026-11-15
+ANF,Consumer Discretionary,Apparel Retail,6317629952,2026-11-15
+GATX,Industrials,Rental & Leasing Services,6680755200,2026-11-15
+BKH,Utilities,Utilities - Regulated Gas,6634699776,2026-11-15
+G,Technology,Information Technology Services,7292769280,2026-11-15
+ARWR,Health Care,Biotechnology,6754563072,2026-11-15
+FLR,Industrials,Engineering & Construction,6278465024,2026-11-15
+LNTH,Health Care,Drug Manufacturers - Specialty & Generic,6644129280,2026-11-15
+TEX,Industrials,Farm & Heavy Construction Machinery,6400055808,2026-11-15
+FAF,Financials,Insurance - Specialty,6623227392,2026-11-15
+HR,Real Estate,REIT - Healthcare Facilities,6705595392,2026-11-15
+EXLS,Technology,Information Technology Services,6521612800,2026-11-15
+LAD,Consumer Discretionary,Auto & Truck Dealerships,6410849792,2026-11-15
+CHDN,Consumer Discretionary,Gambling,6835640832,2026-11-15
+KTOS,Industrials,Aerospace & Defense,6384354304,2026-11-15
+UBSI,Financials,Banks - Regional,6476545536,2026-11-15
+AGCO,Industrials,Farm & Heavy Construction Machinery,7718356480,2026-11-15
+M,Consumer Discretionary,Department Stores,6451063296,2026-11-15
+SAIC,Technology,Information Technology Services,6294701056,2026-11-15
+FNB,Financials,Banks - Regional,6378290688,2026-11-15
+ULS,Industrials,Specialty Business Services,16224920576,2026-11-15
+DUOL,Technology,Software - Application,7799037952,2026-11-15
+NOV,Energy,Oil & Gas Equipment & Services,6449310720,2026-11-15
+RLI,Financials,Insurance - Property & Casualty,6389136384,2026-11-15
+MSA,Industrials,Security & Protection Services,6709302784,2026-11-15
+GBCI,Financials,Banks - Regional,6265049600,2026-11-15
+HRB,Consumer Discretionary,Personal Services,6078870016,2026-11-15
+GXO,Industrials,Integrated Freight & Logistics,6174784000,2026-11-15
+MTDR,Energy,Oil & Gas E&P,6616793600,2026-11-15
+SIGI,Financials,Insurance - Property & Casualty,6057142784,2026-11-15
+CTVA,Materials,Agricultural Inputs,6292856320,2026-11-15
+CRUS,Technology,Semiconductors,5992920064,2026-11-15
+SARO,Industrials,Aerospace & Defense,9101856768,2026-11-15
+HXL,Industrials,Aerospace & Defense,6015274496,2026-11-15
+QLYS,Technology,Software - Infrastructure,6037234688,2026-11-15
+CAVA,Consumer Discretionary,Restaurants,6803794944,2026-11-15
+NXST,Communication Services,Broadcasting,6408924672,2026-11-15
+RYN,Real Estate,REIT - Specialty,6379089920,2026-11-15
+TXNM,Utilities,Utilities - Regulated Electric,6483103232,2026-11-15
+SIRI,Communication Services,Entertainment,10717102080,2026-11-15
+WH,Consumer Discretionary,Lodging,5782491648,2026-11-15
+INGR,Consumer Staples,Packaged Foods,5863748608,2026-11-15
+VNT,Technology,Scientific & Technical Instruments,5795392000,2026-11-15
+ESNT,Financials,Insurance - Specialty,5681231872,2026-11-15
+CELH,Consumer Staples,Beverages - Non-Alcoholic,8123035136,2026-11-15
+WEX,Technology,Software - Infrastructure,5965810688,2026-11-15
+ST,Technology,Scientific & Technical Instruments,5612886528,2026-11-15
+OLLI,Consumer Staples,Discount Stores,5628972032,2026-11-15
+MTG,Financials,Insurance - Specialty,5524821504,2026-11-15
+FBIN,Industrials,Building Products & Equipment,5692754944,2026-11-15
+HOMB,Financials,Banks - Regional,5961019904,2026-11-15
+MP,Materials,Other Industrial Metals & Mining,6909666304,2026-11-15
+EXP,Materials,Building Materials,5495773184,2026-11-15
+HAE,Health Care,Medical Devices,5598382080,2026-11-15
+NJR,Utilities,Utilities - Regulated Gas,5610230272,2026-11-15
+MIDD,Industrials,Specialty Industrial Machinery,5886960640,2026-11-15
+VNO,Real Estate,REIT - Office,7069048320,2026-11-15
+ORA,Utilities,Utilities - Renewable,5562945536,2026-11-15
+AAON,Industrials,Building Products & Equipment,6617618432,2026-11-15
+PATH,Technology,Software - Infrastructure,6915732480,2026-11-15
+MTN,Consumer Discretionary,Resorts & Casinos,5450855424,2026-11-15
+CNX,Energy,Oil & Gas E&P,5223003136,2026-11-15
+TREX,Industrials,Building Products & Equipment,5272670720,2026-11-15
+FCN,Industrials,Consulting Services,5527421952,2026-11-15
+APPF,Technology,Software - Application,7954148864,2026-11-15
+NEU,Materials,Specialty Chemicals,6522356736,2026-11-15
+POR,Utilities,Utilities - Regulated Electric,5467977216,2026-11-15
+LEA,Consumer Discretionary,Auto Parts,5238956544,2026-11-15
+ENS,Industrials,Electrical Equipment & Parts,5088902144,2026-11-15
+VAL,Energy,Oil & Gas Drilling,5842938880,2026-11-15
+CNO,Financials,Insurance - Life,5249847808,2026-11-15
+NWE,Utilities,Utilities - Regulated Electric,5223963648,2026-11-15
+CHWY,Consumer Discretionary,Internet Retail,9051402240,2026-11-15
+SR,Utilities,Utilities - Regulated Gas,5251581440,2026-11-15
+FND,Consumer Discretionary,Home Improvement Retail,4977183232,2026-11-15
+OGS,Utilities,Utilities - Regulated Gas,5271200768,2026-11-15
+SBRA,Real Estate,REIT - Healthcare Facilities,5354492416,2026-11-15
+KRG,Real Estate,REIT - Retail,5193662464,2026-11-15
+HWC,Financials,Banks - Regional,5189987328,2026-11-15
+OZK,Financials,Banks - Regional,5470278144,2026-11-15
+LSTR,Industrials,Integrated Freight & Logistics,5045554688,2026-11-15
+ASB,Financials,Banks - Regional,5745736192,2026-11-15
+LIVN,Health Care,Medical Devices,5030527488,2026-11-15
+RYAN,Financials,Insurance Brokers,11883388928,2026-11-15
+BC,Consumer Discretionary,Recreational Vehicles,4890427904,2026-11-15
+MSM,Industrials,Industrial Distribution,6617527808,2026-11-15
+MUR,Energy,Oil & Gas E&P,5279292928,2026-11-15
+CUZ,Real Estate,REIT - Office,4879503872,2026-11-15
+ESAB,Industrials,Metal Fabrication,5176171008,2026-11-15
+BCO,Industrials,Security & Protection Services,4814313472,2026-11-15
+SON,Consumer Discretionary,Packaging & Containers,4838978560,2026-11-15
+LPX,Industrials,Building Products & Equipment,5303976960,2026-11-15
+SFM,Consumer Staples,Grocery Stores,4802553344,2026-11-15
+TNL,Consumer Discretionary,Travel Services,4739031040,2026-11-15
+DBX,Technology,Software - Infrastructure,7218684416,2026-11-15
+OPCH,Health Care,Medical Care Facilities,4741160960,2026-11-15
+MORN,Financials,Financial Data & Stock Exchanges,9137307648,2026-11-15
+WMG,Communication Services,Entertainment,16896444416,2026-11-15
+GAP,Consumer Discretionary,Apparel Retail,7401262080,2026-11-15
+AN,Consumer Discretionary,Auto & Truck Dealerships,5685076480,2026-11-15
+SHC,Health Care,Diagnostics & Research,4744328704,2026-11-15
+SYNA,Technology,Semiconductors,4693527040,2026-11-15
+AMKR,Technology,Semiconductor Equipment & Materials,8948425728,2026-11-15
+AVAV,Industrials,Aerospace & Defense,5972448768,2026-11-15
+PLNT,Consumer Discretionary,Leisure,4562107904,2026-11-15
+FHI,Financials,Asset Management,4713820160,2026-11-15
+EPR,Real Estate,REIT - Specialty,4610324480,2026-11-15
+KBR,Industrials,Engineering & Construction,4488218624,2026-11-15
+VVV,Consumer Discretionary,Auto & Truck Dealerships,4417511936,2026-11-15
+MAT,Consumer Discretionary,Leisure,4316760064,2026-11-15
+NOVT,Technology,Scientific & Technical Instruments,4496262656,2026-11-15
+UFPI,Materials,Lumber & Wood Production,4339783680,2026-11-15
+BROS,Consumer Discretionary,Restaurants,4952428032,2026-11-15
+ALK,Industrials,Airlines,4339635712,2026-11-15
+BILL,Technology,Software - Application,4678907904,2026-11-15
+ACI,Consumer Staples,Grocery Stores,6153910272,2026-11-15
+TXCP,Financials,Banks - Regional,4345263104,2026-11-15
+WING,Consumer Discretionary,Restaurants,4297660416,2026-11-15
+PVH,Consumer Discretionary,Apparel Manufacturing,4306043904,2026-11-15
+BBWI,Consumer Discretionary,Specialty Retail,4313192960,2026-11-15
+DOCS,Health Care,Health Information Services,5948171264,2026-11-15
+KRC,Real Estate,REIT - Office,4232629760,2026-11-15
+HIMS,Health Care,Drug Manufacturers - Specialty & Generic,4624956928,2026-11-15
+AVNT,Materials,Specialty Chemicals,4097369088,2026-11-15
+EXPO,Industrials,Engineering & Construction,4151804416,2026-11-15
+GNTX,Consumer Discretionary,Auto Parts,3942269184,2026-11-15
+VICR,Technology,Electronic Components,7339934720,2026-11-15
+THO,Consumer Discretionary,Recreational Vehicles,3988992512,2026-11-15
+ALGM,Technology,Semiconductors,5618743296,2026-11-15
+BDC,Technology,Communication Equipment,3983510272,2026-11-15
+STWD,Real Estate,REIT - Mortgage,4236680704,2026-11-15
+GHC,Industrials,Conglomerates,5186178560,2026-11-15
+NVST,Health Care,Medical Instruments & Supplies,3926847744,2026-11-15
+FFIN,Financials,Banks - Regional,4334912000,2026-11-15
+BYD,Consumer Discretionary,Resorts & Casinos,5458273792,2026-11-15
+DLB,Industrials,Specialty Business Services,5958272000,2026-11-15
+OLED,Technology,Electronic Components,4020175872,2026-11-15
+PAG,Consumer Discretionary,Auto & Truck Dealerships,13920286720,2026-11-15
+HLNE,Financials,Asset Management,6335377408,2026-11-15
+CBT,Materials,Specialty Chemicals,3692286464,2026-11-15
+KD,Technology,Information Technology Services,3661691648,2026-11-15
+CDP,Real Estate,REIT - Office,3838202624,2026-11-15
+IBOC,Financials,Banks - Regional,4211173376,2026-11-15
+SLGN,Consumer Discretionary,Packaging & Containers,4322394624,2026-11-15
+PII,Consumer Discretionary,Recreational Vehicles,3667740160,2026-11-15
+IRT,Real Estate,REIT - Residential,3617498112,2026-11-15
+ASH,Materials,Specialty Chemicals,3501818880,2026-11-15
+MMS,Industrials,Specialty Business Services,3388070912,2026-11-15
+HOG,Consumer Discretionary,Recreational Vehicles,3270132480,2026-11-15
+PK,Real Estate,REIT - Hotel & Motel,3267667968,2026-11-15
+IESC,Industrials,Engineering & Construction,7220690432,2026-11-15
+KNF,Materials,Building Materials,3195241984,2026-11-15
+GPK,Consumer Discretionary,Packaging & Containers,3218498816,2026-11-15
+FLG,Financials,Banks - Regional,4173410048,2026-11-15
+SLM,Financials,Credit Services,3233600256,2026-11-15
+LOPE,Consumer Staples,Education & Training Services,3076568064,2026-11-15
+POST,Consumer Staples,Packaged Foods,3568413440,2026-11-15
+KBH,Consumer Discretionary,Residential Construction,2910535168,2026-11-15
+SMG,Materials,Agricultural Inputs,3716782080,2026-11-15
+PSN,Technology,Information Technology Services,5247393280,2026-11-15
+CXT,Industrials,Business Equipment & Supplies,3276762112,2026-11-15
+YETI,Consumer Discretionary,Leisure,2867068160,2026-11-15
+PEGA,Technology,Software - Application,5307609088,2026-11-15
+BHF,Financials,Insurance - Life,2524182528,2026-11-15
+HGV,Consumer Discretionary,Resorts & Casinos,3330134016,2026-11-15
+CHH,Consumer Discretionary,Lodging,5286724608,2026-11-15
+EEFT,Technology,Software - Infrastructure,2612421376,2026-11-15
+FOUR,Technology,Software - Infrastructure,3355989760,2026-11-15
+CAR,Industrials,Rental & Leasing Services,4433129984,2026-11-15
+MZTI,Consumer Staples,Packaged Foods,3023044864,2026-11-15
+VC,Consumer Discretionary,Auto Parts,2032721792,2026-11-15
+WLK,Materials,Specialty Chemicals,8134888448,2026-11-15
+RH,Consumer Discretionary,Specialty Retail,2449761536,2026-11-15
+WHR,Consumer Discretionary,"Furnishings, Fixtures & Appliances",1910308864,2026-11-15
+IPGP,Technology,Semiconductor Equipment & Materials,2881201664,2026-11-15
+XRAY,Health Care,Medical Instruments & Supplies,1826081408,2026-11-15
+GEF,Consumer Discretionary,Packaging & Containers,4029966080,2026-11-15
+COLM,Consumer Discretionary,Apparel Manufacturing,3700572160,2026-11-15
+PPC,Consumer Staples,Packaged Foods,6695710208,2026-11-15
+VSAT,Technology,Communication Equipment,9425918976,2026-11-15
+MTCH,Communication Services,Internet Content & Information,9472052224,2026-11-15
+PAYC,Technology,Software - Application,11207357440,2026-11-15
+RHP,Real Estate,REIT - Hotel & Motel,9322593280,2026-11-15
+TGTX,Health Care,Biotechnology,9750546432,2026-11-15
+PTGX,Health Care,Biotechnology,8547121152,2026-11-15
+LTH,Consumer Discretionary,Leisure,10448555008,2026-11-15
+JXN,Financials,Insurance - Life,9178921984,2026-11-15
+EPAM,Technology,Information Technology Services,8324456960,2026-11-15
+VSXY,Consumer Discretionary,Apparel Retail,8468548096,2026-11-15
+ALKS,Health Care,Drug Manufacturers - Specialty & Generic,7903087104,2026-11-15
+RAL,Technology,Electronic Components,7620801536,2026-11-15
+SM,Energy,Oil & Gas E&P,7692181504,2026-11-15
+POOL,Industrials,Industrial Distribution,7723118080,2026-11-15
+ESI,Materials,Specialty Chemicals,8025307648,2026-11-15
+LW,Consumer Staples,Packaged Foods,7723972096,2026-11-15
+ETSY,Consumer Discretionary,Internet Retail,7672324096,2026-11-15
+EMN,Materials,Specialty Chemicals,7434660352,2026-11-15
+KMX,Consumer Discretionary,Auto & Truck Dealerships,7554195968,2026-11-15
+MHK,Consumer Discretionary,"Furnishings, Fixtures & Appliances",8567710208,2026-11-15
+AWI,Industrials,Building Products & Equipment,7351889920,2026-11-15
+TRNO,Real Estate,REIT - Industrial,7347560448,2026-11-15
+LNC,Financials,Insurance - Life,7990151680,2026-11-15
+MAC,Real Estate,REIT - Retail,7397089280,2026-11-15
+FSS,Industrials,Farm & Heavy Construction Machinery,7038858752,2026-11-15
+CAG,Consumer Staples,Packaged Foods,7032271360,2026-11-15
+MBGL,Technology,Software - Infrastructure,6863896064,2026-11-15
+ZWS,Industrials,Pollution & Treatment Controls,7572814848,2026-11-15
+TTD,Communication Services,Advertising Agencies,7414880768,2026-11-15
+FTDR,Consumer Discretionary,Personal Services,6531751424,2026-11-15
+JBTM,Industrials,Specialty Industrial Machinery,6412317184,2026-11-15
+TFX,Health Care,Medical Instruments & Supplies,6151461888,2026-11-15
+BLDR,Industrials,Building Products & Equipment,6529551360,2026-11-15
+GTES,Industrials,Specialty Industrial Machinery,6378889728,2026-11-15
+MATX,Industrials,Marine Shipping,6183905280,2026-11-15
+TAP,Consumer Staples,Beverages - Brewers,7569841152,2026-11-15
+LGND,Health Care,Biotechnology,6176722432,2026-11-15
+LYFT,Technology,Software - Application,6416678400,2026-11-15
+CWST,Industrials,Waste Management,6376824832,2026-11-15
+SNEX,Financials,Capital Markets,6904102400,2026-11-15
+ACIW,Technology,Software - Infrastructure,6090825728,2026-11-15
+VCTR,Financials,Asset Management,7741560320,2026-11-15
+ESE,Technology,Scientific & Technical Instruments,5997601792,2026-11-15
+SUPN,Health Care,Drug Manufacturers - Specialty & Generic,6173559808,2026-11-15
+BOX,Technology,Software - Infrastructure,5986069504,2026-11-15
+EPRT,Real Estate,REIT - Retail,6135156224,2026-11-15
+CZR,Consumer Discretionary,Resorts & Casinos,5977662464,2026-11-15
+NPO,Industrials,Specialty Industrial Machinery,5793467392,2026-11-15
+OUT,Real Estate,REIT - Specialty,5908650496,2026-11-15
+MKTX,Financials,Capital Markets,5816516608,2026-11-15
+MGY,Energy,Oil & Gas E&P,6670818816,2026-11-15
+PLXS,Technology,Electronic Components,5555896832,2026-11-15
+RNG,Technology,Software - Application,6367465984,2026-11-15
+AUB,Financials,Banks - Regional,5511512064,2026-11-15
+GVA,Industrials,Engineering & Construction,5495104000,2026-11-15
+BCPC,Materials,Specialty Chemicals,5501925888,2026-11-15
+YOU,Technology,Software - Application,8631580672,2026-11-15
+NE,Energy,Oil & Gas Drilling,6967641088,2026-11-15
+MSGK,Communication Services,Entertainment,7584466432,2026-11-15
+RDNT,Health Care,Diagnostics & Research,6019977216,2026-11-15
+PECO,Real Estate,REIT - Retail,5824265728,2026-11-15
+PTCT,Health Care,Biotechnology,5304226816,2026-11-15
+ADT,Industrials,Security & Protection Services,7232258048,2026-11-15
+CE,Materials,Chemicals,5642388992,2026-11-15
+ABCB,Financials,Banks - Regional,5551909888,2026-11-15
+AX,Financials,Banks - Regional,5171254784,2026-11-15
+MMSI,Health Care,Medical Instruments & Supplies,5190439936,2026-11-15
+VSEC,Industrials,Aerospace & Defense,5098319872,2026-11-15
+HRI,Industrials,Rental & Leasing Services,5534511104,2026-11-15
+CON,Health Care,Medical Care Facilities,5349289472,2026-11-15
+PI,Technology,Semiconductors,5201073152,2026-11-15
+IBP,Consumer Discretionary,Residential Construction,6415439872,2026-11-15
+NSIT,Technology,Electronics & Computer Distribution,4862052864,2026-11-15
+KRMN,Industrials,Aerospace & Defense,5388820480,2026-11-15
+RITM,Real Estate,REIT - Mortgage,5008911360,2026-11-15
+SKY,Consumer Discretionary,Residential Construction,4963857920,2026-11-15
+VIRT,Financials,Capital Markets,12859544576,2026-11-15
+LKQ,Consumer Discretionary,Auto Parts,4914190336,2026-11-15
+MXL,Technology,Semiconductors,5075980288,2026-11-15
+HASI,Financials,Asset Management,4964268032,2026-11-15
+CVCO,Consumer Discretionary,Residential Construction,4916044800,2026-11-15
+SXT,Materials,Specialty Chemicals,4966954496,2026-11-15
+VSNT,Communication Services,Entertainment,4912735232,2026-11-15
+IRDM,Communication Services,Telecom Services,4861373440,2026-11-15
+URBN,Consumer Discretionary,Apparel Retail,7395899904,2026-11-15
+RDN,Financials,Insurance - Specialty,4626346496,2026-11-15
+CAKE,Consumer Discretionary,Restaurants,5439724032,2026-11-15
+EBC,Financials,Banks - Regional,5137822208,2026-11-15
+AROC,Energy,Oil & Gas Equipment & Services,4802947072,2026-11-15
+RXO,Industrials,Trucking,4687908864,2026-11-15
+MRCY,Industrials,Aerospace & Defense,4959981056,2026-11-15
+SIG,Consumer Discretionary,Luxury Goods,4367399424,2026-11-15
+CSW,Industrials,Specialty Industrial Machinery,4611328512,2026-11-15
+RELY,Technology,Software - Infrastructure,4825983488,2026-11-15
+ATMU,Consumer Discretionary,Auto Parts,4493858816,2026-11-15
+FULT,Financials,Banks - Regional,4540689920,2026-11-15
+QTWO,Technology,Software - Application,4568744960,2026-11-15
+TPC,Industrials,Engineering & Construction,5193303040,2026-11-15
+SKT,Real Estate,REIT - Retail,4721761792,2026-11-15
+TENB,Technology,Software - Infrastructure,4259730688,2026-11-15
+UCB,Financials,Banks - Regional,4463227904,2026-11-15
+KGS,Energy,Oil & Gas Equipment & Services,4530558976,2026-11-15
+BMI,Technology,Scientific & Technical Instruments,4484845056,2026-11-15
+ECG,Industrials,Engineering & Construction,4353219584,2026-11-15
+PIPR,Financials,Capital Markets,4654909440,2026-11-15
+ICUI,Health Care,Medical Instruments & Supplies,4483560960,2026-11-15
+LAUR,Consumer Staples,Education & Training Services,4755178496,2026-11-15
+LFST,Health Care,Medical Care Facilities,5353085440,2026-11-15
+AGX,Industrials,Engineering & Construction,4299866112,2026-11-15
+HCC,Materials,Coking Coal,4401054208,2026-11-15
+MIR,Industrials,Specialty Industrial Machinery,4457204736,2026-11-15
+CATY,Financials,Banks - Regional,4326352384,2026-11-15
+INSW,Energy,Oil & Gas Midstream,5383077376,2026-11-15
+MTRN,Materials,Other Industrial Metals & Mining,4254084864,2026-11-15
+LQDA,Health Care,Drug Manufacturers - Specialty & Generic,5173010944,2026-11-15
+WHD,Energy,Oil & Gas Equipment & Services,5030094848,2026-11-15
+AIR,Industrials,Aerospace & Defense,4357856256,2026-11-15
+MYRG,Industrials,Engineering & Construction,4252013312,2026-11-15
+ITGR,Health Care,Medical Devices,4307462144,2026-11-15
+CPB,Consumer Staples,Packaged Foods,6805743104,2026-11-15
+APLE,Real Estate,REIT - Hotel & Motel,4594556928,2026-11-15
+SEI,Energy,Oil & Gas Equipment & Services,6372129792,2026-11-15
+CNR,Energy,Thermal Coal,4198112768,2026-11-15
+CNK,Communication Services,Entertainment,4728308736,2026-11-15
+MTH,Consumer Discretionary,Residential Construction,4153365248,2026-11-15
+RHI,Industrials,Staffing & Employment Services,4298713600,2026-11-15
+DIOD,Technology,Semiconductors,4018011136,2026-11-15
+ITRI,Technology,Scientific & Technical Instruments,4213232640,2026-11-15
+PSMT,Consumer Staples,Discount Stores,5096044032,2026-11-15
+DK,Energy,Oil & Gas Refining & Marketing,4152069376,2026-11-15
+ASO,Consumer Discretionary,Specialty Retail,4162117120,2026-11-15
+PLMR,Financials,Insurance - Property & Casualty,4186155520,2026-11-15
+GEO,Industrials,Security & Protection Services,4281584896,2026-11-15
+ENVA,Financials,Credit Services,4154544384,2026-11-15
+MC,Financials,Capital Markets,4135689984,2026-11-15
+SFBS,Financials,Banks - Regional,4465422848,2026-11-15
+MDU,Utilities,Utilities - Regulated Gas,4180659968,2026-11-15
+RUSHA,Consumer Discretionary,Auto & Truck Dealerships,5245582336,2026-11-15
+WSFS,Financials,Banks - Regional,4043649024,2026-11-15
+POWL,Industrials,Electrical Equipment & Parts,5199524864,2026-11-15
+BGC,Financials,Capital Markets,5223368704,2026-11-15
+PTEN,Energy,Oil & Gas Drilling,4162224128,2026-11-15
+CVSA,Consumer Staples,Education & Training Services,3929771776,2026-11-15
+BOOT,Consumer Discretionary,Apparel Retail,4115155712,2026-11-15
+CWEN,Utilities,Utilities - Renewable,4049666816,2026-11-15
+AZZ,Industrials,Specialty Business Services,3997683712,2026-11-15
+GFF,Industrials,Building Products & Equipment,4763192320,2026-11-15
+LAZ,Financials,Capital Markets,4335489536,2026-11-15
+INDB,Financials,Banks - Regional,3914562304,2026-11-15
+FELE,Industrials,Specialty Industrial Machinery,4338421760,2026-11-15
+AMRX,Health Care,Drug Manufacturers - Specialty & Generic,7449063936,2026-11-15
+MRP,Real Estate,REIT - Residential,4295660032,2026-11-15
+FBP,Financials,Banks - Regional,3907591680,2026-11-15
+LUMN,Communication Services,Telecom Services,4216964864,2026-11-15
+KTB,Consumer Discretionary,Apparel Manufacturing,4454153728,2026-11-15
+CHEF,Consumer Staples,Food Distribution,4635752448,2026-11-15
+VSH,Technology,Electronic Components,4083095040,2026-11-15
+CRGY,Energy,Oil & Gas E&P,5883727872,2026-11-15
+CRC,Energy,Oil & Gas E&P,4264603136,2026-11-15
+STEP,Financials,Asset Management,6181368320,2026-11-15
+ROAD,Industrials,Engineering & Construction,4583011328,2026-11-15
+OPLN,Consumer Discretionary,Auto & Truck Dealerships,4264067584,2026-11-15
+PJT,Financials,Capital Markets,5947166720,2026-11-15
+KFY,Industrials,Staffing & Employment Services,4121921536,2026-11-15
+PRIM,Industrials,Engineering & Construction,3640239360,2026-11-15
+KLIC,Technology,Semiconductor Equipment & Materials,3614372096,2026-11-15
+BFH,Financials,Credit Services,3743357952,2026-11-15
+CVBF,Financials,Banks - Regional,3930358784,2026-11-15
+MWA,Industrials,Specialty Industrial Machinery,3763124224,2026-11-15
+HP,Energy,Oil & Gas Drilling,3803676416,2026-11-15
+WSBC,Financials,Banks - Regional,3705025792,2026-11-15
+OGN,Health Care,Drug Manufacturers - General,3650439936,2026-11-15
+RNST,Financials,Banks - Regional,3627510016,2026-11-15
+PARR,Energy,Oil & Gas Refining & Marketing,3660625664,2026-11-15
+TDW,Energy,Oil & Gas Equipment & Services,3942365952,2026-11-15
+WSC,Industrials,Rental & Leasing Services,3571928576,2026-11-15
+ABG,Consumer Discretionary,Auto & Truck Dealerships,3540103424,2026-11-15
+DORM,Consumer Discretionary,Auto Parts,3902355200,2026-11-15
+EXTR,Technology,Communication Equipment,3509356544,2026-11-15
+BRC,Industrials,Security & Protection Services,3879034112,2026-11-15
+NATL,Technology,Software - Application,3566120448,2026-11-15
+ENPH,Technology,Solar,3449433344,2026-11-15
+LIF,Technology,Software - Application,3591511296,2026-11-15
+HAYW,Industrials,Electrical Equipment & Parts,3428017664,2026-11-15
+UNF,Industrials,Specialty Business Services,4257643008,2026-11-15
+AWR,Utilities,Utilities - Regulated Water,3520044544,2026-11-15
+WK,Technology,Software - Application,3714896640,2026-11-15
+ACHC,Health Care,Medical Care Facilities,3512281344,2026-11-15
+OII,Energy,Oil & Gas Equipment & Services,3546241536,2026-11-15
+KAI,Industrials,Specialty Industrial Machinery,3474548480,2026-11-15
+SLG,Real Estate,REIT - Office,3764103680,2026-11-15
+HNI,Consumer Discretionary,"Furnishings, Fixtures & Appliances",3491524096,2026-11-15
+NIC,Financials,Banks - Regional,3618958848,2026-11-15
+KNTK,Energy,Oil & Gas Midstream,9288857600,2026-11-15
+AMTM,Industrials,Engineering & Construction,5366916096,2026-11-15
+HIW,Real Estate,REIT - Office,3490172928,2026-11-15
+WAY,Health Care,Health Information Services,5385042432,2026-11-15
+FFBC,Financials,Banks - Regional,3434295040,2026-11-15
+SFNC,Financials,Banks - Regional,3383197952,2026-11-15
+CPK,Utilities,Utilities - Regulated Gas,3538182400,2026-11-15
+CBU,Financials,Banks - Regional,3391558144,2026-11-15
+BNL,Real Estate,REIT - Diversified,3524930560,2026-11-15
+AVA,Utilities,Utilities - Diversified,3426477824,2026-11-15
+ACLS,Technology,Semiconductor Equipment & Materials,3224877568,2026-11-15
+SPHR,Communication Services,Entertainment,4555756544,2026-11-15
+AEO,Consumer Discretionary,Apparel Retail,3638016768,2026-11-15
+ALRM,Technology,Software - Application,3205851392,2026-11-15
+SBCF,Financials,Banks - Regional,3253375744,2026-11-15
+ABM,Industrials,Specialty Business Services,3202701312,2026-11-15
+SKYW,Industrials,Airlines,3131732224,2026-11-15
+MHO,Consumer Discretionary,Residential Construction,3209933824,2026-11-15
+TMDX,Health Care,Medical Devices,3173982208,2026-11-15
+GNW,Financials,Insurance - Life,3050528256,2026-11-15
+COCO,Consumer Staples,Beverages - Non-Alcoholic,3601870848,2026-11-15
+NHI,Real Estate,REIT - Healthcare Facilities,3091501824,2026-11-15
+CWK,Real Estate,Real Estate Services,3122248192,2026-11-15
+TDC,Technology,Software - Infrastructure,3181634048,2026-11-15
+MGRC,Industrials,Rental & Leasing Services,3135203584,2026-11-15
+VAC,Consumer Discretionary,Resorts & Casinos,4020478720,2026-11-15
+OTTR,Industrials,Conglomerates,3188804608,2026-11-15
+BKU,Financials,Banks - Regional,3074243072,2026-11-15
+ARQT,Health Care,Biotechnology,3573619200,2026-11-15
+AGYS,Technology,Software - Application,3440635136,2026-11-15
+HWKN,Materials,Specialty Chemicals,3091363584,2026-11-15
+OSW,Consumer Discretionary,Leisure,3083231232,2026-11-15
+FIBK,Financials,Banks - Regional,3511598592,2026-11-15
+FRPT,Consumer Staples,Packaged Foods,3263342336,2026-11-15
+CXW,Industrials,Security & Protection Services,2704794880,2026-11-15
+CURB,Real Estate,REIT - Retail,3539515136,2026-11-15
+LRN,Consumer Staples,Education & Training Services,3188143872,2026-11-15
+OSIS,Technology,Electronic Components,3034275840,2026-11-15
+GPI,Consumer Discretionary,Auto & Truck Dealerships,3108808960,2026-11-15
+CWT,Utilities,Utilities - Regulated Water,3114295552,2026-11-15
+PRVA,Health Care,Health Information Services,3136711424,2026-11-15
+VGNT,Consumer Discretionary,Auto Parts,2988935936,2026-11-15
+TDS,Communication Services,Telecom Services,3430104576,2026-11-15
+FHB,Financials,Banks - Regional,3017697536,2026-11-15
+MGEE,Utilities,Utilities - Regulated Electric,2978980096,2026-11-15
+AGO,Financials,Insurance - Specialty,3286634752,2026-11-15
+SHOO,Consumer Discretionary,Footwear & Accessories,3074893312,2026-11-15
+ADMA,Health Care,Biotechnology,3034968064,2026-11-15
+ARCB,Industrials,Trucking,3013108992,2026-11-15
+WDFC,Materials,Specialty Chemicals,2991880704,2026-11-15
+SPSC,Technology,Software - Application,2881347584,2026-11-15
+SHAK,Consumer Discretionary,Restaurants,3212663808,2026-11-15
+PFS,Financials,Banks - Regional,2969645568,2026-11-15
+VCEL,Health Care,Biotechnology,2906655488,2026-11-15
+NMIH,Financials,Insurance - Specialty,2881680384,2026-11-15
+DRH,Real Estate,REIT - Hotel & Motel,2956897536,2026-11-15
+SXI,Industrials,Specialty Industrial Machinery,2914452224,2026-11-15
+ACMR,Technology,Semiconductor Equipment & Materials,3357035264,2026-11-15
+KN,Technology,Electronic Components,2795792640,2026-11-15
+WT,Financials,Asset Management,3265127936,2026-11-15
+UNFI,Consumer Staples,Food Distribution,2924588544,2026-11-15
+REZI,Industrials,Industrial Distribution,3244215808,2026-11-15
+PRK,Financials,Banks - Regional,3189593600,2026-11-15
+CALM,Consumer Staples,Farm Products,3103920128,2026-11-15
+ATRC,Health Care,Medical Instruments & Supplies,2894422528,2026-11-15
+AXTI,Technology,Semiconductor Equipment & Materials,2749823232,2026-11-15
+BANC,Financials,Banks - Regional,2825335296,2026-11-15
+FRSH,Technology,Software - Application,3323694592,2026-11-15
+PGNY,Health Care,Healthcare Plans,2664560640,2026-11-15
+TRMK,Financials,Banks - Regional,2764353792,2026-11-15
+AAMI,Financials,Asset Management,3353058048,2026-11-15
+AKR,Real Estate,REIT - Retail,2962942720,2026-11-15
+MARA,Financials,Capital Markets,2707970560,2026-11-15
+FBK,Financials,Banks - Regional,2678197248,2026-11-15
+AAP,Consumer Discretionary,Auto Parts,2746387968,2026-11-15
+BOH,Financials,Banks - Regional,2723835904,2026-11-15
+WRBY,Health Care,Medical Instruments & Supplies,3411192064,2026-11-15
+SPNT,Financials,Insurance - Reinsurance,3056401920,2026-11-15
+NBTB,Financials,Banks - Regional,2737560064,2026-11-15
+CUBI,Financials,Banks - Regional,2843629056,2026-11-15
+APAM,Financials,Asset Management,2729264128,2026-11-15
+PPLI,Communication Services,Internet Content & Information,3283932672,2026-11-15
+DAVE,Technology,Software - Application,3544191232,2026-11-15
+JOE,Real Estate,Real Estate - Diversified,3977088512,2026-11-15
+KSS,Consumer Discretionary,Department Stores,2721034752,2026-11-15
+UE,Real Estate,REIT - Retail,2872039936,2026-11-15
+FBNC,Financials,Banks - Regional,2670250496,2026-11-15
+LOAR,Industrials,Aerospace & Defense,7005236224,2026-11-15
+NHC,Health Care,Medical Care Facilities,3257078528,2026-11-15
+PHIN,Consumer Discretionary,Auto Parts,2638361856,2026-11-15
+CRVL,Financials,Insurance Brokers,4314115584,2026-11-15
+FUL,Materials,Specialty Chemicals,2653237248,2026-11-15
+SEZL,Financials,Credit Services,5222914048,2026-11-15
+CACC,Financials,Credit Services,5115668992,2026-11-15
+XNCR,Health Care,Biotechnology,2783222016,2026-11-15
+NOG,Energy,Oil & Gas E&P,2659078912,2026-11-15
+BFAM,Consumer Discretionary,Personal Services,2525007104,2026-11-15
+CARG,Communication Services,Internet Content & Information,3111874304,2026-11-15
+POWI,Technology,Semiconductors,2468868608,2026-11-15
+CALY,Consumer Discretionary,Leisure,3073854464,2026-11-15
+HHH,Real Estate,Real Estate - Development,4957622784,2026-11-15
+BBT,Financials,Banks - Regional,2562411264,2026-11-15
+PENG,Technology,Information Technology Services,2870804224,2026-11-15
+FCPT,Real Estate,REIT - Retail,2562190848,2026-11-15
+VVX,Industrials,Aerospace & Defense,2516910336,2026-11-15
+PATK,Consumer Discretionary,Recreational Vehicles,2591622912,2026-11-15
+AVPT,Technology,Software - Infrastructure,3476769024,2026-11-15
+BANF,Financials,Banks - Regional,3992935936,2026-11-15
+DNOW,Industrials,Industrial Distribution,2505799168,2026-11-15
+PLUS,Technology,Software - Application,2507440128,2026-11-15
+DAN,Consumer Discretionary,Auto Parts,2386118144,2026-11-15
+MD,Health Care,Medical Care Facilities,2445303552,2026-11-15
+HURN,Industrials,Consulting Services,2677046528,2026-11-15
+VECO,Technology,Semiconductor Equipment & Materials,2388134656,2026-11-15
+IVT,Real Estate,REIT - Retail,2459439872,2026-11-15
+NWL,Consumer Staples,Household & Personal Products,2462280192,2026-11-15
+PEB,Real Estate,REIT - Hotel & Motel,2414825984,2026-11-15
+NEOG,Health Care,Medical Devices,2451576576,2026-11-15
+CENX,Materials,Aluminum,3368741632,2026-11-15
+GPOR,Energy,Oil & Gas E&P,2866368512,2026-11-15
+RRR,Consumer Discretionary,Resorts & Casinos,5007848448,2026-11-15
+TRN,Industrials,Railroads,2387802880,2026-11-15
+DXC,Technology,Information Technology Services,2290082816,2026-11-15
+IPAR,Consumer Staples,Household & Personal Products,4271518208,2026-11-15
+BCC,Materials,Lumber & Wood Production,2345359360,2026-11-15
+PTON,Consumer Discretionary,Leisure,2541347328,2026-11-15
+ACAD,Health Care,Biotechnology,3240543232,2026-11-15
+LTC,Real Estate,REIT - Healthcare Facilities,2431975424,2026-11-15
+UFPT,Health Care,Medical Devices,2363295488,2026-11-15
+FA,Industrials,Specialty Business Services,3693921280,2026-11-15
+LCII,Consumer Discretionary,Recreational Vehicles,2385987072,2026-11-15
+BHE,Technology,Electronic Components,2254289408,2026-11-15
+SHO,Real Estate,REIT - Hotel & Motel,2258394880,2026-11-15
+CPRI,Consumer Discretionary,Luxury Goods,2217884672,2026-11-15
+BANR,Financials,Banks - Regional,2525070592,2026-11-15
+ECPG,Financials,Credit Services,2284655872,2026-11-15
+MCY,Financials,Insurance - Property & Casualty,4788346880,2026-11-15
+ADUS,Health Care,Medical Care Facilities,2291897856,2026-11-15
+ALGT,Industrials,Airlines,2516382208,2026-11-15
+PRGO,Health Care,Drug Manufacturers - Specialty & Generic,2254142464,2026-11-15
+NTCT,Technology,Software - Infrastructure,2336086016,2026-11-15
+HTO,Utilities,Utilities - Regulated Water,2926198272,2026-11-15
+GOLF,Consumer Discretionary,Leisure,4744563712,2026-11-15
+PENN,Consumer Discretionary,Resorts & Casinos,2349441280,2026-11-15
+DGII,Technology,Communication Equipment,2103464576,2026-11-15
+NWBI,Financials,Banks - Regional,2215978496,2026-11-15
+WAFD,Financials,Banks - Regional,2177693696,2026-11-15
+ROG,Technology,Electronic Components,2235641088,2026-11-15
+UCTT,Technology,Semiconductor Equipment & Materials,2222953216,2026-11-15
+NWN,Utilities,Utilities - Regulated Gas,2198345728,2026-11-15
+PBH,Health Care,Drug Manufacturers - Specialty & Generic,2189272064,2026-11-15
+OFG,Financials,Banks - Regional,2163753984,2026-11-15
+PBI,Industrials,Integrated Freight & Logistics,2113295360,2026-11-15
+MAN,Industrials,Staffing & Employment Services,2166694400,2026-11-15
+NGVT,Materials,Specialty Chemicals,2084946304,2026-11-15
+NEO,Health Care,Diagnostics & Research,2072819328,2026-11-15
+HMN,Financials,Insurance - Property & Casualty,2147898624,2026-11-15
+COHU,Technology,Semiconductor Equipment & Materials,2063919872,2026-11-15
+ATEN,Technology,Software - Infrastructure,2064996992,2026-11-15
+BTU,Energy,Thermal Coal,2122279040,2026-11-15
+FCF,Financials,Banks - Regional,2028697088,2026-11-15
+FIVN,Technology,Software - Infrastructure,2041446784,2026-11-15
+LBRT,Energy,Oil & Gas Equipment & Services,2131280128,2026-11-15
+KWR,Materials,Specialty Chemicals,2672146176,2026-11-15
+WU,Financials,Credit Services,2103255424,2026-11-15
+CENTA,Consumer Staples,Packaged Foods,2529367040,2026-11-15
+RUN,Technology,Solar,2088120448,2026-11-15
+KMPR,Financials,Insurance - Property & Casualty,2012254464,2026-11-15
+OLN,Materials,Chemicals,1990539904,2026-11-15
+XHR,Real Estate,REIT - Hotel & Motel,2160536320,2026-11-15
+CNS,Financials,Asset Management,3669738752,2026-11-15
+CHCO,Financials,Banks - Regional,2005140352,2026-11-15
+CC,Materials,Specialty Chemicals,2000408192,2026-11-15
+TALO,Energy,Oil & Gas E&P,2695773696,2026-11-15
+EPAC,Industrials,Specialty Industrial Machinery,2019904768,2026-11-15
+HCI,Financials,Insurance - Property & Casualty,2378859520,2026-11-15
+VCYT,Health Care,Diagnostics & Research,1963320960,2026-11-15
+MSGR,Communication Services,Entertainment,2349957632,2026-11-15
+LEU,Energy,Uranium,2139782656,2026-11-15
+IOSP,Materials,Specialty Chemicals,1980134016,2026-11-15
+DXPE,Industrials,Industrial Distribution,2382788352,2026-11-15
+WLY,Communication Services,Publishing,2538757888,2026-11-15
+PAYO,Technology,Software - Infrastructure,2454616576,2026-11-15
+AIN,Consumer Discretionary,Textile Manufacturing,1939016576,2026-11-15
+MTX,Materials,Specialty Chemicals,1905415680,2026-11-15
+EVTC,Technology,Software - Infrastructure,1928064768,2026-11-15
+FTRE,Health Care,Biotechnology,1949300096,2026-11-15
+CALX,Technology,Software - Infrastructure,1988178048,2026-11-15
+WWW,Consumer Discretionary,Footwear & Accessories,2043141248,2026-11-15
+MFP,Industrials,Specialty Industrial Machinery,2003935360,2026-11-15
+DBD,Technology,Software - Application,1848924416,2026-11-15
+NTST,Real Estate,REIT - Retail,2332919552,2026-11-15
+KMT,Industrials,Tools & Accessories,1848107392,2026-11-15
+RCUS,Health Care,Biotechnology,2509756416,2026-11-15
+ANDE,Consumer Staples,Food Distribution,1864904576,2026-11-15
+DV,Communication Services,Advertising Agencies,2118223104,2026-11-15
+TBBK,Financials,Banks - Regional,1941416064,2026-11-15
+ADEA,Technology,Software - Application,1790161792,2026-11-15
+BLKB,Technology,Software - Application,2435606272,2026-11-15
+GRBK,Consumer Discretionary,Residential Construction,2591372544,2026-11-15
+KALU,Materials,Aluminum,1773876480,2026-11-15
+WOR,Industrials,Metal Fabrication,2929475072,2026-11-15
+TILE,Consumer Discretionary,"Furnishings, Fixtures & Appliances",1791814272,2026-11-15
+PRDO,Consumer Staples,Education & Training Services,1796812416,2026-11-15
+STBA,Financials,Banks - Regional,1804237440,2026-11-15
+NSP,Industrials,Staffing & Employment Services,1923091328,2026-11-15
+WKC,Energy,Oil & Gas Refining & Marketing,1823555328,2026-11-15
+PRGS,Technology,Software - Infrastructure,1789472128,2026-11-15
+SONO,Technology,Consumer Electronics,2125742720,2026-11-15
+CTS,Technology,Electronic Components,1715841152,2026-11-15
+SDGR,Health Care,Health Information Services,2217047296,2026-11-15
+INSP,Health Care,Medical Devices,1769829888,2026-11-15
+LPG,Energy,Oil & Gas Midstream,2069540864,2026-11-15
+CLSK,Financials,Capital Markets,1707833600,2026-11-15
+AZTA,Health Care,Medical Instruments & Supplies,1906208000,2026-11-15
+HCSG,Health Care,Medical Care Facilities,1679057024,2026-11-15
+SBH,Consumer Discretionary,Specialty Retail,1720239488,2026-11-15
+DCOM,Financials,Banks - Regional,1846261632,2026-11-15
+HRMY,Health Care,Biotechnology,1982495104,2026-11-15
+BXMT,Real Estate,REIT - Mortgage,1774410752,2026-11-15
+SRPT,Health Care,Biotechnology,1723280000,2026-11-15
+DFIN,Technology,Software - Application,1659184512,2026-11-15
+ARR,Real Estate,REIT - Mortgage,1688727808,2026-11-15
+WERN,Industrials,Trucking,1681001344,2026-11-15
+HOPE,Financials,Banks - Regional,1663414784,2026-11-15
+NBHC,Financials,Banks - Regional,1648286464,2026-11-15
+CVI,Energy,Oil & Gas Refining & Marketing,4545106432,2026-11-15
+LMAT,Health Care,Medical Instruments & Supplies,1791343488,2026-11-15
+DEI,Real Estate,REIT - Office,1990996096,2026-11-15
+PLAB,Technology,Semiconductor Equipment & Materials,1625371904,2026-11-15
+GTY,Real Estate,REIT - Retail,1923765632,2026-11-15
+SAM,Consumer Staples,Beverages - Brewers,2251485952,2026-11-15
+PRLB,Industrials,Metal Fabrication,1612545280,2026-11-15
+CNXC,Technology,Information Technology Services,1999370112,2026-11-15
+OMCL,Health Care,Health Information Services,1611205888,2026-11-15
+ENOV,Health Care,Medical Devices,1596992256,2026-11-15
+AMR,Materials,Coking Coal,1948182400,2026-11-15
+ZD,Communication Services,Advertising Agencies,1704436480,2026-11-15
+EZPW,Financials,Credit Services,1690146432,2026-11-15
+VSTS,Industrials,Rental & Leasing Services,1862135936,2026-11-15
+THRM,Consumer Discretionary,Auto Parts,1584132352,2026-11-15
+COTY,Consumer Staples,Household & Personal Products,3560626176,2026-11-15
+VIR,Health Care,Biotechnology,1705856896,2026-11-15
+LKFN,Financials,Banks - Regional,1539128704,2026-11-15
+ALG,Industrials,Farm & Heavy Construction Machinery,1689952896,2026-11-15
+SAFT,Financials,Insurance - Property & Casualty,1533670016,2026-11-15
+PDFS,Technology,Software - Application,1562457728,2026-11-15
+PRG,Industrials,Rental & Leasing Services,1496692480,2026-11-15
+CNMD,Health Care,Medical Devices,1507750144,2026-11-15
+HUBG,Industrials,Integrated Freight & Logistics,1504376448,2026-11-15
+SEDG,Technology,Solar,1476658432,2026-11-15
+HE,Utilities,Utilities - Regulated Electric,1487187968,2026-11-15
+EYE,Consumer Discretionary,Specialty Retail,1428237952,2026-11-15
+EFOR,Technology,Information Technology Services,1461105024,2026-11-15
+USPH,Health Care,Medical Care Facilities,1486874752,2026-11-15
+PCRX,Health Care,Drug Manufacturers - Specialty & Generic,1455199616,2026-11-15
+CBRL,Consumer Discretionary,Restaurants,1496495104,2026-11-15
+MLKN,Consumer Discretionary,"Furnishings, Fixtures & Appliances",1453739520,2026-11-15
+AMN,Health Care,Medical Care Facilities,1466161664,2026-11-15
+ENR,Industrials,Electrical Equipment & Parts,1652265216,2026-11-15
+IIPR,Real Estate,REIT - Industrial,1461806976,2026-11-15
+SNDR,Industrials,Trucking,5145469952,2026-11-15
+ANIP,Health Care,Drug Manufacturers - Specialty & Generic,1623816704,2026-11-15
+ALHC,Health Care,Healthcare Plans,1540215424,2026-11-15
+EFC,Real Estate,REIT - Mortgage,1486586496,2026-11-15
+SCL,Materials,Specialty Chemicals,1509126656,2026-11-15
+ICHR,Technology,Semiconductor Equipment & Materials,1342225664,2026-11-15
+VYX,Technology,Information Technology Services,1423815936,2026-11-15
+HTH,Financials,Financial Conglomerates,2048947840,2026-11-15
+RSI,Consumer Discretionary,Gambling,2888532992,2026-11-15
+GNL,Real Estate,REIT - Diversified,1466286720,2026-11-15
+INVA,Health Care,Biotechnology,1352680576,2026-11-15
+BKE,Consumer Discretionary,Apparel Retail,2245942016,2026-11-15
+BL,Technology,Software - Application,1686425728,2026-11-15
+REYN,Consumer Discretionary,Packaging & Containers,5229799424,2026-11-15
+MBIN,Financials,Banks - Regional,2431164416,2026-11-15
+TFIN,Financials,Banks - Regional,1431941632,2026-11-15
+CERT,Health Care,Health Information Services,1764927232,2026-11-15
+ASTH,Health Care,Medical Care Facilities,1579418880,2026-11-15
+WD,Financials,Mortgage Finance,1322652544,2026-11-15
+EPC,Consumer Staples,Household & Personal Products,1257305600,2026-11-15
+WEN,Consumer Discretionary,Restaurants,1583491072,2026-11-15
+MCRI,Consumer Discretionary,Resorts & Casinos,1951068800,2026-11-15
+WABC,Financials,Banks - Regional,1373598592,2026-11-15
+UPBD,Technology,Software - Application,1462806784,2026-11-15
+TNC,Industrials,Specialty Industrial Machinery,1269614208,2026-11-15
+GBX,Industrials,Railroads,1283342080,2026-11-15
+STC,Financials,Insurance - Property & Casualty,1307152640,2026-11-15
+LZB,Consumer Discretionary,"Furnishings, Fixtures & Appliances",1306120960,2026-11-15
+JJSF,Consumer Staples,Packaged Foods,1651267328,2026-11-15
+SLVM,Materials,Paper & Paper Products,1532328704,2026-11-15
+FLO,Consumer Staples,Packaged Foods,1172810368,2026-11-15
+TMP,Financials,Banks - Regional,1440641536,2026-11-15
+TRUP,Financials,Insurance - Property & Casualty,1491758848,2026-11-15
+INVX,Energy,Oil & Gas Equipment & Services,1773729920,2026-11-15
+GO,Consumer Staples,Grocery Stores,1254437760,2026-11-15
+ARLO,Industrials,Building Products & Equipment,1275319936,2026-11-15
+CRI,Consumer Discretionary,Apparel Retail,1258185856,2026-11-15
+CCS,Real Estate,Real Estate - Development,1451705856,2026-11-15
+MBC,Consumer Discretionary,"Furnishings, Fixtures & Appliances",1296594048,2026-11-15
+WS,Materials,Steel,1948815616,2026-11-15
+ACT,Financials,Insurance - Specialty,6102312960,2026-11-15
+USLM,Materials,Building Materials,3189568256,2026-11-15
+TNDM,Health Care,Medical Devices,1400762496,2026-11-15
+UPWK,Communication Services,Internet Content & Information,1248338048,2026-11-15
+DLX,Industrials,Conglomerates,1229280000,2026-11-15
+UTI,Consumer Staples,Education & Training Services,1211544192,2026-11-15
+ADNT,Consumer Discretionary,Auto Parts,1196800000,2026-11-15
+STRA,Consumer Staples,Education & Training Services,1197390080,2026-11-15
+JBLU,Industrials,Airlines,1418842880,2026-11-15
+CRK,Energy,Oil & Gas E&P,4457055744,2026-11-15
+GT,Consumer Discretionary,Auto Parts,1186364160,2026-11-15
+BJRI,Consumer Discretionary,Restaurants,1221355264,2026-11-15
+GIII,Consumer Discretionary,Apparel Manufacturing,1363472896,2026-11-15
+HFWA,Financials,Banks - Regional,1146296704,2026-11-15
+FUN,Consumer Discretionary,Leisure,1181678464,2026-11-15
+HLIT,Technology,Communication Equipment,1111036032,2026-11-15
+REX,Materials,Chemicals,1269299968,2026-11-15
+PFBC,Financials,Banks - Regional,1230163584,2026-11-15
+DCH,Consumer Discretionary,Auto Parts,1114497664,2026-11-15
+UFCS,Financials,Insurance - Property & Casualty,1309356672,2026-11-15
+LNN,Industrials,Farm & Heavy Construction Machinery,1090612864,2026-11-15
+NSSC,Industrials,Security & Protection Services,1080922112,2026-11-15
+GSHD,Financials,Insurance Brokers,1644314112,2026-11-15
+LQDT,Consumer Discretionary,Internet Retail,1415249152,2026-11-15
+MSEX,Utilities,Utilities - Regulated Water,1098043648,2026-11-15
+PRSU,Consumer Discretionary,Travel Services,1477678208,2026-11-15
+VTOL,Energy,Oil & Gas Equipment & Services,1172609024,2026-11-15
+AAT,Real Estate,REIT - Diversified,1683573888,2026-11-15
+HZO,Consumer Discretionary,Specialty Retail,1166179584,2026-11-15
+YELP,Communication Services,Internet Content & Information,1108385536,2026-11-15
+QNST,Communication Services,Advertising Agencies,1087419776,2026-11-15
+SMPL,Consumer Staples,Packaged Foods,1091854848,2026-11-15
+CPF,Financials,Banks - Regional,987723904,2026-11-15
+UTL,Utilities,Utilities - Diversified,1034899520,2026-11-15
+SBSI,Financials,Banks - Regional,1034603584,2026-11-15
+APOG,Industrials,Building Products & Equipment,985645440,2026-11-15
+DEA,Real Estate,REIT - Office,1081068160,2026-11-15
+TRST,Financials,Banks - Regional,947370048,2026-11-15
+HAFC,Financials,Banks - Regional,962728896,2026-11-15
+CFFN,Financials,Banks - Regional,1037903872,2026-11-15
+XPEL,Consumer Discretionary,Auto Parts,1041514560,2026-11-15
+EGBN,Financials,Banks - Regional,1050169792,2026-11-15
+UVV,Consumer Staples,Tobacco,941493120,2026-11-15
+IART,Health Care,Medical Devices,1119923968,2026-11-15
+CSR,Real Estate,REIT - Residential,1964488320,2026-11-15
+AORT,Health Care,Medical Devices,931884672,2026-11-15
+UAA,Consumer Discretionary,Apparel Manufacturing,2109068544,2026-11-15
+SMP,Consumer Discretionary,Auto Parts,983709952,2026-11-15
+ROCK,Industrials,Building Products & Equipment,901589696,2026-11-15
+CNXN,Technology,Electronics & Computer Distribution,2093304320,2026-11-15
+AMPH,Health Care,Drug Manufacturers - Specialty & Generic,1252581248,2026-11-15
+SCSC,Technology,Electronics & Computer Distribution,909647616,2026-11-15
+ASTE,Industrials,Farm & Heavy Construction Machinery,890163456,2026-11-15
+DMC,Consumer Staples,Farm Products,1283359360,2026-11-15
+NX,Industrials,Building Products & Equipment,879404928,2026-11-15
+WGO,Consumer Discretionary,Recreational Vehicles,881625024,2026-11-15
+FIZZ,Consumer Staples,Beverages - Non-Alcoholic,3485178624,2026-11-15
+EIG,Financials,Insurance - Specialty,834783040,2026-11-15
+AHCO,Health Care,Medical Devices,1045784128,2026-11-15
+MPT,Real Estate,REIT - Healthcare Facilities,983462912,2026-11-15
+TRIP,Consumer Discretionary,Travel Services,853063488,2026-11-15
+LGIH,Consumer Discretionary,Residential Construction,960833088,2026-11-15
+FG,Financials,Insurance - Life,3048381696,2026-11-15
+COLL,Health Care,Drug Manufacturers - Specialty & Generic,786829696,2026-11-15
+WINA,Consumer Discretionary,Specialty Retail,966926528,2026-11-15
+HOS,Industrials,Marine Shipping,1316288256,2026-11-15
+STAA,Health Care,Medical Instruments & Supplies,1324825984,2026-11-15
+CXM,Technology,Software - Application,1578765184,2026-11-15
+TR,Consumer Staples,Confectioners,2860594432,2026-11-15
+UNIT,Real Estate,REIT - Specialty,1184994944,2026-11-15
+VRTS,Financials,Asset Management,803267712,2026-11-15
+GTM,Technology,Software - Application,968358976,2026-11-15
+AOSL,Technology,Semiconductors,824551680,2026-11-15
+OI,Consumer Discretionary,Packaging & Containers,763556480,2026-11-15
+PAHC,Health Care,Drug Manufacturers - Specialty & Generic,1460439808,2026-11-15
+RUSHB,Consumer Discretionary,Auto & Truck Dealerships,7021992960,2026-11-15
+QDEL,Health Care,Medical Devices,736899200,2026-11-15
+FOXF,Consumer Discretionary,Auto Parts,733456640,2026-11-15
+NPK,Industrials,Aerospace & Defense,992698304,2026-11-15
+SAH,Consumer Discretionary,Auto & Truck Dealerships,1880525696,2026-11-15
+PRKS,Consumer Discretionary,Leisure,1822032128,2026-11-15
+JBGS,Real Estate,REIT - Diversified,956017280,2026-11-15
+MRTN,Industrials,Trucking,980701440,2026-11-15
+ADIG,Technology,Computer Hardware,766861696,2026-11-15
+HSTM,Health Care,Health Information Services,855766976,2026-11-15
+SABR,Technology,Software - Infrastructure,751047040,2026-11-15
+FMC,Materials,Agricultural Inputs,810459264,2026-11-15
+PZZA,Consumer Discretionary,Restaurants,656231360,2026-11-15
+PMT,Real Estate,REIT - Mortgage,649657536,2026-11-15
+MTUS,Materials,Steel,698925696,2026-11-15
+KOP,Materials,Specialty Chemicals,585696192,2026-11-15
+CRSR,Technology,Computer Hardware,1286987904,2026-11-15
+SCHL,Communication Services,Publishing,678019840,2026-11-15
+LZ,Industrials,Specialty Business Services,824144192,2026-11-15
+UA,Consumer Discretionary,Apparel Manufacturing,2023159552,2026-11-15
+MMI,Real Estate,Real Estate Services,935888832,2026-11-15
+RES,Energy,Oil & Gas Equipment & Services,1278479360,2026-11-15
+JBSS,Consumer Staples,Packaged Foods,690617024,2026-11-15
+HTLD,Industrials,Trucking,805778112,2026-11-15
+AESI,Energy,Oil & Gas Equipment & Services,697685952,2026-11-15
+SAFE,Real Estate,REIT - Diversified,690066432,2026-11-15
+ADAM,Real Estate,REIT - Mortgage,474099904,2026-11-15
+NAVI,Financials,Credit Services,580267712,2026-11-15
+CENT,Consumer Staples,Packaged Foods,2946233600,2026-11-15
+WRLD,Financials,Credit Services,612858048,2026-11-15
+BFS,Real Estate,REIT - Retail,988580224,2026-11-15
+DFH,Consumer Discretionary,Residential Construction,965104384,2026-11-15
+AGNT,Real Estate,Real Estate Services,466140640,2026-11-15
