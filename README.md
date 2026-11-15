@@ -36,8 +36,9 @@ is skipped and the previously published page stays up. You can also start it by 
 
 ## Data sources
 
-Yahoo Finance (prices, via yfinance) and State Street SPDR (sector ETF holdings). Only derived numbers are published; raw
-source data is not redistributed. For personal and friends' use.
+Yahoo Finance (prices, via yfinance) and State Street SPDR (sector ETF holdings). Prices are not redistributed: only
+derived numbers are published. Two small files are committed: `data/sectors.csv` (Yahoo industry and market cap per stock)
+and `data/membership.csv` (index constituents). For personal and friends' use.
 
 ## Disclaimer
 
@@ -55,7 +56,9 @@ Educational use only. This is not investment advice.
 This repository is public, so everything committed is visible to everyone.
 
 - [ ] Turn on 2-factor sign-in on your GitHub account.
-- [ ] Settings -> Actions -> General: restrict Actions to selected actions, and set workflow permissions to read.
-- [ ] Protect `main` against force-pushes and deletion only. Do NOT require pull requests or status checks on `main`: the nightly job commits three small data files straight to `main`, and a PR-required rule would make that push fail and block publishing.
+- [ ] Settings -> Pages -> Build and deployment -> Source: GitHub Actions (without it the deploy step fails).
+- [ ] The default branch must be `main`. The first publish pushes the local branch as `main`: `git push origin build/initial:main`. Never use `git push --all`: a local branch `wip/task-16` holds parked, unreviewed work.
+- [ ] Settings -> Actions -> General: restrict Actions to selected actions (allow "actions created by GitHub": all five actions used are `actions/*`), and set workflow permissions to read.
+- [ ] Branch protection on `main`: block force-pushes and deletions only. Do NOT require pull requests or status checks on `main`: the nightly job commits three small data files straight to `main`, and a PR-required rule would make that push fail and block publishing.
 - [ ] Never commit raw or private data (pickles, caches, `.env`, tokens). Only reviewed CSV outputs belong in `data/`.
 - [ ] Remember: the repo is public, so nothing secret, personal, or account-related may ever be committed.

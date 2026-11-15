@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import yfinance as yf
 
+SOFT_MISSING_RATIO = 0.01  # up to this share of symbols may be missing and the status stays ok
 STALE_RATIO = 0.8  # fresh download must return at least this share of the cached symbols
 
 
@@ -51,8 +52,12 @@ def download_prices(symbols, period="5y", batch=100, retries=3, downloader=yf.do
     close = close.loc[:, ~close.columns.duplicated()]
     volume = volume.loc[:, ~volume.columns.duplicated()]
     missing = len(symbols) - close.shape[1]
-    if missing or failed_batches:
+    if failed_batches or missing > SOFT_MISSING_RATIO * len(symbols):
         return close, volume, f"partial: {close.shape[1]}/{len(symbols)} symbols"
+    if missing:
+        names = [s for s in symbols if s not in close.columns]
+        shown = ", ".join(names[:10]) + (", ..." if len(names) > 10 else "")
+        return close, volume, f"ok ({missing} missing: {shown})"
     return close, volume, "ok"
 
 

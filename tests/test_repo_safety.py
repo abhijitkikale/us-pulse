@@ -50,3 +50,20 @@ def test_gitignore_blocks_data_and_secrets():
     lines = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
     for entry in ["data/*.pkl", "data/raw/", ".env", "*.token", "__pycache__/"]:
         assert entry in lines
+
+
+def test_no_personal_identifiers_in_tracked_files():
+    import subprocess
+    needles = ["Kik" + "ale", "gmail" + ".com"]
+    files = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.splitlines()
+    hits = []
+    for f in files:
+        p = ROOT / f
+        if not p.is_file():
+            continue
+        data = p.read_bytes()
+        if b"\0" in data:
+            continue
+        text = data.decode("utf-8", errors="ignore")
+        hits += [(f, n) for n in needles if n in text]
+    assert hits == []

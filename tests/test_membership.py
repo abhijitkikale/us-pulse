@@ -39,6 +39,8 @@ def fake_get(files):
     """files: lowercase ticker -> list of rows (or None for a 404)."""
     def get(url, timeout=None, **kw):
         assert timeout is not None
+        ua = kw.get("headers", {}).get("User-Agent", "")
+        assert ua.startswith("Mozilla/5.0") and "python-requests" not in ua
         assert kw.get("verify", True) is True
         tick = url.rsplit("holdings-daily-us-en-", 1)[1].split(".")[0]
         assert tick == tick.lower()

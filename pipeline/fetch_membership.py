@@ -11,6 +11,8 @@ BASE = ("https://www.ssga.com/us/en/intermediary/etfs/library-content/products/"
         "fund-data/etfs/us/holdings-daily-us-en-{t}.xlsx")  # ticker must be lowercase
 COLUMNS = ["ticker", "name", "universe", "sector"]
 TIMEOUT = 30
+HEADERS = {"User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/124.0 Safari/537.36")}
 # Real equity tickers: letters with an optional share-class suffix, checked after dot->dash.
 # Drops futures (IXTZ6), numeric ids (2602335D), CASH-like and blank rows.
 _TICKER_RE = re.compile(r"^[A-Z]{1,5}(-[A-Z]{1,2})?$")
@@ -48,7 +50,7 @@ def _empty() -> pd.DataFrame:
 
 
 def _load(get, etf: str) -> pd.DataFrame:
-    r = get(BASE.format(t=etf.lower()), timeout=TIMEOUT)
+    r = get(BASE.format(t=etf.lower()), timeout=TIMEOUT, headers=HEADERS)
     r.raise_for_status()
     return parse_ssga_xlsx(r.content)
 

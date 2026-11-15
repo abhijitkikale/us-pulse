@@ -82,8 +82,9 @@ def test_only_commit_step_may_continue_on_error():
     assert "continue-on-error" not in DEPLOY and not any("continue-on-error" in s for s in DEPLOY["steps"])
     assert "continue-on-error" not in BUILD
     commit = flagged[0]["run"]
-    assert "git pull --rebase --autostash" in commit and "::warning::" in commit
+    assert "pull --rebase --autostash" in commit and "::warning::" in commit
     assert "${{" not in commit
+    assert commit.count("http.extraheader=$AUTH") == 2 and "echo \"$TOKEN" not in commit
     assert commit.strip().splitlines()[-1].lstrip().startswith("git diff --cached --quiet")
 
 
@@ -92,3 +93,20 @@ def test_requirements_pinned():
     assert all("==" in l for l in lines), lines
     assert any(l.startswith("plotly==") for l in lines)
     assert "yfinance==1.2.0" in lines
+
+
+def test_checkout_does_not_persist_credentials():
+    checkout = next(s for s in _steps() if s.get("uses", "").startswith("actions/checkout@"))
+    assert checkout["with"]["persist-credentials"] is False
+
+
+def test_token_only_in_commit_step_env():
+    assert TEXT.count("github.token") == 1
+    for s in _steps() + DEPLOY["steps"]:
+        env = s.get("env", {})
+        if s.get("name") == "Commit data files":
+            assert env["TOKEN"] == "${{ github.token }}"
+            assert "echo" not in s["run"].split("AUTH=")[0]
+        else:
+            assert not any("token" in k.lower() or "token" in str(v).lower() for k, v in env.items()), s
+    assert "env" not in BUILD or "token" not in str(BUILD["env"]).lower()

@@ -167,3 +167,48 @@ def test_refresh_failed_without_cache(tmp_path):
 
 def test_load_cache_missing(tmp_path):
     assert fp.load_cache(tmp_path / "nope.pkl") == (None, None)
+
+
+def _drop_n(n):
+    return lambda b: make_frame(b, nan_cols=[f"S{i}" for i in range(n)])
+
+
+def test_one_of_200_missing_is_ok():
+    syms = [f"S{i}" for i in range(200)]
+    close, _, status = fp.download_prices(syms, downloader=Fake(_drop_n(1)), sleep=lambda s: None)
+    assert status.startswith("ok") and "1 missing: S0" in status
+    assert close.shape[1] == 199
+
+
+def test_five_of_200_missing_is_partial():
+    syms = [f"S{i}" for i in range(200)]
+    _, _, status = fp.download_prices(syms, downloader=Fake(_drop_n(5)), sleep=lambda s: None)
+    assert status.startswith("partial:")
+
+
+def test_failed_batch_is_partial_even_if_few_missing():
+    syms = [f"S{i}" for i in range(250)]
+
+    def fn(batch):
+        if batch[0] == "S100":
+            raise RuntimeError("down")
+        return make_frame(batch)
+
+    _, _, status = fp.download_prices(syms, downloader=Fake(fn), sleep=lambda s: None)
+    assert status.startswith("partial:")
+
+
+def test_missing_ticker_list_truncated_at_ten():
+    syms = [f"S{i}" for i in range(2000)]
+    _, _, status = fp.download_prices(syms, batch=2000, downloader=Fake(_drop_n(15)), sleep=lambda s: None)
+    assert status.startswith("ok (15 missing: S0, S1")
+    assert status.endswith("S9, ...)") and "S10" not in status
+
+
+def test_symbol_missing_today_keeps_cached_history(tmp_path):
+    cache = tmp_path / "p.pkl"
+    syms = [f"S{i}" for i in range(200)]
+    fp.refresh(syms, cache, downloader=Fake(), sleep=lambda s: None)
+    c, v, status = fp.refresh(syms, cache, downloader=Fake(_drop_n(1)), sleep=lambda s: None)
+    assert status.startswith("ok (1 missing")
+    assert c["S0"].notna().all() and "S0" in v.columns
