@@ -373,7 +373,7 @@ def test_sectors_themes_and_momentum_render(tmp_path):
             per_tab[t] = errors[before:]
         assert all(v == [] for v in per_tab.values()), per_tab
         page.click('nav button[data-tab="sectors"]')
-        page.click('#periods button[data-p="1M"]')
+        page.click('.pseg[data-k="secTbl"] button[data-p="1M"]')
         assert page.locator("#tb-secrank tbody tr").count() == 11
         assert page.locator("#tb-themes tbody tr").count() == n_themes
         head = page.inner_text("#tb-secrank thead")
@@ -416,7 +416,7 @@ def test_sectors_themes_and_momentum_render(tmp_path):
         pw.stop()
 
 
-MOM_BY_SECTOR = """() => { const out = {}; momRows(S.secH || '6M').rows.forEach(r => (out[r.sec] ??= []).push([r.s.s, r.tRank, r.nIn]));
+MOM_BY_SECTOR = """() => { const out = {}; momRows(S.momH).rows.forEach(r => (out[r.sec] ??= []).push([r.s.s, r.tRank, r.nIn]));
   return out; }"""
 
 
@@ -545,8 +545,12 @@ def test_hostile_payload_does_not_execute(tmp_path):
         for t in TABS:
             page.click(f'nav button[data-tab="{t}"]')
             page.wait_for_timeout(200)
-            for sel in ('#periods button[data-p="1Y"]', '#periods button[data-p="1D"]'):
-                page.click(sel)
+            for q in ("1Y", "1D"):                               # every period control of the tab (no page-wide bar)
+                for btn in page.locator(f'#tab-{t} .pseg button[data-p="{q}"]').all():
+                    btn.click()
+            for sel in ("#secH", "#thH", "#mom-h", "#etf-h"):
+                if page.is_visible(sel):
+                    page.select_option(sel, "1Y")
         page.click('nav button[data-tab="sectors"]')
         assert sec in page.inner_text("#tb-secrank")             # shown as literal text
         page.click(f'#tb-secrank tr[data-l="{sec.replace(chr(34), chr(92) + chr(34))}"]')
@@ -562,7 +566,17 @@ def test_hostile_payload_does_not_execute(tmp_path):
         page.evaluate("closeDrawer()")
         page.click('nav button[data-tab="momentum"]')
         page.check("#mom-illiq")
+        page.select_option("#mom-h", "6M")                      # the 1Y set above leaves no stock with enough history
         page.wait_for_timeout(200)
+        opts = page.locator("#mom-sec option").all_inner_texts()
+        assert sec in opts, opts                                  # the hostile sector is a literal option label
+        page.select_option("#mom-sec", sec)
+        page.fill("#mom-mcap", "300")
+        page.fill("#mom-cap", "1")
+        page.click('#mom-mcap-q button[data-mcap="2000"]')
+        page.click('#mom-mcap-q button[data-mcap=""]')
+        page.fill("#mom-cap", "")
+        page.select_option("#mom-sec", "")
         page.click('nav button[data-tab="sectors"]')
         page.evaluate("s=>openStock(s,true)", sym)
         page.wait_for_timeout(250)
@@ -575,6 +589,10 @@ def test_hostile_payload_does_not_execute(tmp_path):
         assert "src " + HOSTILE in page.inner_text("#status")
         page.evaluate("closeDrawer()")
         page.click('nav button[data-tab="etfs"]')
+        assert "Cat " + HOSTILE in page.locator("#etf-cat option").all_inner_texts()
+        page.select_option("#etf-h", "3M")
+        page.click('#etf-aum-q button[data-aum="500"]')
+        page.click('#etf-aum-q button[data-aum=""]')
         page.select_option("#etf-cat", "Cat " + HOSTILE)
         page.wait_for_timeout(150)
         assert page.locator("#tb-etf tbody tr").count() == 1
@@ -694,6 +712,294 @@ def test_etf_tab_renders_ranks_and_drawer(tmp_path):
         page.wait_for_timeout(150)
         page.click('nav button[data-tab="etfs"]')
         assert "cumulative" in page.inner_text("#etf-note")
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()
+
+
+# ---------- fixes batch 2: per-table periods, momentum filters, ETF AUM / horizon, Russell 2000 ----------
+
+def test_no_page_wide_period_bar():
+    html = _html()
+    assert 'id="periods"' not in html and "#periods" not in html and "All charts" not in html
+    js = _app_script(html)
+    for k in ("globTbl", "secTbl", "thTbl"):
+        assert f'data-k="{k}"' in html and f"S.pp.{k}" in js, k
+    for sel, key in (("secH", "S.secH"), ("thH", "S.thH"), ("mom-h", "S.momH"), ("etf-h", "S.etfH")):
+        assert re.search(rf'<select[^>]*id="{sel}"', html), sel
+        assert f"{key}=$('#{sel}').value" in js, (sel, key)
+    assert re.search(r"function renderETFs\(\)\{\s*const H=S\.etfH", js)
+    assert "S.secH" not in re.search(r"function renderMomentum\(\)\{(.*?)\n\}", js, re.S).group(1)
+
+
+def test_new_filter_controls_present_and_persisted():
+    html, js = _html(), _app_script(_html())
+    for i in ("mom-cap", "mom-mcap", "etf-aum", "etf-h", "mom-why"):
+        assert re.search(rf'id="{i}"', html), i
+    assert "Min market cap ($M)" in html and "Min AUM ($M)" in html and "Max stocks per sector" in html
+    assert [b for b in re.findall(r'data-mcap="(\d*)"', html)] == ["300", "2000", "10000", ""]
+    assert [b for b in re.findall(r'data-aum="(\d*)"', html)] == ["500", "1000", "5000", ""]
+    keys = set(re.findall(r"localStorage\.(?:get|set)Item\('([^']+)'", js))
+    assert {"usp_mom_mcap", "usp_etf_aum", "usp_mom_cap"} <= keys
+
+
+SNAPSHOT = """() => { renderOverview(); renderSectors(); renderBreadth(); renderMomentum(); renderETFs();
+  const t = id => document.getElementById(id).innerHTML;
+  const c = id => JSON.stringify((document.getElementById(id).data || []).map(d => [d.x, d.y]));
+  const out = {};
+  for (const id of ['tb-globrank', 'tb-secrank', 'tb-themes', 'tb-mom', 'mom-sub', 'tb-etf', 'etf-note', 'tb-bands', 'tb-strength']) out[id] = t(id);
+  for (const id of ['ch-bench', 'ch-glob', 'ch-sec', 'ch-sma', 'ch-ad']) out[id] = c(id);
+  return out; }"""
+
+
+def test_each_table_and_chart_has_its_own_period(tmp_path):
+    out = _render_fixture(tmp_path)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        assert page.locator("#periods").count() == 0
+        steps = [  # (tab, action, control, value, keys that must change)
+            ("overview", "seg", "bench", "1Y", {"ch-bench"}),
+            ("overview", "seg", "glob", "6M", {"ch-glob"}),
+            ("overview", "seg", "globTbl", "1Y", {"tb-globrank"}),
+            ("sectors", "seg", "sec", "3M", {"ch-sec"}),
+            ("sectors", "seg", "secTbl", "1Y", {"tb-secrank"}),
+            ("sectors", "seg", "thTbl", "6M", {"tb-themes"}),
+            ("sectors", "sel", "#secH", "3M", {"tb-secrank"}),
+            ("sectors", "sel", "#thH", "1Y", {"tb-themes"}),
+            ("breadth", "seg", "ad", "1Y", {"ch-ad"}),
+            ("momentum", "sel", "#mom-h", "3M", {"tb-mom", "mom-sub"}),
+            ("etfs", "sel", "#etf-h", "3M", {"tb-etf", "etf-note"}),
+        ]
+        for tab, kind, ctl, val, expect in steps:
+            page.click(f'nav button[data-tab="{tab}"]')
+            page.wait_for_timeout(100)
+            before = page.evaluate(SNAPSHOT)
+            if kind == "seg":
+                page.click(f'.pseg[data-k="{ctl}"] button[data-p="{val}"]')
+                assert page.locator(f'.pseg[data-k="{ctl}"] button.on').inner_text() == val
+            else:
+                page.select_option(ctl, val)
+            page.wait_for_timeout(100)
+            after = page.evaluate(SNAPSHOT)
+            changed = {k for k in before if before[k] != after[k]}
+            assert changed == expect, (ctl, val, changed, expect)
+        assert page.evaluate("[S.secH, S.thH, S.momH, S.etfH]") == ["3M", "1Y", "3M", "3M"]
+        assert page.inner_text("#tb-secrank thead th.sel >> nth=-1") == "1Y"         # its own period column
+        assert page.inner_text("#tb-themes thead th.sel >> nth=-1") == "6M"
+        assert page.inner_text("#tb-mom thead th.sel") == "3M"
+        assert page.inner_text("#tb-etf thead th.sel") == "3M"
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()
+
+
+def _mom_dom(page):
+    return page.locator("#tb-mom tbody tr").evaluate_all(
+        "trs => trs.map(t => [t.dataset.s, t.cells[2].innerText, +t.cells[0].innerText, t.cells[5].innerText])")
+
+
+def test_momentum_weights_line_and_linked_inputs(tmp_path):
+    out = _render_fixture(tmp_path)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        page.click('nav button[data-tab="momentum"]')
+        for ws in ("0.2", "0.5", "0.8", "1"):
+            page.fill("#mom-ws", ws)
+            page.wait_for_timeout(100)
+            assert float(page.input_value("#mom-wt")) == pytest.approx(1 - float(ws))   # the other box follows
+            rows = _mom_dom(page)
+            top = rows[0][1]
+            k = next((r[2] for r in rows if r[1] != top), None)
+            why = page.inner_text("#mom-why")
+            assert f"Sector weight {float(ws):g} + stock weight" in why, why
+            assert (f"first stock outside {top} appears at rank {k} " in why) if k else (f"Every listed stock is in {top}" in why), why
+        page.fill("#mom-wt", "0.3")
+        page.wait_for_timeout(100)
+        assert page.input_value("#mom-ws") == "0.7"
+        assert "Weighted score = 0.7 × sector score + 0.3 × stock score" in page.inner_text("#mom-sub")
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()
+
+
+def test_momentum_max_per_sector_cap(tmp_path):
+    out = _render_fixture(tmp_path)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        page.click('nav button[data-tab="momentum"]')
+        page.fill("#mom-ws", "1")                            # one sector fills the top
+        page.wait_for_timeout(100)
+        full = _mom_dom(page)
+        page.fill("#mom-cap", "1")
+        page.wait_for_timeout(100)
+        capped = _mom_dom(page)
+        secs = [r[1] for r in capped]
+        assert len(secs) == len(set(secs)) == len({r[1] for r in full})        # one stock per sector, every sector
+        best = {}
+        for r in full:
+            best.setdefault(r[1], r)
+        assert capped == sorted(best.values(), key=lambda r: r[2])              # each sector's best, ranks unchanged
+        assert "max 1 per sector" in page.inner_text("#mom-sub")
+        assert page.evaluate("localStorage.getItem('usp_mom_cap')") == "1"
+        page.fill("#mom-cap", "2")
+        page.wait_for_timeout(100)
+        assert all(sum(1 for r in _mom_dom(page) if r[1] == s) <= 2 for s in secs)
+        page.fill("#mom-cap", "")
+        page.wait_for_timeout(100)
+        assert _mom_dom(page) == full
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()
+
+
+def test_momentum_min_market_cap_filter(tmp_path):
+    d = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    sectors = {i["label"] for i in d["indices"] if i["group"] == "sector"}
+    pool = [s for s in d["stocks"] if s["liq"] is not False and set(s["x"]) & sectors]
+    out = _render_fixture(tmp_path, d)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        page.click('nav button[data-tab="momentum"]')
+        n0 = page.locator("#tb-mom tbody tr").count()
+        assert "below market cap" not in page.inner_text("#mom-sub")
+        for how, val in (("fill", "2000"), ("click", "10000"), ("click", "300")):
+            if how == "fill":
+                page.fill("#mom-mcap", val)
+            else:
+                page.click(f'#mom-mcap-q button[data-mcap="{val}"]')
+            page.wait_for_timeout(100)
+            assert page.input_value("#mom-mcap") == val
+            low = [s["s"] for s in pool if s["mc"] is None or s["mc"] < float(val)]
+            assert low and any(s["mc"] is None for s in pool)
+            rows = page.evaluate(MOM_BY_SECTOR)
+            listed = [x for v in rows.values() for x in v]
+            assert all(sym not in low for sym, _, _ in listed), val
+            for sec, rs in rows.items():                     # ranks are among the remaining stocks only
+                assert sorted(r for _, r, _ in rs) == list(range(1, len(rs) + 1)), (sec, rs)
+                assert all(n == len(rs) for _, _, n in rs), (sec, rs)
+            assert page.locator("#tb-mom tbody tr").count() == len(listed) < n0
+            assert f"{len(low)} below market cap hidden" in page.inner_text("#mom-sub")
+            assert page.evaluate("localStorage.getItem('usp_mom_mcap')") == val
+        page.click('#mom-mcap-q button[data-mcap=""]')
+        page.wait_for_timeout(100)
+        assert page.input_value("#mom-mcap") == "" and page.locator("#tb-mom tbody tr").count() == n0
+        assert page.evaluate("localStorage.getItem('usp_mom_mcap')") == "null"
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()
+
+
+def test_etf_min_aum_filter_reranks_the_rest(tmp_path):
+    d = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    aum = {e["t"]: e["aum"] for e in d["etfs"]}
+    assert None in aum.values() and any(v is not None and v < 1 for v in aum.values())
+    out = _render_fixture(tmp_path, d)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        page.click('nav button[data-tab="etfs"]')
+        cells = dict(page.locator("#tb-etf tbody tr").evaluate_all(
+            "trs => trs.map(t => [t.dataset.t, t.cells[12].innerText])"))
+        assert "AUM" in page.inner_text("#tb-etf thead")
+        assert cells["IWM"] == "–" and cells["IEF"] == "$0.4M" and cells["SPY"] == "$630.00B" and cells["XLB"] == "$800M"
+        page.click('#etf-aum-q button[data-aum="1000"]')
+        page.wait_for_timeout(100)
+        keep = [e for e in d["etfs"] if e["aum"] is not None and e["aum"] >= 1000]
+        hidden = len(d["etfs"]) - len(keep)
+        assert hidden == 3
+        rows = page.locator("#tb-etf tbody tr").evaluate_all("trs => trs.map(t => t.dataset.t)")
+        exp, bad = _expected_category_order(keep)
+        assert rows == exp + bad
+        assert f"{hidden} below AUM hidden" in page.inner_text("#etf-note")
+        page.select_option("#etf-cat", "US Sector")             # the category filter works with the AUM filter
+        page.wait_for_timeout(100)
+        sec = [e for e in keep if e["c"] == "US Sector"]
+        rows = page.locator("#tb-etf tbody tr").evaluate_all("trs => trs.map(t => [t.dataset.t, t.cells[3].innerText])")
+        exp, bad = _expected_category_order(sec)
+        assert [r[0] for r in rows] == exp + bad and "XLB" not in [r[0] for r in rows]
+        assert [r[1] for r in rows] == [f"{k + 1}/{len(exp)}" for k in range(len(exp))] + ["n/a"] * len(bad)
+        page.click('nav button[data-tab="momentum"]')           # the filters survive a tab switch
+        page.click('nav button[data-tab="etfs"]')
+        assert page.input_value("#etf-cat") == "US Sector" and page.input_value("#etf-aum") == "1000"
+        assert page.locator("#tb-etf tbody tr").count() == len(sec)
+        page.evaluate("() => { const s = $('#etf-cat'); s.value = 'Size'; s.dispatchEvent(new Event('input', {bubbles: true})); }")
+        page.wait_for_timeout(100)
+        size = [e["t"] for e in keep if e["c"] == "Size"]
+        assert sorted(page.locator("#tb-etf tbody tr").evaluate_all("trs => trs.map(t => t.dataset.t)")) == sorted(size)
+        page.fill("#etf-aum", "999999999")
+        page.wait_for_timeout(100)
+        assert "No ETFs match" in page.inner_text("#tb-etf")
+        assert page.evaluate("localStorage.getItem('usp_etf_aum')") == "999999999"
+        page.fill("#etf-aum", "")
+        page.wait_for_timeout(100)
+        assert page.locator("#tb-etf tbody tr").count() == sum(e["c"] == "Size" for e in d["etfs"]) > len(size)
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()
+
+
+def test_etf_horizon_changes_order_like_hand_calculation(tmp_path):
+    d = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    out = _render_fixture(tmp_path, d)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        page.click('nav button[data-tab="etfs"]')
+        assert page.input_value("#etf-h") == "6M"
+        orders = set()
+        for h in ("1M", "3M", "6M", "1Y"):
+            page.select_option("#etf-h", h)
+            page.wait_for_timeout(100)
+            rows = page.locator("#tb-etf tbody tr").evaluate_all("trs => trs.map(t => t.dataset.t)")
+            exp, bad = _expected_category_order(d["etfs"], h)
+            assert rows == exp + bad, (h, rows, exp, bad)
+            assert page.inner_text("#tb-etf thead th.sel") == h
+            orders.add(tuple(rows))
+        assert len(orders) > 1
+        page.click('nav button[data-tab="sectors"]')            # the sector horizon does not move the ETF table
+        page.select_option("#secH", "1M")
+        page.click('nav button[data-tab="etfs"]')
+        assert page.input_value("#etf-h") == "1Y"
+        assert errors == [], errors
+    finally:
+        b.close()
+        pw.stop()
+
+
+def test_russell_2000_on_overview_index_only(tmp_path):
+    d = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    rut = next(i for i in d["indices"] if i["label"] == "Russell 2000")
+    assert rut["group"] == "benchmark" and rut["nse"] == "^RUT" and "Russell 2000" not in d["members"]
+    assert all("Russell" not in g["name"] for g in d["global"])
+    out = _render_fixture(tmp_path, d)
+    pw, b = _browser()
+    try:
+        page, errors = _open(b, out)
+        bars = page.evaluate("$('#ch-bench').data[0].x")
+        assert len(bars) == 6 and "Russell 2000" in bars and "VIX" not in bars
+        page.evaluate("$('#ch-bench').emit('plotly_click',{points:[{customdata:'Russell 2000'}]})")
+        page.wait_for_timeout(250)
+        assert page.is_visible("#drawer.open")
+        assert page.inner_text("#dtitle") == "Russell 2000 (^RUT)"
+        assert page.locator("#d-tbl").count() == 0 and page.locator("#csv").count() == 0
+        assert "Constituent stocks are not tracked for this index" in page.inner_text("#dbody")
+        assert page.evaluate("$('#d-idx').data[0].y.length") == len(rut["wk"]["c"])
+        page.click('#dbody .pseg button[data-p="1Y"]')         # the drawer's own period still works
+        page.wait_for_timeout(150)
+        assert page.locator('#dbody .pseg button.on').inner_text() == "1Y"
+        page.evaluate("closeDrawer()")
+        page.click('nav button[data-tab="breadth"]')
+        assert "Russell" not in page.inner_text("#tab-breadth")
         assert errors == [], errors
     finally:
         b.close()
