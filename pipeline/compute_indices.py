@@ -1,7 +1,7 @@
 """Index / sector / theme builders, equal-weight sector returns, relative strength and global rows."""
 import pandas as pd
 from compute_core import _num, period_returns
-from us_config import BENCHMARKS, GLOBAL, PERIODS, SECTOR_ETFS, THEMES
+from us_config import BENCHMARKS, GLOBAL, PERIODS, RUSSELL, SECTOR_ETFS, THEMES
 
 MIN_EW_MEMBERS = 5
 SPX = "S&P 500"
@@ -69,7 +69,7 @@ def build_global(close: pd.DataFrame) -> list:
         series[label] = (close[sym], rate)
     covered = {sym for sym, _ in GLOBAL.values()}
     for label, sym in BENCHMARKS.items():
-        if label == "VIX" or sym in covered or sym not in close.columns:
+        if label in ("VIX", RUSSELL) or sym in covered or sym not in close.columns:   # Russell: Overview bar only
             continue
         series[label] = (close[sym], None)
     out = []

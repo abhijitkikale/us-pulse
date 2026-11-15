@@ -87,6 +87,9 @@ def _fake_world(monkeypatch, tmp_path, tpl, n=30, price_status="ok", today="2026
     monkeypatch.setattr(run.fetch_prices, "refresh", fake_refresh)
     monkeypatch.setattr(run.fetch_sectors, "load_sectors", lambda t, c, **kw: (labels, "sectors: fetched 0"))
     monkeypatch.setattr(run.fetch_sectors, "fill_all", lambda t, c, **kw: (labels, "sectors: fetched 0"))
+    monkeypatch.setattr(run.fetch_etf_aum, "fetch_etf_aum",
+                        lambda t, c, **kw: (pd.DataFrame({"ticker": ["SPY"], "aum": [5.5e11], "asof": ["2026-11-01"]}),
+                                            "ok (1 of 1 have AUM)"))
     monkeypatch.setattr(run, "DATA", tmp_path)
     monkeypatch.setattr(run, "OUT", tmp_path / "dashboard.html")
     monkeypatch.setattr(run, "TEMPLATE", tpl)
@@ -231,8 +234,55 @@ def test_cli_out_flag_parsing():
 
 def test_critical_symbols_cover_benchmarks_sectors_themes_only():
     crit = run.critical_symbols()
-    assert {"^GSPC", "^VIX", "XLK", "SMH"} <= crit
+    assert {"^GSPC", "^VIX", "XLK", "SMH", "^NDX", "^DJI", "^SP400", "^SP600"} <= crit
     assert "^FTSE" not in crit and "T00" not in crit and "JPY=X" not in crit
+    assert "^RUT" not in crit                         # a missing Russell 2000 index must not stop the build
+
+
+def test_russell_index_is_downloaded_but_not_a_stock_or_global_row():
+    uni = pd.DataFrame({"ticker": ["T00"], "name": ["Co"], "universe": ["SP500"], "sector": ["Technology"]})
+    etf_uni = pd.DataFrame({"ticker": ["SPY"], "name": ["SPDR"], "category": ["Size"]})
+    assert "^RUT" in run.symbol_list(uni, etf_uni)
+    idx = pd.bdate_range(end=END, periods=300)
+    close = pd.DataFrame({"^GSPC": np.linspace(100, 130, 300), "^RUT": np.linspace(50, 60, 300)}, index=idx)
+    indices, _, _ = run.compute_indices.build_indices(close)
+    assert indices["Russell 2000"]["group"] == "benchmark" and indices["Russell 2000"]["nse"] == "^RUT"
+    assert all(r["name"] != "Russell 2000" for r in run.compute_indices.build_global(close))
+
+
+def test_run_records_etf_aum_status_and_payload(monkeypatch, tmp_path, tpl):
+    _fake_world(monkeypatch, tmp_path, tpl)
+    run.main()
+    d = _embedded((tmp_path / "dashboard.html").read_text(encoding="utf-8"))
+    assert d["status"]["etf_aum"] == "ok (1 of 1 have AUM)"
+    spy = next(e for e in d["etfs"] if e["t"] == "SPY")
+    assert spy["aum"] == 550000.0
+
+
+def test_run_survives_an_aum_crash(monkeypatch, tmp_path, tpl):
+    _fake_world(monkeypatch, tmp_path, tpl)
+
+    def boom(*a, **kw):
+        raise RuntimeError("network down")
+
+    monkeypatch.setattr(run.fetch_etf_aum, "fetch_etf_aum", boom)
+    run.main()                                                    # no SystemExit: AUM is optional
+    d = _embedded((tmp_path / "dashboard.html").read_text(encoding="utf-8"))
+    assert d["status"]["etf_aum"].startswith("unavailable") and not d["status"]["etf_aum"].startswith(run.BAD)
+    assert all(e["aum"] is None for e in d["etfs"])
+
+
+def test_cached_run_only_reads_the_aum_cache(monkeypatch, tmp_path, tpl):
+    _fake_world(monkeypatch, tmp_path, tpl)
+    got = {}
+    monkeypatch.setattr(run.fetch_etf_aum, "fetch_etf_aum",
+                        lambda t, c, **kw: (got.update(kw) or pd.DataFrame(columns=["ticker", "aum", "asof"]), "ok"))
+    status = {}
+    run._etf_aum(pd.DataFrame({"ticker": ["SPY"]}), True, status)
+    assert got == {"max_new": 0} and status == {"etf_aum": "ok"}
+    got.clear()
+    run._etf_aum(pd.DataFrame({"ticker": ["SPY"]}), False, status)
+    assert got == {}                                              # a full run tops the cache up (default max_new)
 
 
 def test_run_passes_critical_to_refresh(monkeypatch, tmp_path, tpl):

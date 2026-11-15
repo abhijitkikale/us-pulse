@@ -78,7 +78,7 @@ jobs:
           git config user.name "uspulse-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -c "http.extraheader=$AUTH" pull --rebase --autostash origin "$BRANCH" || echo "::warning::could not pull before committing data files"
-          for f in data/sectors.csv data/membership.csv data/last_count.txt; do
+          for f in data/sectors.csv data/membership.csv data/last_count.txt data/etf_aum.csv; do
             if [ -f "$f" ]; then git add -- "$f"; fi
           done
           git diff --cached --quiet || (git commit -m "Update data files" && (git -c "http.extraheader=$AUTH" push || echo "::warning::could not push data files"))

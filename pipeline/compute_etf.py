@@ -18,9 +18,32 @@ def load_universe(path=UNIVERSE_CSV) -> pd.DataFrame:
     return pd.read_csv(path)
 
 
+def _aum_millions(aum) -> dict:
+    """{ticker: AUM in $ millions} from a frame with columns ticker / aum (raw dollars) or a {ticker: dollars} map."""
+    if aum is None:
+        return {}
+    if isinstance(aum, pd.DataFrame):
+        if not {"ticker", "aum"} <= set(aum.columns):
+            return {}
+        pairs = zip(aum["ticker"], aum["aum"])
+    else:
+        pairs = dict(aum).items()
+    out = {}
+    for t, v in pairs:
+        try:
+            v = float(v)
+        except (TypeError, ValueError):
+            continue
+        if v == v and v not in (float("inf"), float("-inf")) and v > 0:
+            out[str(t)] = _num(v / 1e6, 1)
+    return out
+
+
 def build_etf(universe: pd.DataFrame, close: pd.DataFrame, volume: pd.DataFrame,
-              bench: pd.Series | None = None):
-    """Returns (etfs, categories present, sorted). ETFs missing from `close` or with < 20 closes are skipped."""
+              bench: pd.Series | None = None, aum=None):
+    """Returns (etfs, categories present, sorted). ETFs missing from `close` or with < 20 closes are skipped.
+    `aum` (optional): ticker -> assets under management in raw dollars; each ETF gets `aum` in $ millions or None."""
+    aum_m = _aum_millions(aum)
     close = close.sort_index()
     asof = close.index.max() if len(close) else None
     etfs = []
@@ -40,6 +63,7 @@ def build_etf(universe: pd.DataFrame, close: pd.DataFrame, volume: pd.DataFrame,
             **{k: flags.get(k) for k in FLAG_KEYS},
             "vol": risk["vol"], "mdd": risk["mdd"],
             "dv": _num(_dollar_vol(c, volume, sym), 0),
+            "aum": aum_m.get(sym),
             "ser": [_num(v) for v in c.tail(SER_LEN).values],
         })
     return etfs, sorted({e["c"] for e in etfs})

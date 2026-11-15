@@ -48,7 +48,8 @@ def test_commit_step_only_adds_allowed_files():
     runs = [s["run"] for s in _steps() if "git add" in s.get("run", "")]
     assert len(runs) == 1
     m = re.search(r"for f in ([^;]+); do", runs[0])
-    assert m and m.group(1).split() == ["data/sectors.csv", "data/membership.csv", "data/last_count.txt"]
+    assert m and m.group(1).split() == ["data/sectors.csv", "data/membership.csv", "data/last_count.txt",
+                                         "data/etf_aum.csv"]
     for bad in (r"git add -A", r"git add \.", r"git add -u", r"git add --all", r"git commit -a", r"git commit -\w*a"):
         assert not re.search(bad, TEXT), bad
 

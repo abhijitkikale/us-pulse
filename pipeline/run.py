@@ -25,7 +25,7 @@ import compute_indices                                 # noqa: E402
 import compute_stocks                                  # noqa: E402
 import us_calendar                                     # noqa: E402
 import us_config                                       # noqa: E402
-from pipeline import fetch_membership, fetch_prices, fetch_sectors   # noqa: E402
+from pipeline import fetch_etf_aum, fetch_membership, fetch_prices, fetch_sectors   # noqa: E402
 
 warnings.filterwarnings("ignore")
 
@@ -107,12 +107,27 @@ def symbol_list(uni, etf_uni):
     return list(dict.fromkeys(s for s in syms if isinstance(s, str) and s))
 
 
+NON_CRITICAL = frozenset({"^RUT"})   # shown on the Overview only: a missing Russell 2000 index must not stop the build
+
+
 def critical_symbols():
-    """Benchmarks, sector ETFs and theme ETFs: a missing one is never tolerated (status 'partial:')."""
+    """Benchmarks, sector ETFs and theme ETFs: a missing one is never tolerated (status 'partial:').
+    The Russell 2000 index (^RUT) is downloaded with the benchmarks but is not critical."""
     out = set()
     for table in (us_config.BENCHMARKS, us_config.SECTOR_ETFS, us_config.THEMES):
         out.update(v for v in table.values() if isinstance(v, str))
-    return frozenset(out)
+    return frozenset(out - NON_CRITICAL)
+
+
+def _etf_aum(etf_uni, cached, status):
+    """ETF AUM from data/etf_aum.csv, topped up from Yahoo unless --cached. Optional: never fails the build."""
+    try:
+        aum, status["etf_aum"] = fetch_etf_aum.fetch_etf_aum(list(etf_uni["ticker"]), DATA / "etf_aum.csv",
+                                                             **({"max_new": 0} if cached else {}))
+        return aum
+    except Exception as e:                       # fetch_etf_aum never raises; belt and braces
+        status["etf_aum"] = f"unavailable ({type(e).__name__})"
+        return None
 
 
 def _previous_count():
@@ -122,7 +137,7 @@ def _previous_count():
         return None
 
 
-def build_payload(uni, etf_uni, close, volume, labels, status, today=None) -> dict:
+def build_payload(uni, etf_uni, close, volume, labels, status, today=None, aum=None) -> dict:
     """Compute every section and assemble the sanitized payload. Adds status['freshness'] when prices are behind."""
     # US instruments only trade on NYSE sessions; Yahoo adds weekend rows for some FX pairs (e.g. CAD=X on a
     # Saturday), which would otherwise become the "as of" date with no stock data. Global rows keep every date.
@@ -134,7 +149,7 @@ def build_payload(uni, etf_uni, close, volume, labels, status, today=None) -> di
     compute_indices.add_equal_weight(indices, members, us_close)
     stock_cols = [t for t in dict.fromkeys(uni["ticker"]) if t in us_close.columns]
     activity = compute_activity.build_activity(us_close[stock_cols], us_volume.reindex(columns=stock_cols))
-    etfs, etf_categories = compute_etf.build_etf(etf_uni, us_close, us_volume, bench)
+    etfs, etf_categories = compute_etf.build_etf(etf_uni, us_close, us_volume, bench, aum=aum)
     global_rows = compute_indices.build_global(close)
     price_asof = us_close[stock_cols].dropna(how="all").index.max() if stock_cols else None
 
@@ -169,7 +184,8 @@ def main(cached: bool = False, fill_sectors: bool = False, out=None):
     else:
         labels, status["sectors"] = fetch_sectors.load_sectors(tickers, sectors_csv, **({"max_new": 0} if cached else {}))
 
-    payload = build_payload(uni, etf_uni, close, volume, labels, status, today=_today())
+    aum = _etf_aum(etf_uni, cached, status)
+    payload = build_payload(uni, etf_uni, close, volume, labels, status, today=_today(), aum=aum)
     stocks = payload["stocks"]
 
     prev = _previous_count()

@@ -10,7 +10,7 @@ Published page: `https://<owner>.github.io/<repo>/` (fill in after the first dep
 - `pipeline/` data-building code
 - `tests/` automated tests
 - `tools/` helper scripts, including `scan_repo.py` (secret and broker-code scanner) and `should_run.py` (workflow guard)
-- `data/` committed small outputs only (`sectors.csv`, `membership.csv`, `last_count.txt`)
+- `data/` committed small outputs only (`sectors.csv`, `membership.csv`, `last_count.txt`, `etf_aum.csv`)
 - `docs/` project documents
 - `.github/workflows/` the scheduled refresh job
 
@@ -37,8 +37,9 @@ is skipped and the previously published page stays up. You can also start it by 
 ## Data sources
 
 Yahoo Finance (prices, via yfinance) and State Street SPDR (sector ETF holdings). Prices are not redistributed: only
-derived numbers are published. Two small files are committed: `data/sectors.csv` (Yahoo industry and market cap per stock)
-and `data/membership.csv` (index constituents). For personal and friends' use.
+derived numbers are published. Three small files are committed: `data/sectors.csv` (Yahoo industry and market cap per stock),
+`data/membership.csv` (index constituents) and `data/etf_aum.csv` (Yahoo ETF assets under management, refreshed about
+monthly; optional, a failed fetch never stops the build). For personal and friends' use.
 
 ## Disclaimer
 

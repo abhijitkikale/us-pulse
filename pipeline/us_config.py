@@ -13,8 +13,10 @@ BENCHMARKS = {
     "Dow Jones": "^DJI",
     "S&P 400": "^SP400",
     "S&P 600": "^SP600",
+    "Russell 2000": "^RUT",      # index only: shown on the Overview; not in the stock universe, breadth or GLOBAL
     "VIX": "^VIX",
 }
+RUSSELL = "Russell 2000"
 
 # label -> Select Sector SPDR ticker
 SECTOR_ETFS = {

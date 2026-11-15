@@ -17,9 +17,10 @@ def test_themes_count_is_15_and_do_not_overlap_sector_etfs():
     assert not set(c.THEMES.values()) & set(c.SECTOR_ETFS.values())
 
 
-def test_benchmarks_have_six_entries():
-    assert len(c.BENCHMARKS) == 6
+def test_benchmarks_have_seven_entries_incl_russell_index():
+    assert len(c.BENCHMARKS) == 7
     assert c.BENCHMARKS["S&P 400"] == "^SP400"
+    assert c.BENCHMARKS[c.RUSSELL] == "^RUT" and c.RUSSELL == "Russell 2000"
 
 
 def test_global_has_no_russell_or_india_and_fx_shape():
