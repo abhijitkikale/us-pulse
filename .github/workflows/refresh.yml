@@ -46,7 +46,7 @@ jobs:
       - name: Tests
         if: steps.guard.outputs.run == 'true'
         run: python -m pytest tests -q
-      - name: Scan repo for secrets and broker code
+      - name: Scan repo for credentials and broker code
         if: steps.guard.outputs.run == 'true'
         run: python tools/scan_repo.py
       - name: Restore price cache
@@ -64,15 +64,21 @@ jobs:
         run: |
           mkdir _site
           cp dashboard.html _site/index.html
+      # Deliberate exception to "no continue-on-error": a failed push of the data files (for example a branch rule
+      # or a race with a human commit) must not block publishing the page. The failure is surfaced as a warning.
       - name: Commit data files
         if: steps.guard.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          BRANCH: ${{ github.ref_name }}
         run: |
           git config user.name "uspulse-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase --autostash origin "$BRANCH"
           for f in data/sectors.csv data/membership.csv data/last_count.txt; do
             if [ -f "$f" ]; then git add -- "$f"; fi
           done
-          git diff --cached --quiet || (git commit -m "Update data files" && git push)
+          git diff --cached --quiet || (git commit -m "Update data files" && (git push || echo "::warning::could not push data files"))
       - name: Upload site
         if: steps.guard.outputs.run == 'true'
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa   # v3

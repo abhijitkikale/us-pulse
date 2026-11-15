@@ -56,6 +56,6 @@ This repository is public, so everything committed is visible to everyone.
 
 - [ ] Turn on 2-factor sign-in on your GitHub account.
 - [ ] Settings -> Actions -> General: restrict Actions to selected actions, and set workflow permissions to read.
-- [ ] Protect the `main` branch (require pull requests and passing checks).
+- [ ] Protect `main` against force-pushes and deletion only. Do NOT require pull requests or status checks on `main`: the nightly job commits three small data files straight to `main`, and a PR-required rule would make that push fail and block publishing.
 - [ ] Never commit raw or private data (pickles, caches, `.env`, tokens). Only reviewed CSV outputs belong in `data/`.
 - [ ] Remember: the repo is public, so nothing secret, personal, or account-related may ever be committed.

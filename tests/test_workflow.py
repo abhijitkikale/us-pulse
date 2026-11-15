@@ -34,23 +34,23 @@ def test_only_schedule_and_dispatch_triggers():
 
 
 def test_actions_pinned_to_sha():
-    uses = re.findall(r"^\s*-?\s*uses:\s*(\S+)", TEXT, re.M)
-    assert uses
+    uses = [s["uses"] for s in _steps() if "uses" in s] + [s["uses"] for s in DEPLOY["steps"] if "uses" in s]
+    assert len(uses) == 5
     for u in uses:
         assert re.fullmatch(r"[\w.-]+/[\w./-]+@[0-9a-f]{40}", u), u
 
 
 def test_no_secrets_referenced():
-    assert "secrets." not in TEXT
+    assert not re.search(r"\bsecrets\b", TEXT)
 
 
 def test_commit_step_only_adds_allowed_files():
-    allowed = {"data/sectors.csv", "data/membership.csv", "data/last_count.txt"}
     runs = [s["run"] for s in _steps() if "git add" in s.get("run", "")]
     assert len(runs) == 1
-    found = set(re.findall(r"data/[\w.]+", runs[0]))
-    assert found == allowed
-    assert "git add -A" not in TEXT and "git add ." not in TEXT
+    m = re.search(r"for f in ([^;]+); do", runs[0])
+    assert m and m.group(1).split() == ["data/sectors.csv", "data/membership.csv", "data/last_count.txt"]
+    for bad in (r"git add -A", r"git add \.", r"git add -u", r"git add --all", r"git commit -a", r"git commit -\w*a"):
+        assert not re.search(bad, TEXT), bad
 
 
 def test_scan_runs_before_build():
@@ -67,13 +67,24 @@ def test_job_permissions_and_concurrency():
     assert BUILD["timeout-minutes"] == 90
 
 
-def test_all_later_steps_gated_by_guard_and_no_continue_on_error():
+def test_all_later_steps_gated_by_guard():
     steps = _steps()
     guard = next(i for i, s in enumerate(steps) if "should_run.py" in s.get("run", ""))
     for s in steps[guard + 1:]:
-        assert "steps.guard.outputs.run" in s.get("if", ""), s
-    assert "continue-on-error" not in TEXT
-    assert "needs.build.outputs.run" in DEPLOY["if"]
+        assert s.get("if") == "steps.guard.outputs.run == 'true'", s
+    assert DEPLOY["if"] == "needs.build.outputs.run == 'true'"
+
+
+def test_only_commit_step_may_continue_on_error():
+    flagged = [s for s in _steps() if "continue-on-error" in s]
+    assert [s["name"] for s in flagged] == ["Commit data files"]
+    assert flagged[0]["continue-on-error"] is True
+    assert "continue-on-error" not in DEPLOY and not any("continue-on-error" in s for s in DEPLOY["steps"])
+    assert "continue-on-error" not in BUILD
+    commit = flagged[0]["run"]
+    assert "git pull --rebase --autostash" in commit and "::warning::" in commit
+    assert "${{" not in commit
+    assert commit.strip().splitlines()[-1].lstrip().startswith("git diff --cached --quiet")
 
 
 def test_requirements_pinned():
