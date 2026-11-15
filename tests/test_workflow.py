@@ -85,6 +85,7 @@ def test_only_commit_step_may_continue_on_error():
     assert "pull --rebase --autostash" in commit and "::warning::" in commit
     assert "${{" not in commit
     assert commit.count("http.extraheader=$AUTH") == 2 and "echo \"$TOKEN" not in commit
+    assert 'echo "::add-mask::$AUTH"' in commit and "::warning::could not pull" in commit
     assert commit.strip().splitlines()[-1].lstrip().startswith("git diff --cached --quiet")
 
 

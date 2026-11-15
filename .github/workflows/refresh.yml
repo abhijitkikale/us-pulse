@@ -74,9 +74,10 @@ jobs:
           TOKEN: ${{ github.token }}
         run: |
           AUTH="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
+          echo "::add-mask::$AUTH"
           git config user.name "uspulse-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -c "http.extraheader=$AUTH" pull --rebase --autostash origin "$BRANCH"
+          git -c "http.extraheader=$AUTH" pull --rebase --autostash origin "$BRANCH" || echo "::warning::could not pull before committing data files"
           for f in data/sectors.csv data/membership.csv data/last_count.txt; do
             if [ -f "$f" ]; then git add -- "$f"; fi
           done

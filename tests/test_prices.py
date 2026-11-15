@@ -212,3 +212,24 @@ def test_symbol_missing_today_keeps_cached_history(tmp_path):
     c, v, status = fp.refresh(syms, cache, downloader=Fake(_drop_n(1)), sleep=lambda s: None)
     assert status.startswith("ok (1 missing")
     assert c["S0"].notna().all() and "S0" in v.columns
+
+
+def test_missing_critical_symbol_is_partial_even_at_one_in_1800():
+    syms = ["^GSPC"] + [f"S{i}" for i in range(1799)]
+    d = Fake(lambda b: make_frame(b, nan_cols=["^GSPC"] if "^GSPC" in b else []))
+    _, _, status = fp.download_prices(syms, batch=2000, downloader=d, sleep=lambda s: None, critical={"^GSPC", "SPY"})
+    assert status.startswith("partial:") and "^GSPC" in status
+
+
+def test_missing_noncritical_stock_stays_ok_with_critical_present():
+    syms = ["^GSPC"] + [f"S{i}" for i in range(1799)]
+    _, _, status = fp.download_prices(syms, batch=2000, downloader=Fake(_drop_n(1)), sleep=lambda s: None,
+                                      critical={"^GSPC"})
+    assert status.startswith("ok (1 missing: S0")
+
+
+def test_refresh_passes_critical_through(tmp_path):
+    syms = ["^GSPC"] + [f"S{i}" for i in range(199)]
+    d = Fake(lambda b: make_frame(b, nan_cols=["^GSPC"]))
+    _, _, status = fp.refresh(syms, tmp_path / "p.pkl", downloader=d, sleep=lambda s: None, critical={"^GSPC"})
+    assert status.startswith("partial:")

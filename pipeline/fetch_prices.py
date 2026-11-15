@@ -22,8 +22,10 @@ def _field(frame, name, symbols):
     return frame[[name]].rename(columns={name: symbols[0]})
 
 
-def download_prices(symbols, period="5y", batch=100, retries=3, downloader=yf.download, sleep=time.sleep):
-    """Return (close, volume, status). Never raises; failed batches are skipped."""
+def download_prices(symbols, period="5y", batch=100, retries=3, downloader=yf.download, sleep=time.sleep,
+                    critical=frozenset()):
+    """Return (close, volume, status). Never raises; failed batches are skipped. A missing symbol in `critical`
+    (benchmarks, sector and theme ETFs) always makes the status 'partial:'; other symbols get the 1% tolerance."""
     symbols = list(dict.fromkeys(symbols))
     closes, vols, failed_batches = [], [], 0
     for i in range(0, len(symbols), batch):
@@ -52,6 +54,10 @@ def download_prices(symbols, period="5y", batch=100, retries=3, downloader=yf.do
     close = close.loc[:, ~close.columns.duplicated()]
     volume = volume.loc[:, ~volume.columns.duplicated()]
     missing = len(symbols) - close.shape[1]
+    lost_critical = [s for s in symbols if s in set(critical) and s not in close.columns]
+    if lost_critical:
+        shown = ", ".join(lost_critical[:10]) + (", ..." if len(lost_critical) > 10 else "")
+        return close, volume, f"partial: {close.shape[1]}/{len(symbols)} symbols; critical missing: {shown}"
     if failed_batches or missing > SOFT_MISSING_RATIO * len(symbols):
         return close, volume, f"partial: {close.shape[1]}/{len(symbols)} symbols"
     if missing:

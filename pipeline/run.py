@@ -107,6 +107,14 @@ def symbol_list(uni, etf_uni):
     return list(dict.fromkeys(s for s in syms if isinstance(s, str) and s))
 
 
+def critical_symbols():
+    """Benchmarks, sector ETFs and theme ETFs: a missing one is never tolerated (status 'partial:')."""
+    out = set()
+    for table in (us_config.BENCHMARKS, us_config.SECTOR_ETFS, us_config.THEMES):
+        out.update(v for v in table.values() if isinstance(v, str))
+    return frozenset(out)
+
+
 def _previous_count():
     try:
         return int((DATA / "last_count.txt").read_text(encoding="utf-8").strip())
@@ -148,9 +156,11 @@ def main(cached: bool = False, fill_sectors: bool = False, out=None):
         close, volume = fetch_prices.load_cache(cache)
         status["prices"] = "cached" if close is not None else f"failed: no price cache at {cache}"
     else:
-        close, volume, status["prices"] = fetch_prices.refresh(symbols, cache)
+        close, volume, status["prices"] = fetch_prices.refresh(symbols, cache, critical=critical_symbols())
     if close is None or close.empty:
         raise SystemExit(f"No price data ({status['prices']}); page not written")
+    if "^GSPC" not in close.columns or close["^GSPC"].dropna().empty:
+        raise SystemExit(f"No ^GSPC benchmark data ({status['prices']}); page not written")
 
     tickers = list(uni["ticker"])                    # Ruling R18: industry + mcap labels for the whole universe
     sectors_csv = DATA / "sectors.csv"

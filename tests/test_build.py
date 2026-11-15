@@ -227,3 +227,40 @@ def test_run_out_option_writes_to_given_path(monkeypatch, tmp_path, tpl):
 def test_cli_out_flag_parsing():
     assert run._cli_out(["run.py", "--out", "X/y.html"]) == run.Path("X/y.html")
     assert run._cli_out(["run.py", "--cached"]) is None
+
+
+def test_critical_symbols_cover_benchmarks_sectors_themes_only():
+    crit = run.critical_symbols()
+    assert {"^GSPC", "^VIX", "XLK", "SMH"} <= crit
+    assert "^FTSE" not in crit and "T00" not in crit and "JPY=X" not in crit
+
+
+def test_run_passes_critical_to_refresh(monkeypatch, tmp_path, tpl):
+    _fake_world(monkeypatch, tmp_path, tpl)
+    got = {}
+    orig = run.fetch_prices.refresh
+
+    def spy(symbols, cache_path, **kw):
+        got.update(kw)
+        return orig(symbols, cache_path, **kw)
+
+    monkeypatch.setattr(run.fetch_prices, "refresh", spy)
+    run.main()
+    assert got["critical"] == run.critical_symbols()
+
+
+def test_run_refuses_to_render_without_gspc(monkeypatch, tmp_path, tpl):
+    _fake_world(monkeypatch, tmp_path, tpl)
+    orig = run.fetch_prices.refresh
+
+    def no_gspc(symbols, cache_path, **kw):
+        c, v, s = orig(symbols, cache_path, **kw)
+        return c.drop(columns=["^GSPC"]), v, "ok (1 missing: ^GSPC)"
+
+    monkeypatch.setattr(run.fetch_prices, "refresh", no_gspc)
+    (tmp_path / "last_count.txt").write_text("30", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        run.main()
+    assert "^GSPC" in str(e.value.code)
+    assert not (tmp_path / "dashboard.html").exists()
+    assert (tmp_path / "last_count.txt").read_text(encoding="utf-8") == "30"
